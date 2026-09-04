@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide — The Vault</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --danger:#F04438; --danger-bg:#FEF3F2;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:40px 20px 70px;line-height:1.6;}
+.wrap{max-width:760px;margin:0 auto;}
+a{color:var(--accent);font-weight:600;}
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px;}
+h1{font-size:28px;font-weight:800;letter-spacing:-0.01em;margin:0 0 8px;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0 0 20px;}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px;}
+.toc a{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;}
+.toc a:hover{color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg);}
+
+section{margin:0 0 44px;scroll-margin-top:20px;}
+.snum{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;margin-right:9px;}
+h2{font-size:16px;text-transform:uppercase;letter-spacing:.03em;color:var(--text);font-weight:700;border-bottom:1px solid var(--border);padding-bottom:11px;margin:0 0 16px;display:flex;align-items:center;}
+p{font-size:14.5px;color:var(--text-secondary);}
+code{font-family:'JetBrains Mono',monospace;background:var(--surface-alt);color:#7C3AED;padding:2px 6px;border-radius:4px;font-size:13px;}
+
+.code-block{position:relative;margin:10px 0;}
+pre{background:#0D1117;border:none;border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:#E6EDF3;line-height:1.6;margin:0;}
+pre .cm{color:#8B949E;}
+.copy-btn{position:absolute;top:8px;right:8px;font-size:10.5px;font-weight:600;background:rgba(255,255,255,0.08);color:#C9D1D9;border:1px solid rgba(255,255,255,0.15);padding:4px 9px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+.copy-btn:hover{background:rgba(255,255,255,0.15);}
+.copy-btn.copied{color:var(--success);border-color:var(--success);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,24,40,0.05);}
+.card h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);font-weight:700;margin:0 0 8px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0;}
+th{text-align:left;color:var(--text-muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;padding:7px 10px;border-bottom:1px solid var(--border);}
+td{padding:9px 10px;border-bottom:1px solid var(--surface-alt);color:var(--text);}
+td code{background:transparent;padding:0;}
+.mistake{border-left:3px solid var(--danger);padding:11px 14px;background:var(--danger-bg);border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13.5px;color:var(--text);}
+.mistake b{color:#B42318;}
+
+/* try-it widget: editable function + editable params + real result */
+.tryit{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;padding:16px 18px;margin:14px 0;}
+.tryit .tt-label{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.03em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.tryit textarea{width:100%;min-height:90px;background:#0D1117;color:#E6EDF3;border:none;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;padding:12px 14px;resize:vertical;}
+.tryit textarea:focus{outline:2px solid var(--accent);}
+.tryit .tt-actions{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.tryit .tt-params{display:flex;gap:8px;flex-wrap:wrap;}
+.tryit .tt-params label{font-size:11.5px;color:var(--text-secondary);font-weight:600;display:flex;align-items:center;gap:5px;}
+.tryit .tt-params input{width:64px;padding:6px 8px;border-radius:6px;border:1px solid var(--accent-border);font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#fff;}
+.tryit button.run{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:7px;font-weight:600;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;}
+.tryit button.run:hover{background:var(--accent-hover);}
+.tryit .tt-console{background:#0D1117;border-radius:8px;padding:10px 14px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#86EFAC;min-height:20px;}
+.tryit .tt-console .err{color:#FDA29B;}
+.tryit .tt-console .muted{color:#6B7280;}
+
+/* quiz */
+.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+.quiz-q p.qtext{font-size:14px;color:var(--text);font-weight:600;margin:0 0 12px;}
+.quiz-opt{display:block;width:100%;text-align:left;background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;}
+.quiz-opt:hover{border-color:var(--accent-border);background:var(--accent-bg);}
+.quiz-opt.correct{background:var(--success-bg);border-color:var(--success);color:#067647;font-weight:600;}
+.quiz-opt.wrong{background:var(--danger-bg);border-color:var(--danger);color:#B42318;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-feedback{font-size:13px;color:var(--text-secondary);margin-top:8px;display:none;}
+.quiz-feedback.show{display:block;}
+
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Guide · Reference</div>
+  <h1>The Vault</h1>
+  <p class="sub">Writing your own functions, booleans, and conditionals — the exact wording, not the answers to any specific challenge. Every example below actually runs, so change the numbers and see for yourself.</p>
+
+  <div class="toc">
+    <a href="#function">1. Writing a function</a>
+    <a href="#booleans">2. Booleans &amp; comparison</a>
+    <a href="#ifelse">3. If / else</a>
+    <a href="#testing">4. What "testing" means</a>
+    <a href="#quiz">Check yourself</a>
+  </div>
+
+  <section id="function">
+    <h2><span class="snum">1</span>Writing a function</h2>
+    <p>A function takes some input (its <b>parameters</b>), does something with it, and sends a result back with <code>return</code>.</p>
+    <div class="code-block">
+      <pre id="code-1">function double(n) {
+  return n * 2;
+}</pre>
+      <button class="copy-btn" onclick="copyCode('code-1', this)">Copy</button>
+    </div>
+    <p><code>double(5)</code> runs the function with <code>n</code> set to 5, and gives you back <code>10</code>. Nothing happens until it's actually called.</p>
+    <div class="mistake"><b>Common mistake:</b> writing the logic but forgetting <code>return</code> — the function runs, but silently gives back <code>undefined</code> instead of your answer.</div>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — edit the function, change n, run it</div>
+      <textarea id="tt1-code" spellcheck="false">function double(n) {
+  return n * 2;
+}</textarea>
+      <div class="tt-actions">
+        <div class="tt-params"><label>n <input type="number" id="tt1-n" value="5" step="any"></label></div>
+        <button class="run" onclick="runFn('tt1-code','double',['tt1-n'],'tt1-console')">▶ Run</button>
+      </div>
+      <div class="tt-console" id="tt1-console"><span class="muted">result appears here</span></div>
+    </div>
+  </section>
+
+  <section id="booleans">
+    <h2><span class="snum">2</span>Booleans and comparison</h2>
+    <p>A boolean is just <code>true</code> or <code>false</code>. Comparison operators produce one:</p>
+    <p>Keyboards don't have a single ≥ key, so code spells "greater than or equal to" as two ordinary characters, back to back: <code>&gt;</code> immediately followed by <code>=</code>. Read <code>&gt;=</code> as <i>one</i> operator, not a <code>&gt;</code> with something bolted on.</p>
+    <table>
+      <tr><th>Operator</th><th>Read it as</th><th>Same as</th></tr>
+      <tr><td><code>&gt;</code></td><td>"greater than"</td><td>&gt;</td></tr>
+      <tr><td><code>&gt;=</code></td><td>"greater than <i>or equal to</i>"</td><td>≥</td></tr>
+      <tr><td><code>&lt;</code></td><td>"less than"</td><td>&lt;</td></tr>
+      <tr><td><code>&lt;=</code></td><td>"less than <i>or equal to</i>"</td><td>≤</td></tr>
+      <tr><td><code>===</code></td><td>"is equal to" (use this, not <code>==</code>)</td><td>=</td></tr>
+      <tr><td><code>&amp;&amp;</code></td><td>"AND" — both sides must be true</td><td>—</td></tr>
+    </table>
+    <div class="code-block">
+      <pre id="code-2">function isAdult(age) {
+  return age >= 18;
+}</pre>
+      <button class="copy-btn" onclick="copyCode('code-2', this)">Copy</button>
+    </div>
+    <div class="mistake"><b>Common mistake:</b> mixing up <code>&gt;</code> and <code>&gt;=</code>. "Over 18" excludes exactly 18; "18 or over" includes it. Read the brief carefully — it's usually specific on purpose.</div>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — test the boundary at 18</div>
+      <textarea id="tt2-code" spellcheck="false">function isAdult(age) {
+  return age >= 18;
+}</textarea>
+      <div class="tt-actions">
+        <div class="tt-params"><label>age <input type="number" id="tt2-age" value="18" step="1"></label></div>
+        <button class="run" onclick="runFn('tt2-code','isAdult',['tt2-age'],'tt2-console')">▶ Run</button>
+      </div>
+      <div class="tt-console" id="tt2-console"><span class="muted">result appears here</span></div>
+    </div>
+  </section>
+
+  <section id="ifelse">
+    <h2><span class="snum">3</span>If / else</h2>
+    <p>Run different code depending on a condition. The first condition that matches wins — the rest are skipped.</p>
+    <div class="code-block">
+      <pre id="code-3">function describe(n) {
+  if (n > 100) {
+    return "big";
+  } else if (n > 10) {
+    return "medium";
+  } else {
+    return "small";
+  }
+}</pre>
+      <button class="copy-btn" onclick="copyCode('code-3', this)">Copy</button>
+    </div>
+    <div class="card">
+      <h3>Order matters</h3>
+      <p style="margin-bottom:0;">Checks run top to bottom. Put the most specific or most extreme condition first — if you check the broadest one first, the narrower ones never get a chance to run.</p>
+    </div>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — find where each branch switches over</div>
+      <textarea id="tt3-code" spellcheck="false">function describe(n) {
+  if (n > 100) {
+    return "big";
+  } else if (n > 10) {
+    return "medium";
+  } else {
+    return "small";
+  }
+}</textarea>
+      <div class="tt-actions">
+        <div class="tt-params"><label>n <input type="number" id="tt3-n" value="50" step="any"></label></div>
+        <button class="run" onclick="runFn('tt3-code','describe',['tt3-n'],'tt3-console')">▶ Run</button>
+      </div>
+      <div class="tt-console" id="tt3-console"><span class="muted">result appears here</span></div>
+    </div>
+  </section>
+
+  <section id="testing">
+    <h2><span class="snum">4</span>What "testing" means here</h2>
+    <p>Each test case calls your function with specific input and compares what it <i>actually</i> returns against what it's <i>expected</i> to return. A test only passes when those match exactly — a function that works for one input but not another still fails overall.</p>
+  </section>
+
+  <section id="quiz">
+    <h2>Check yourself</h2>
+    <div class="quiz-q">
+      <p class="qtext">1. A function has correct logic but no <code>return</code> statement. What happens when you call it?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">It throws an error and stops</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">It runs fine but silently gives back undefined</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">It automatically returns the last value it calculated</button>
+      <div class="quiz-feedback">JavaScript doesn't guess what you meant to return — no return statement means undefined comes back, no error, no warning.</div>
+    </div>
+    <div class="quiz-q">
+      <p class="qtext">2. Which correctly means "16 or older"?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)"><code>age &gt; 16</code></button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)"><code>age &gt;= 16</code></button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)"><code>age === 16</code></button>
+      <div class="quiz-feedback">"16 or older" includes exactly 16, so you need the "or equal to" version — &gt;= not just &gt;.</div>
+    </div>
+    <div class="quiz-q">
+      <p class="qtext">3. In an if/else chain, why does order matter?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">It doesn't — JavaScript checks every branch regardless</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">The first matching branch wins — later ones never get checked</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">Branches are checked in a random order each time</button>
+      <div class="quiz-feedback">Once one condition matches, its branch runs and the rest are skipped entirely — that's why the most specific case usually needs to come first.</div>
+    </div>
+  </section>
+
+  <footer>Part of <a href="index.html">The Mainframe</a> — financial systems training terminal.</footer>
+</div>
+
+<script>
+function copyCode(id, btn){
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+  }).catch(()=>{});
+}
+
+function runFn(codeId, fnName, paramIds, consoleId){
+  const out = document.getElementById(consoleId);
+  const src = document.getElementById(codeId).value;
+  try{
+    const fn = new Function(src + `\nreturn ${fnName};`)();
+    const args = paramIds.map(id => Number(document.getElementById(id).value));
+    const result = fn(...args);
+    out.innerHTML = `→ ${fnName}(${args.join(', ')}) = <b>${JSON.stringify(result)}</b>`;
+  }catch(e){
+    out.innerHTML = `<span class="err">Error: ${e.message}</span>`;
+  }
+}
+
+function answerQuiz(btn){
+  const group = btn.parentElement;
+  const opts = group.querySelectorAll('.quiz-opt');
+  const isCorrect = btn.dataset.correct === 'true';
+  opts.forEach(o => o.disabled = true);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if(!isCorrect){
+    opts.forEach(o => { if(o.dataset.correct === 'true') o.classList.add('correct'); });
+  }
+  group.querySelector('.quiz-feedback').classList.add('show');
+}
+</script>
+</body>
+</html>

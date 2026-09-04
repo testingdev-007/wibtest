@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Mainframe — Financial Systems Training Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --border-strong:#D0D5DD;
+  --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3; --success-border:#A6F4C5;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.05);
+  --shadow-md: 0 4px 16px rgba(16,24,40,0.07);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 24px 70px;}
+a{color:inherit;text-decoration:none;}
+
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);}
+
+header{margin-bottom:36px;}
+h1{font-size:clamp(28px,4vw,38px);margin:0 0 10px;font-weight:800;letter-spacing:-0.02em;color:var(--text);}
+.lead{color:var(--text-secondary);font-size:15px;line-height:1.65;max-width:640px;margin:0;}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin:22px 0 6px;font-size:12px;color:var(--text-secondary);font-weight:500;}
+.legend span{display:inline-flex;align-items:center;gap:7px;}
+.legend .sw{width:8px;height:8px;border-radius:50%;}
+.sw.ready{background:var(--success);}
+.sw.soon{background:var(--border-strong);}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px;}
+.dash-section{margin-top:38px;}
+.dash-section:first-of-type{margin-top:26px;}
+.section-head{margin-bottom:14px;}
+.section-head h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);font-weight:800;margin:0 0 4px;}
+.section-head p{font-size:13px;color:var(--text-secondary);margin:0;}
+.grid-1col{display:grid;grid-template-columns:1fr;gap:18px;}
+.grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.grid-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+@media (max-width:900px){.grid-3col{grid-template-columns:1fr 1fr;}}
+@media (max-width:640px){.grid-2col,.grid-3col{grid-template-columns:1fr;}}
+.advanced-note{background:var(--warning-bg,#FFFAEB);border:1px solid #FEDF89;border-radius:10px;padding:12px 16px;font-size:13px;color:#B54708;margin-bottom:16px;}
+@media (max-width:760px){.grid{grid-template-columns:1fr;}}
+
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:box-shadow .2s ease, opacity .2s ease, border-color .2s ease;}
+.tile.dimmed{opacity:0.4;}
+.tile.highlighted{border-color:var(--accent);box-shadow:0 0 0 2.5px var(--accent-border), 0 6px 18px rgba(79,70,229,0.18);}
+.interest-picker{background:linear-gradient(135deg,#F8F7FF,#EEF2FF);border:1px solid var(--accent-border);border-radius:16px;padding:22px 26px;margin:26px 0 6px;}
+.ip-label{font-size:14px;font-weight:800;color:var(--text);margin-bottom:13px;letter-spacing:-0.01em;}
+.ip-chips{display:flex;gap:10px;flex-wrap:wrap;}
+.ip-chip{background:#fff;border:1.5px solid var(--accent-border);border-radius:22px;padding:9px 18px;font-size:13px;font-weight:700;color:var(--text-secondary);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s ease;}
+.ip-chip:hover{border-color:var(--accent);color:var(--accent);}
+.ip-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(79,70,229,0.35);}
+.tile:hover{box-shadow:var(--shadow-md);}
+.tile.soon{opacity:.6;}
+.tile-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;}
+.tile-num{font-size:11px;color:var(--text-muted);letter-spacing:.05em;font-weight:600;}
+.tile h2{font-size:17px;margin:2px 0 8px;font-weight:700;color:var(--text);letter-spacing:-0.01em;}
+.status-pill{font-size:10px;letter-spacing:.03em;text-transform:uppercase;padding:4px 10px;border-radius:20px;white-space:nowrap;height:fit-content;font-weight:700;}
+.status-pill.ready{color:var(--success);border:1px solid var(--success-border);background:var(--success-bg);}
+.status-pill.soon{color:var(--text-muted);border:1px solid var(--border);background:var(--surface-alt);}
+
+.tile p.desc{color:var(--text-secondary);font-size:13px;line-height:1.6;margin:0 0 14px;}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.chip{font-size:10.5px;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface-alt);padding:4px 10px;border-radius:20px;font-weight:600;}
+
+.tile-actions{display:flex;flex-direction:column;gap:8px;}
+.action-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-size:12.5px;transition:border-color .15s ease, background .15s ease;}
+.action-row.live{border-color:var(--border-strong);}
+a.action-row:hover{background:var(--accent-bg);border-color:var(--accent-border);}
+.action-row .label{display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:700;font-size:12.5px;}
+.action-row .time{color:var(--text-muted);font-size:11.5px;}
+.action-row.disabled{opacity:.5;cursor:not-allowed;}
+.action-row.disabled .label{color:var(--text-muted);}
+
+.guide-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;color:var(--text-secondary);font-weight:600;}
+.guide-link:hover{color:var(--accent);}
+
+footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--border);color:var(--text-muted);font-size:12px;line-height:1.7;}
+footer b{color:var(--text-secondary);}
+footer a{color:var(--accent);font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Digital Skills · Training Hub</div>
+    <h1>The Mainframe</h1>
+    <p class="lead">Start with Hello, Computer if this is your first time — it takes three minutes and everything else builds on it. From there: three short taster activities to try in any order, two AI skills exercises, and two more involved coding challenges once you're ready for a bit more.</p>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+      <a href="start-here.html" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-border);padding:8px 16px;border-radius:20px;text-decoration:none;">← Session intro</a>
+      <a href="intro-slides.html" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-border);padding:8px 16px;border-radius:20px;text-decoration:none;">🖥️ Intro slides</a>
+      <a href="facilitator-notes.html" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-border);padding:8px 16px;border-radius:20px;text-decoration:none;">Facilitator notes →</a>
+    </div>
+  </header>
+
+  <div class="interest-picker">
+    <div class="ip-label">I'm interested in...</div>
+    <div class="ip-chips">
+      <button class="ip-chip" data-cat="coding" onclick="toggleInterest('coding')">💻 Coding</button>
+      <button class="ip-chip" data-cat="web-design" onclick="toggleInterest('web-design')">🎨 Web Design</button>
+      <button class="ip-chip" data-cat="ai-prompting" onclick="toggleInterest('ai-prompting')">🤖 AI Prompting</button>
+      <button class="ip-chip" data-cat="data" onclick="toggleInterest('data')">📊 Data &amp; Dashboards</button>
+      <button class="ip-chip" data-cat="debugging" onclick="toggleInterest('debugging')">🐛 Debugging</button>
+    </div>
+  </div>
+
+  <div class="dash-section">
+    <div class="section-head">
+      <h2>Start here</h2>
+      <p>Never written any code before? This takes 3 minutes and everything else builds on it.</p>
+    </div>
+    <div class="grid-1col">
+
+      <!-- HELLO WORLD -->
+      <div class="tile" data-category="coding" style="background:linear-gradient(135deg,#EEF2FF,#fff);">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">00</div>
+            <h2>Hello, Computer</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <p class="desc">Type one instruction, press a button, and watch the computer respond straight away. Teaches what a "console" actually is and what your first ever line of code looks like — no experience assumed at all.</p>
+        <div class="chips">
+          <span class="chip">what is a console</span><span class="chip">your first instruction</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="hello-world.html">
+            <span class="label">▶ Start Here</span>
+            <span class="time">~3 min · zero experience needed</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dash-section">
+    <div class="section-head">
+      <h2>Core activities</h2>
+      <p>Pick any of these in any order — each is a short, self-contained taste of a real skill.</p>
+    </div>
+    <div class="grid-3col">
+
+      <!-- CONSTRUCT -->
+      <div class="tile" data-category="coding">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">01</div>
+            <h2>The Construct</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <p class="desc">Give a rover simple instructions — move forward, turn — and watch it follow them exactly. Teaches that code is just a list of steps, followed one at a time, in order.</p>
+        <div class="chips">
+          <span class="chip">step-by-step instructions</span><span class="chip">repeating steps</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="mission-control-taster.html">
+            <span class="label">▶ Live Taster</span>
+            <span class="time">~6 min · 3 constructs + bonus</span>
+          </a>
+          <a class="action-row live" href="mission-control.html">
+            <span class="label">📘 Take-Home Extension</span>
+            <span class="time">6 constructs + bonus round</span>
+          </a>
+        </div>
+        <a class="guide-link" href="construct-guide.html">📖 Reference guide →</a>
+      </div>
+
+      <!-- CSS SITE -->
+      <div class="tile" data-category="web-design">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">02</div>
+            <h2>The Front</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <p class="desc">Change how a plain webpage looks — colours, rounded corners, spacing. Teaches the basics of CSS, the part of a website that controls how it looks (not what it does).</p>
+        <div class="chips">
+          <span class="chip">colours &amp; spacing</span><span class="chip">making things line up</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="the-front.html">
+            <span class="label">▶ Live Taster</span>
+            <span class="time">~6 min · 3 screens</span>
+          </a>
+          <a class="action-row live" href="the-front-extended.html">
+            <span class="label">📘 Take-Home Extension</span>
+            <span class="time">~15 min · 1 continuous page</span>
+          </a>
+        </div>
+        <a class="guide-link" href="front-guide.html">📖 Reference guide →</a>
+      </div>
+
+      <!-- HELPDESK -->
+      <div class="tile" data-category="coding debugging">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">03</div>
+            <h2>The Helpdesk</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <p class="desc">A working bank app has a few things wrong with it. Describe what you notice, in your own words, and watch the fix happen. Teaches how real developers actually find and fix problems.</p>
+        <div class="chips">
+          <span class="chip">spotting what's wrong</span><span class="chip">describing a problem clearly</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="the-helpdesk.html">
+            <span class="label">▶ Live Taster</span>
+            <span class="time">~6 min · 5 known issues</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dash-section">
+    <div class="section-head">
+      <h2>AI skills</h2>
+      <p>No code in this section — just how to get genuinely useful results out of tools like CoPilot.</p>
+    </div>
+    <div class="grid-2col">
+
+      <!-- COPILOT PROMPTS -->
+      <div class="tile" data-category="ai-prompting">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">04</div>
+            <h2>Effective CoPilot Prompts</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <p class="desc">A short read comparing a vague CoPilot question with a well-written one side by side. Teaches the handful of habits that make CoPilot's answers genuinely more useful.</p>
+        <div class="chips">
+          <span class="chip">being specific</span><span class="chip">giving it context</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="copilot-prompts-guide.html">
+            <span class="label">📖 Read the Guide</span>
+            <span class="time">~5 min · copyable examples</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- COPILOT EXCEL OUTLOOK -->
+      <div class="tile" data-category="ai-prompting data">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">05</div>
+            <h2>Effective CoPilot — Excel &amp; Outlook</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <p class="desc">The exact same spreadsheet and inbox, every time — pick a weak prompt and get a vague guess, pick a strong one and get a real chart or the exact email you needed. Teaches this by letting you see it happen, not just reading about it.</p>
+        <div class="chips">
+          <span class="chip">getting a real dashboard</span><span class="chip">finding an old email</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="copilot-excel-outlook.html">
+            <span class="label">▶ Live Exercise</span>
+            <span class="time">~8 min · Excel + Outlook</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dash-section">
+    <div class="section-head">
+      <h2>Advanced extensions</h2>
+      <p>More involved than the activities above — a good next step once you're comfortable, not a place to start.</p>
+    </div>
+    <div class="grid-2col">
+
+      <!-- VAULT -->
+      <div class="tile" data-category="coding">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">06</div>
+            <h2>The Vault</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <div class="advanced-note">⚠️ More involved than the Core Activities above — try Construct or Front first if this is your first time today.</div>
+        <p class="desc">Write short pieces of code to fix a bank's rules for spotting risk. Teaches how to write your own simple logic, building on the "follow the steps" idea from The Construct.</p>
+        <div class="chips">
+          <span class="chip">writing your own logic</span><span class="chip">true / false decisions</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="the-vault.html">
+            <span class="label">▶ Live Taster</span>
+            <span class="time">~6 min · 3 challenges</span>
+          </a>
+          <a class="action-row live" href="the-vault-extended.html">
+            <span class="label">📘 Take-Home Extension</span>
+            <span class="time">~15 min · 6 challenges</span>
+          </a>
+        </div>
+        <a class="guide-link" href="vault-guide.html">📖 Reference guide →</a>
+      </div>
+
+      <!-- LEDGER -->
+      <div class="tile" data-category="coding data">
+        <div class="tile-head">
+          <div>
+            <div class="tile-num">07</div>
+            <h2>The Ledger</h2>
+          </div>
+          <span class="status-pill ready">ready</span>
+        </div>
+        <div class="advanced-note">⚠️ Builds on ideas from The Vault — a good follow-on, not a starting point.</div>
+        <p class="desc">Write short pieces of code to answer real questions about a list of bank transactions. Teaches how to work with a whole list of information at once, not just one thing.</p>
+        <div class="chips">
+          <span class="chip">working with lists of data</span><span class="chip">totals &amp; filtering</span>
+        </div>
+        <div class="tile-actions">
+          <a class="action-row live" href="the-ledger.html">
+            <span class="label">▶ Live Taster</span>
+            <span class="time">~6 min · 3 queries</span>
+          </a>
+          <a class="action-row live" href="the-ledger-extended.html">
+            <span class="label">📘 Take-Home Extension</span>
+            <span class="time">~15 min · 6 queries</span>
+          </a>
+        </div>
+        <a class="guide-link" href="ledger-guide.html">📖 Reference guide →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <b>Deployment note:</b> all files sit flat in the same folder — 10 activities (including Hello, Computer and The Helpdesk), 4 participant guides, and facilitator-notes.html — so this page just links between them, no server or build step required.
+    <a href="start-here.html" style="color:var(--text-secondary);">← Back to session intro</a> · <a href="facilitator-notes.html" style="color:var(--text-secondary);">Facilitator notes →</a>
+  </footer>
+
+</div>
+
+<script>
+let activeInterests = new Set();
+function toggleInterest(cat){
+  if(activeInterests.has(cat)){ activeInterests.delete(cat); } else { activeInterests.add(cat); }
+  document.querySelectorAll('.ip-chip').forEach(chip => {
+    chip.classList.toggle('active', activeInterests.has(chip.dataset.cat));
+  });
+  document.querySelectorAll('.tile').forEach(tile => {
+    if(activeInterests.size === 0){
+      tile.classList.remove('dimmed', 'highlighted');
+      return;
+    }
+    const tileCats = (tile.dataset.category || '').split(' ').filter(Boolean);
+    const match = tileCats.some(c => activeInterests.has(c));
+    tile.classList.toggle('highlighted', match);
+    tile.classList.toggle('dimmed', !match);
+  });
+}
+</script>
+</body>
+</html>

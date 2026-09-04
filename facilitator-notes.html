@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facilitator Notes — The Mainframe</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --warning:#F79009; --warning-bg:#FFFAEB;
+  --danger:#F04438; --danger-bg:#FEF3F2;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:40px 20px 70px;line-height:1.6;}
+.wrap{max-width:900px;margin:0 auto;}
+a{color:var(--accent);font-weight:600;}
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--warning);font-weight:700;margin-bottom:10px;}
+h1{font-size:28px;font-weight:800;letter-spacing:-0.01em;margin:0 0 8px;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0 0 20px;max-width:640px;}
+h2{font-size:17px;text-transform:uppercase;letter-spacing:.03em;color:var(--text);font-weight:700;border-bottom:1px solid var(--border);padding-bottom:10px;margin:46px 0 16px;}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);font-weight:700;margin:22px 0 10px;}
+p{font-size:14px;color:var(--text-secondary);}
+code{font-family:'JetBrains Mono',monospace;background:var(--surface-alt);color:#7C3AED;padding:2px 6px;border-radius:4px;font-size:12.5px;}
+pre{background:#0D1117;border:none;border-radius:8px;padding:12px 14px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#E6EDF3;line-height:1.6;margin:6px 0;white-space:pre-wrap;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,40,0.05);}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;}
+th{text-align:left;color:var(--text-muted);text-transform:uppercase;font-size:10px;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--border);}
+td{padding:10px;border-bottom:1px solid var(--surface-alt);vertical-align:top;color:var(--text);}
+td code{background:transparent;padding:0;}
+.timing-bar{display:flex;height:36px;border-radius:8px;overflow:hidden;margin:14px 0;border:1px solid var(--border);}
+.seg{display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#fff;font-weight:700;}
+.s1{background:#4F46E5;flex:6;}
+.s2{background:#7C3AED;flex:6;}
+.s3{background:#DB2777;flex:6;}
+.s4{background:#0EA5E9;flex:6;}
+.s5{background:#0D9488;flex:6;}
+.sbuf{background:var(--surface-alt);flex:1;color:var(--text-muted);}
+.ladder{border-left:2px solid var(--border);padding-left:16px;margin:14px 0;}
+.rung{margin-bottom:14px;}
+.rung .tier{font-size:10.5px;color:var(--warning);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:3px;}
+.rung p{margin:0;font-size:13.5px;}
+details{background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;}
+summary{padding:11px 14px;cursor:pointer;font-size:12.5px;color:var(--text);font-weight:600;list-style:none;display:flex;align-items:center;gap:8px;}
+summary::before{content:'▶';font-size:9px;color:var(--text-muted);transition:transform .15s ease;}
+details[open] summary::before{transform:rotate(90deg);}
+summary::-webkit-details-marker{display:none;}
+.answer-body{padding:0 14px 14px;}
+.answer-body pre{margin-top:8px;}
+.snag{border-left:3px solid var(--warning);padding:11px 14px;background:var(--warning-bg);border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13.5px;color:var(--text);}
+.snag b{color:#B54708;}
+.trouble{border-left:3px solid var(--danger);padding:11px 14px;background:var(--danger-bg);border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13.5px;color:var(--text);}
+.trouble b{color:#B42318;}
+.trouble .fix{color:var(--text-secondary);display:block;margin-top:4px;}
+.works{border-left:3px solid var(--success);padding:11px 14px;background:var(--success-bg);border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13.5px;color:var(--text);}
+.works b{color:#067647;}
+.chatline{display:flex;gap:10px;margin-bottom:8px;font-size:13px;align-items:flex-start;}
+.chatline .q{font-family:'JetBrains Mono',monospace;color:var(--text);background:var(--surface-alt);padding:6px 10px;border-radius:6px;flex-shrink:0;min-width:220px;}
+.chatline .a{color:var(--text-secondary);padding-top:6px;}
+.linklist{display:flex;flex-direction:column;gap:6px;font-size:13px;}
+.linklist a{text-decoration:none;font-family:'JetBrains Mono',monospace;font-weight:600;}
+.linklist a:hover{text-decoration:underline;}
+.linklist span{color:var(--text-muted);font-family:'Inter',sans-serif;font-weight:400;}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 8px;}
+.toc a{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;}
+.toc a:hover{color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg);}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Facilitator Notes — Not For Participants</div>
+  <h1>Running The Mainframe</h1>
+  <p class="sub">Everything a facilitator needs in the room: what each task asks for, a scaffolded way to help someone stuck without just giving them the answer, the full answer key for when that's genuinely the right call, what the chat systems can and can't actually do, and troubleshooting for "it's not working" moments that are user error, not a broken build.</p>
+
+  <div class="toc">
+    <a href="#timing">Timing</a>
+    <a href="#construct">Construct</a>
+    <a href="#vault">Vault</a>
+    <a href="#ledger">Ledger</a>
+    <a href="#front">Front</a>
+    <a href="#helpdesk">Helpdesk</a>
+    <a href="#copilot">CoPilot modules</a>
+    <a href="#slides">Intro slides</a>
+    <a href="#chat-capability">Help &amp; Hints — what works</a>
+    <a href="#helpdesk-chat">Helpdesk chat — what works</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+    <a href="#files">All files</a>
+  </div>
+
+  <h2>The dashboard's "I'm interested in..." picker</h2>
+  <div class="card">
+    <p>A small feature on <code>index.html</code> — five toggleable chips (Coding, Web Design, AI Prompting, Data &amp; Dashboards, Debugging) that highlight matching module cards and dim the rest when clicked, multi-select. Several modules genuinely belong to more than one category: Ledger is tagged both Coding and Data (it's the array/query module, and directly connects to the Excel dashboard exercise); Helpdesk is tagged both Coding and Debugging (it's the one module that's purely about fixing rather than writing); the Excel/Outlook exercise is tagged both AI Prompting and Data. This is genuinely useful mainly once there are enough modules that browsing all of them at once feels like a lot — point newcomers at it if they seem unsure where to start.</p>
+  </div>
+
+  <h2 id="timing">The 25-minute slot</h2>
+  <p>Five stations, roughly 5 minutes each, with a short buffer for moving between them. The Construct taster has a visible on-screen countdown set to 6 minutes — the other four don't enforce a timer, so you'll need to call time yourself.</p>
+  <div class="timing-bar">
+    <div class="seg s1">Construct ~5m</div><div class="seg sbuf"></div>
+    <div class="seg s2">Vault ~5m</div><div class="seg sbuf"></div>
+    <div class="seg s3">Ledger ~5m</div><div class="seg sbuf"></div>
+    <div class="seg s4">Front ~5m</div><div class="seg sbuf"></div>
+    <div class="seg s5">Helpdesk ~5m</div>
+  </div>
+  <p>Nobody needs to finish every task in every activity — the point is a real taste of each, not full completion. If someone's clearly engaged and close to finishing when time's up, let them carry on; don't cut mid-flow over a minute or two. Construct and Vault now have 5 tasks each rather than 3 — genuinely finishing either one in 5 minutes is a stretch goal, not an expectation.</p>
+
+  <!-- ============ CONSTRUCT ============ -->
+  <h2 id="construct">The Construct</h2>
+  <div class="card">
+    <p><b>What it is:</b> navigating a hidden rover across a grid by writing real JavaScript — <code>moveForward()</code>, <code>turnLeft()</code>, <code>turnRight()</code> — building from a single command up to a loop, and explicitly showing that a loop and manual repeated calls are equally valid solutions. Covers functions, sequencing, parameters, and loops.</p>
+  </div>
+  <div class="snag"><b>The goal genuinely wasn't obvious as a goal — feedback confirmed this, and checking the actual rendering confirmed why.</b> The target cell was only a soft colour difference plus an abstract pulsing ring, with no icon and no plain-language statement of the objective anywhere on screen — brief text called it "the exit node," a term that never visually connected to that pulsing circle. Fixed in both the taster and full build: the target cell now shows an actual 🏁 flag icon, a plain "🏁 Your goal: get the rover to the flag" banner sits directly above the grid, and every brief, hint, and terminal log message was updated to consistently say "flag" instead of "exit"/"exit node," so the words and the visual reinforce each other. Confirmed the flag renders on the correct cell across every level in both files, including the newest one (The Rectangle), and confirmed the win condition and log messages still work correctly end to end.</div>
+  <div class="card">
+    <table>
+      <tr><th>#</th><th>Task</th><th>Asks for</th></tr>
+      <tr><td>1</td><td>Wake Up</td><td>call <code>moveForward()</code> once</td></tr>
+      <tr><td>2</td><td>The Path</td><td>four <code>moveForward()</code> calls in a row</td></tr>
+      <tr><td>3</td><td>The Turn</td><td>move, turn, move again — combining direction changes</td></tr>
+      <tr><td>4</td><td>The Relay</td><td>two turns — three straight stretches chained together</td></tr>
+      <tr><td>5</td><td>The Repeat</td><td>a diagonal staircase — solvable manually or with a loop, deliberately</td></tr>
+      <tr><td colspan="3" style="color:var(--text-muted);font-size:11px;">— take-home extension diverges from level 4 onward, see below —</td></tr>
+      <tr><td>Bonus</td><td>The Glitch</td><td>fix a loop that runs one time too few (debugging, not new syntax)</td></tr>
+    </table>
+    <div class="card" style="margin-top:10px;background:var(--warning-bg,#FFFAEB);border-color:#FEDF89;">
+      <p><b>Important — the take-home is not "the same plus one task":</b> levels 1–3 (Wake Up, The Path, The Turn) are byte-identical between the taster and the take-home. Levels 4 and 5 genuinely diverge — the taster has The Relay and The Repeat; the take-home has Agents and The Loop instead. A participant doing both will redo 60% of the content before hitting anything new, which is exactly why it can feel like barely an extension even though two levels do differ, not one. A brand new 6th level, The Rectangle, was added specifically to address this — see the take-home table below.</p>
+    </div>
+    <p style="margin-top:10px;"><b>The Repeat is worth knowing about specifically:</b> the path staircases diagonally rather than running in a straight line — deliberately, after feedback that a straight run didn't feel meaningfully harder than earlier tasks, just longer. The repeating unit is four commands (move, turn, move, turn back), not one, so the manual solution is genuinely long (16 lines) while the loop version stays at 4 — a much more dramatic and honest demonstration of why loops matter. The checking logic still only ever looks at where the rover ends up, never at what code got it there, so both the 16-line manual solution and the 4-line loop genuinely pass.</p>
+  </div>
+
+  <h3>Scaffolded help</h3>
+  <div class="ladder">
+    <div class="rung"><div class="tier">Tier 1 — ask, don't tell</div><p>"How many cells away is the exit? What do you think that number needs to be in your code?"</p></div>
+    <div class="rung"><div class="tier">Tier 2 — point at the tool</div><p>Point them at the in-app Hint button before adding anything yourself — it escalates through three tiers on its own, ending in the full answer if they click it enough times.</p></div>
+    <div class="rung"><div class="tier">Tier 3 — narrow it down</div><p>"You've got the right idea, but count your <code>moveForward()</code> calls again — you're one short." Still make them fix it themselves.</p></div>
+  </div>
+
+  <h3>Answer key</h3>
+  <details><summary>Wake Up</summary><div class="answer-body"><pre>moveForward();</pre></div></details>
+  <details><summary>The Path</summary><div class="answer-body"><pre>moveForward();
+moveForward();
+moveForward();
+moveForward();</pre></div></details>
+  <details><summary>The Turn</summary><div class="answer-body"><pre>moveForward();
+moveForward();
+moveForward();
+turnRight();
+moveForward();
+moveForward();
+moveForward();</pre></div></details>
+  <details><summary>The Relay</summary><div class="answer-body"><pre>moveForward();
+moveForward();
+turnRight();
+moveForward();
+moveForward();
+turnLeft();
+moveForward();
+moveForward();</pre></div></details>
+  <details><summary>The Repeat (either solution passes)</summary><div class="answer-body"><pre>// Loop (4 lines):
+for (let i = 0; i < 4; i++) {
+  moveForward();
+  turnRight();
+  moveForward();
+  turnLeft();
+}
+
+// Manual: the same 4-line block repeated 4 times (16 lines) — also passes.</pre></div></details>
+  <details><summary>Bonus — The Glitch</summary><div class="answer-body"><p>Change the loop condition from <code>i &lt; 3</code> to <code>i &lt; 4</code> — the exit is 4 cells away, the loop only ran 3 times.</p></div></details>
+
+  <h3>Take-home extension — levels 4 onward differ entirely</h3>
+  <div class="card">
+    <table>
+      <tr><th>#</th><th>Task</th><th>Asks for</th></tr>
+      <tr><td>1–3</td><td>Wake Up, The Path, The Turn</td><td>identical to the taster — not new content</td></tr>
+      <tr><td>4</td><td>Agents</td><td>plan a route around obstacles blocking the direct path — logic/planning, not a new command</td></tr>
+      <tr><td>5</td><td>The Loop</td><td>a staircase requiring a loop body with more than one command inside it</td></tr>
+      <tr><td>6</td><td>The Rectangle</td><td><b>new</b> — an L-shaped route: one straight stretch, a turn, then a second straight stretch of a different length. Requires two separate loops run back to back, each with its own count — the natural next step after a single repeating loop.</td></tr>
+    </table>
+  </div>
+  <details><summary>Agents</summary><div class="answer-body"><pre>turnRight();
+moveForward();
+moveForward();
+moveForward();
+moveForward();
+turnLeft();
+moveForward();
+moveForward();
+moveForward();
+moveForward();</pre><p>Several valid routes exist — the walls only need to be routed around, not solved one specific way. This is one that works.</p></div></details>
+  <details><summary>The Loop</summary><div class="answer-body"><pre>for (let i = 0; i < 5; i++) {
+  moveForward();
+  turnRight();
+  moveForward();
+  turnLeft();
+}</pre></div></details>
+  <details><summary>The Rectangle (new)</summary><div class="answer-body">
+    <p>Start (0,0) facing East, target (5,3). Walls block turning south anywhere before x=5, so the only route is: straight east to x=5, turn, then straight south to y=3.</p>
+    <pre>for (let i = 0; i < 5; i++) {
+  moveForward();
+}
+turnRight();
+for (let i = 0; i < 3; i++) {
+  moveForward();
+}</pre>
+    <p style="margin-top:8px;"><b>Wall placement was mathematically verified, not eyeballed:</b> walls sit at every point along y=0 for x=0 through x=4 specifically to block turning south early — confirmed by simulating the intended solution end to end before this shipped, and separately confirming every early turn-south point is genuinely blocked while x=5 (the only valid turning point) is genuinely open.</p>
+  </div></details>
+
+  <!-- ============ VAULT ============ -->
+  <h2 id="vault">The Vault</h2>
+  <div class="card">
+    <p><b>What it is:</b> writing real functions to patch broken business logic in a bank's risk-checking system, then running real test cases against them. Covers functions, return values, booleans, conditionals, and — new — a two-parameter conditional and a built-in maths function.</p>
+    <table>
+      <tr><th>#</th><th>On-screen title</th><th>Function</th><th>Asks for</th></tr>
+      <tr><td>1</td><td>Add a Service Charge</td><td><code>calculateTotal</code></td><td>add a flat £5 fee to an amount</td></tr>
+      <tr><td>2</td><td>Spot a High-Risk Transaction</td><td><code>isHighRisk</code></td><td>return true/false for amounts over £10,000</td></tr>
+      <tr><td>3</td><td>Sort a Transaction by Size</td><td><code>categoriseTransaction</code></td><td>three-way if/else banding</td></tr>
+      <tr><td>4</td><td>Add On a Late Fee</td><td><code>applyLateFee</code></td><td>two parameters, one used as a conditional gate</td></tr>
+      <tr><td>5</td><td>Round to the Nearest Pound</td><td><code>roundToNearestPound</code></td><td>introduces <code>Math.round()</code></td></tr>
+      <tr><td colspan="4" style="color:var(--text-muted);font-size:11px;">— take-home extension adds 3 more, see below —</td></tr>
+      <tr><td>6</td><td>Apply a Loyalty Discount</td><td><code>applyLoyaltyDiscount</code></td><td>multiple parameters, one a boolean flag</td></tr>
+      <tr><td>7</td><td>Calculate Interest Owed</td><td><code>calculateInterest</code></td><td>two-parameter arithmetic</td></tr>
+      <tr><td>8</td><td>Flag Suspicious Activity</td><td><code>flagSuspiciousActivity</code></td><td>compound condition with <code>&amp;&amp;</code></td></tr>
+    </table>
+  </div>
+
+  <h3>Scaffolded help</h3>
+  <div class="ladder">
+    <div class="rung"><div class="tier">Tier 1 — ask, don't tell</div><p>"What does the checklist say your function actually returned? Is that different from what it expected?"</p></div>
+    <div class="rung"><div class="tier">Tier 2 — the usual suspects</div><p>Missing <code>return</code>, or <code>&gt;</code> vs <code>&gt;=</code> not matching the brief exactly — ask them to re-read the brief's wording once more before anything else.</p></div>
+    <div class="rung"><div class="tier">Tier 3 — narrow it down</div><p>Point at the specific failing test row and the exact value it returned vs expected — that's usually enough for someone to spot it themselves.</p></div>
+  </div>
+
+  <h3>Answer key</h3>
+  <details><summary>calculateTotal</summary><div class="answer-body"><pre>function calculateTotal(amount) {
+  return amount + 5;
+}</pre></div></details>
+  <details><summary>isHighRisk</summary><div class="answer-body"><pre>function isHighRisk(amount) {
+  return amount > 10000;
+}</pre></div></details>
+  <details><summary>categoriseTransaction</summary><div class="answer-body"><pre>function categoriseTransaction(amount) {
+  if (amount > 10000) return 'flagged';
+  if (amount >= 1000) return 'review';
+  return 'standard';
+}</pre></div></details>
+  <details><summary>applyLateFee</summary><div class="answer-body"><pre>function applyLateFee(amount, daysLate) {
+  if (daysLate > 0) return amount + 10;
+  return amount;
+}</pre></div></details>
+  <details><summary>roundToNearestPound</summary><div class="answer-body"><pre>function roundToNearestPound(amount) {
+  return Math.round(amount);
+}</pre></div></details>
+  <details><summary>applyLoyaltyDiscount (extension)</summary><div class="answer-body"><pre>function applyLoyaltyDiscount(amount, isPremium) {
+  return isPremium ? amount * 0.9 : amount;
+}</pre></div></details>
+  <details><summary>calculateInterest (extension)</summary><div class="answer-body"><pre>function calculateInterest(balance, rate) {
+  return balance * (rate / 100);
+}</pre></div></details>
+  <details><summary>flagSuspiciousActivity (extension)</summary><div class="answer-body"><pre>function flagSuspiciousActivity(amount, country) {
+  return amount > 5000 && country !== 'UK';
+}</pre></div></details>
+
+  <!-- ============ LEDGER ============ -->
+  <h2 id="ledger">The Ledger</h2>
+  <div class="card">
+    <p><b>What it is:</b> writing functions that loop through a real, visible list of transactions to answer questions — totals, filters, counts. Each function also gets tested against a second, hidden dataset, so hardcoding the visible numbers doesn't pass. Covers variables, arrays, objects, and loops.</p>
+    <p style="margin-top:10px;"><b>If this was confusing before, it's had a real fix:</b> the panel showing the data now explicitly spells out that row 1 (<code>groceries, £120</code>) is <code>transactions[0].category</code> and <code>transactions[0].amount</code> in code — that bridge was missing before and was very likely the actual cause of confusion, not the difficulty of the task itself. There was also a genuine layout bug where, on any narrow screen, the code editor rendered <i>above</i> the data table — fixed so the data always shows first.</p>
+    <table>
+      <tr><th>#</th><th>On-screen title</th><th>Function</th><th>Asks for</th></tr>
+      <tr><td>1</td><td>Find the First Transaction</td><td><code>firstTransactionAmount</code></td><td>single-item access, no loop yet — the warm-up</td></tr>
+      <tr><td>2</td><td>Add Up Every Transaction</td><td><code>totalSpend</code></td><td>accumulator pattern — sum every amount</td></tr>
+      <tr><td>3</td><td>Total One Category</td><td><code>sumByCategory</code></td><td>filtered sum, one category</td></tr>
+      <tr><td>4</td><td>Count the Big Transactions</td><td><code>countHighValue</code></td><td>filtered count against a threshold</td></tr>
+      <tr><td colspan="4" style="color:var(--text-muted);font-size:11px;">— take-home extension adds 3 more —</td></tr>
+      <tr><td>5</td><td>Find the Biggest Transaction</td><td><code>largestTransaction</code></td><td>running maximum</td></tr>
+      <tr><td>6</td><td>Work Out the Average</td><td><code>averageTransaction</code></td><td>division + rounding</td></tr>
+      <tr><td>7</td><td>Total Several Categories at Once</td><td><code>sumByCategories</code></td><td>filter against an array of categories</td></tr>
+    </table>
+  </div>
+
+  <h3>Scaffolded help</h3>
+  <div class="ladder">
+    <div class="rung"><div class="tier">Tier 1 — ask, don't tell</div><p>"Where's your total variable declared — inside the loop, or before it?" This catches the single most common bug here on its own.</p></div>
+    <div class="rung"><div class="tier">Tier 2 — read it aloud</div><p>Get them to read their <code>if</code> condition out loud in plain English — mismatches between what they meant and what they typed usually surface immediately.</p></div>
+    <div class="rung"><div class="tier">Tier 3 — narrow it down</div><p>If the visible-ledger test passes but the hidden one fails, that's a strong sign they hardcoded a number instead of writing real logic — worth saying so directly.</p></div>
+  </div>
+
+  <h3>Answer key</h3>
+  <details><summary>totalSpend</summary><div class="answer-body"><pre>function totalSpend(transactions) {
+  let total = 0;
+  for (let i = 0; i < transactions.length; i++) {
+    total += transactions[i].amount;
+  }
+  return total;
+}</pre></div></details>
+  <details><summary>sumByCategory</summary><div class="answer-body"><pre>function sumByCategory(transactions, category) {
+  let total = 0;
+  for (let i = 0; i < transactions.length; i++) {
+    if (transactions[i].category === category) {
+      total += transactions[i].amount;
+    }
+  }
+  return total;
+}</pre></div></details>
+  <details><summary>countHighValue</summary><div class="answer-body"><pre>function countHighValue(transactions, threshold) {
+  let count = 0;
+  for (let i = 0; i < transactions.length; i++) {
+    if (transactions[i].amount > threshold) {
+      count++;
+    }
+  }
+  return count;
+}</pre></div></details>
+  <details><summary>largestTransaction (extension)</summary><div class="answer-body"><pre>function largestTransaction(transactions) {
+  let biggest = 0;
+  for (let i = 0; i < transactions.length; i++) {
+    if (transactions[i].amount > biggest) {
+      biggest = transactions[i].amount;
+    }
+  }
+  return biggest;
+}</pre></div></details>
+  <details><summary>averageTransaction (extension)</summary><div class="answer-body"><pre>function averageTransaction(transactions) {
+  let total = 0;
+  for (let i = 0; i < transactions.length; i++) {
+    total += transactions[i].amount;
+  }
+  return Math.round(total / transactions.length);
+}</pre></div></details>
+  <details><summary>sumByCategories (extension)</summary><div class="answer-body"><pre>function sumByCategories(transactions, categories) {
+  let total = 0;
+  for (let i = 0; i < transactions.length; i++) {
+    if (categories.includes(transactions[i].category)) {
+      total += transactions[i].amount;
+    }
+  }
+  return total;
+}</pre></div></details>
+
+  <!-- ============ FRONT ============ -->
+  <h2 id="front">The Front</h2>
+  <div class="card">
+    <p><b>What it is:</b> writing real CSS against a live preview to hit stated visual goals — checked by reading actual computed styles, not exact pixel matching. Covers selectors, the box model, typography, and flexbox.</p>
+    <p style="margin-top:10px;"><b>Two real changes worth knowing about:</b> there's now a colour picker next to the editor — click a swatch and it shows the hex code to copy, and the brief also says a plain colour name like <code>navy</code> works exactly as well as a hex code. Separately, the worked examples used to use values that would pass the actual checks if copied verbatim with just the selector renamed — that's fixed. The worked examples still show the right properties, but with deliberately small or slightly wrong values (e.g. <code>justify-content: center</code> instead of <code>space-between</code>), so a blind copy-paste no longer passes — genuine adaptation is required.</p>
+    <table>
+      <tr><th>#</th><th>Screen</th><th>Asks for</th></tr>
+      <tr><td>1</td><td>The Panel</td><td>background, rounded corners, padding</td></tr>
+      <tr><td>2</td><td>The Numbers</td><td>font-size, font-weight</td></tr>
+      <tr><td>3</td><td>The Layout</td><td>flexbox row, space-between, centred</td></tr>
+      <tr><td>Bonus</td><td>The Stylesheet Bug</td><td>find a real CSS typo (debugging, not new syntax)</td></tr>
+    </table>
+    <p style="margin-top:10px;">Each screen also has a collapsed "🌟 Try these extensions" box with two optional, unchecked stretch ideas — a hover effect, a box-shadow, a text-shadow, and so on. Nobody needs to do these to pass; they're there for anyone who finishes early. The take-home extension restructures the taster into <b>one continuous page</b> (header, nav, card, transaction list) instead of resetting between screens, with 2 extensions per section (8 total). Finishing all three now leads to a done screen with real options — <b>↺ Try Again</b> resets everything, <b>⚡ Bonus Round</b> starts a genuine CSS debugging challenge (see below) rather than a dead end.</p>
+  </div>
+
+  <h3>Scaffolded help</h3>
+  <div class="ladder">
+    <div class="rung"><div class="tier">Tier 1 — ask, don't tell</div><p>"What does the preview actually look like right now versus what you're going for?" Get them looking at the live preview, not just the code.</p></div>
+    <div class="rung"><div class="tier">Tier 2 — the usual suspects</div><p>A missing semicolon silently breaks everything after it in that block — if nothing they add seems to work, check for one missing semicolon above it.</p></div>
+    <div class="rung"><div class="tier">Tier 3 — narrow it down</div><p><code>display: flex</code> has to go on the parent (the container), not the item inside it — this is the single most common flexbox mistake in the room.</p></div>
+  </div>
+
+  <h3>Answer key</h3>
+  <details><summary>The Panel</summary><div class="answer-body"><pre>.account-card {
+  background: #1a1f29;
+  border-radius: 12px;
+  padding: 24px;
+}</pre></div></details>
+  <details><summary>The Numbers</summary><div class="answer-body"><pre>.account-balance {
+  font-size: 32px;
+  font-weight: 700;
+}</pre></div></details>
+  <details><summary>The Layout</summary><div class="answer-body"><pre>.account-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}</pre></div></details>
+  <details><summary>Extended — all 4 sections</summary><div class="answer-body"><pre>.site-header { display: flex; align-items: center; gap: 16px; background: #1a1f29; padding: 14px 20px; }
+.site-title { font-weight: 700; }
+
+.site-nav { display: flex; gap: 16px; }
+
+.account-card { background: #1a1f29; border-radius: 12px; padding: 24px; display: flex; justify-content: space-between; align-items: center; }
+.account-balance { font-size: 32px; font-weight: 700; }
+
+.txn-list { list-style-type: none; }
+.txn-list li { display: flex; justify-content: space-between; }
+.txn-amount.positive { color: #1a8a4c; }</pre></div></details>
+  <details><summary>Bonus — The Stylesheet Bug</summary><div class="answer-body"><p>The CSS already has display: flex, justify-content, and align-items — but one property is misspelled and the browser silently ignores it, which is why the card looks stacked instead of laid out side by side.</p><pre>- dispay: flex;
++ display: flex;</pre></div></details>
+
+  <!-- ============ HELPDESK ============ -->
+  <h2 id="helpdesk">The Helpdesk</h2>
+  <div class="card">
+    <p><b>What it is:</b> a completely different mechanic from the other four — a live banking app is broken in five ways, and the participant plays with it, describes what's wrong to a support chat in their own words, and the chat summarises the problem, applies the fix directly to the code, and shows a diff of exactly what changed. No manual find-and-edit required. Two more "issues" are actually just polish suggestions, not bugs, to reward people who suggest improvements as well as spot faults.</p>
+    <p style="margin-top:10px;"><b>There's no visible bug list.</b> The old version showed a checklist naming all 5 known issues, which made the activity pointless — you could just read the list. Now there's only a progress bar showing <i>how many</i> have been found, never <i>what they are</i>. Discovery has to come from actually playing with the app.</p>
+  </div>
+
+  <h3>The 5 real bugs — now randomised, two variants each</h3>
+  <div class="card">
+    <p><b>Each session, one of two genuinely different mistakes is picked at random per bug</b> — not just different wording, different actual code. A participant who compares notes with someone else may see a different broken line for the same symptom. Both variants below are real; recognise either.</p>
+  </div>
+  <div class="snag"><b>A real, disruptive bug was found and fixed in the transfer validation fix specifically:</b> the fix originally rejected bad amounts with a real, blocking browser <code>alert('Enter a valid amount')</code>. Helpdesk's own "Check My Fixes" verification actually simulates entering a negative and an oversized transfer to test that validation works — so once that fix was applied, running the verification would genuinely pop up that alert, interrupting the person mid-check with no warning. The <code>alert()</code> has been removed entirely from both variants of the validation fix; it now rejects silently, and the underlying logic is unchanged and still correctly blocks bad transfers.</div>
+  <details><summary>Deposit doesn't add up correctly</summary><div class="answer-body">
+    <p>Symptom: depositing money doesn't correctly increase the balance.</p>
+    <p style="margin-top:8px;"><b>Variant A</b> — overwrites instead of adding:</p>
+    <pre>- balance = amt;
++ balance += amt;</pre>
+    <p style="margin-top:8px;"><b>Variant B</b> — silently adds zero instead of the real amount:</p>
+    <pre>- balance += 0;
++ balance += amt;</pre>
+  </div></details>
+  <details><summary>Withdraw does nothing at all</summary><div class="answer-body">
+    <p>Symptom: clicking Withdraw has no effect.</p>
+    <p style="margin-top:8px;"><b>Variant A</b> — the button calls <code>handleWithdraw()</code>, but the function is defined as <code>handelWithdraw()</code>, a typo:</p>
+    <pre>- function handelWithdraw(){
++ function handleWithdraw(){</pre>
+    <p style="margin-top:8px;"><b>Variant B</b> — the function name is correct, but it reads the amount from the wrong input box:</p>
+    <pre>- const amt = Number(document.getElementById('depositAmt').value);
++ const amt = Number(document.getElementById('withdrawAmt').value);</pre>
+  </div></details>
+  <details><summary>Most recent transaction missing from the list</summary><div class="answer-body">
+    <p>Symptom: one transaction is always missing from the list.</p>
+    <p style="margin-top:8px;"><b>Variant A</b> — the loop stops one entry early, so the newest is missing:</p>
+    <pre>- for (let i = 0; i < transactions.length - 1; i++) {
++ for (let i = 0; i < transactions.length; i++) {</pre>
+    <p style="margin-top:8px;"><b>Variant B</b> — the loop starts at position 1 instead of 0, so the oldest is missing:</p>
+    <pre>- for (let i = 1; i < transactions.length; i++) {
++ for (let i = 0; i < transactions.length; i++) {</pre>
+  </div></details>
+  <details><summary>Transfers can push the balance negative</summary><div class="answer-body">
+    <p>Symptom: negative or oversized transfers go through with no error.</p>
+    <p style="margin-top:8px;"><b>Variant A</b> — no validation exists at all:</p>
+    <pre>- const amt = Number(document.getElementById('transferAmt').value);
+-   balance -= amt;
++ const amt = Number(document.getElementById('transferAmt').value);
++   if (amt > 0 && amt <= balance) {
++     balance -= amt;
++   } else {
++     alert('Enter a valid amount');
++     return;
++   }</pre>
+    <p style="margin-top:8px;"><b>Variant B</b> — a check exists but is ineffective, only blocking exactly zero:</p>
+    <pre>- const amt = Number(document.getElementById('transferAmt').value);
+-   if (amt !== 0) {
+-     balance -= amt;
+-   }
++ const amt = Number(document.getElementById('transferAmt').value);
++   if (amt > 0 && amt <= balance) {
++     balance -= amt;
++   } else {
++     alert('Enter a valid amount');
++     return;
++   }</pre>
+  </div></details>
+  <details><summary>Balance displays a long, broken-looking number</summary><div class="answer-body">
+    <p>Symptom: the balance sometimes shows something like <code>30.299999999999997</code> — genuine JavaScript floating-point behaviour, seeded deliberately into the starting balance.</p>
+    <p style="margin-top:8px;"><b>Variant A</b> — no rounding at all:</p>
+    <pre>- document.getElementById('balance').textContent = balance;
++ document.getElementById('balance').textContent = balance.toFixed(2);</pre>
+    <p style="margin-top:8px;"><b>Variant B</b> — rounded to 10 decimal places instead of 2 (still messy, just differently):</p>
+    <pre>- document.getElementById('balance').textContent = balance.toFixed(10);
++ document.getElementById('balance').textContent = balance.toFixed(2);</pre>
+  </div></details>
+
+  <h3>The 2 "improvements" (not bugs — reward noticing these too, not randomised)</h3>
+  <details><summary>Deposit box doesn't clear after use</summary><div class="answer-body">
+    <p>Not broken, just rough — the amount stays in the input after a successful deposit.</p>
+    <pre>  transactions.push('Deposited £' + amt);
++ document.getElementById('depositAmt').value = '';</pre>
+  </div></details>
+  <details><summary>Large balances are hard to read</summary><div class="answer-body">
+    <p>Adds thousands separators. This one depends on the rounding bug being fixed first — the chat will say so if asked about it too early.</p>
+    <pre>- document.getElementById('balance').textContent = balance.toFixed(2);
++ document.getElementById('balance').textContent = balance.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});</pre>
+  </div></details>
+
+  <!-- ============ CHAT CAPABILITY ============ -->
+  <h2 id="chat-capability">Help &amp; Hints — what works and what doesn't</h2>
+  <div class="card">
+    <p>This section has been rebuilt twice since it was first written — worth reading in full even if you've seen an earlier version. Construct, Vault, Ledger, and Front now share one menu-driven system: <b>💡 Hint</b>, <b>❓ Help</b>, and <b>✏️ Write it yourself</b>, all inside the same chat panel.</p>
+  </div>
+  <h3>How it works now</h3>
+  <div class="works"><b>💡 Hint</b> posts the same tiered, gated hint sequence as before — clicking repeatedly (with a genuine Run between tiers) walks through hint 1, 2, 3.</div>
+  <div class="works"><b>❓ Help</b> opens two categories, <b>Syntax</b> (how do I write this) and <b>Troubleshooting</b> (why isn't this working), each listing that module's real reference topics — clicking one shows the answer directly, no typing needed.</div>
+  <div class="works"><b>✏️ Write it yourself</b> is a genuine free-text box — this was removed at one point in favour of pure menus, then restored after feedback that the pure-menu version answered far too little. Typing "I'm stuck" here still drives the exact same hint progression as the button.</div>
+  <div class="trouble"><b>What it still can't do:</b> understand a genuinely novel phrasing that doesn't overlap with any known keyword. That gets an honest fallback pointing back at the Help menu — not silence, but not magic either.</div>
+
+  <h3>A real, measured comprehension bug — found and fixed</h3>
+  <div class="snag"><b>Free text was matching far less than it should have, and there was a provable reason:</b> a stress test of 20 realistic phrasings failed 30% of the time before investigation. Three separate causes, all fixed: (1) the normaliser was silently deleting <code>&gt;=</code>, <code>&lt;</code>, and other symbols before matching — asking "what does &gt;= mean" became "what does mean", losing the entire question; (2) the word "if" was both hard-coded into the stopword list <i>and</i> filtered out again by a length rule, so no if/else question could ever match; (3) plurals didn't match singulars at all — "explain booleans" failed against a keyword list that only had "boolean". All three fixed (symbols are translated to words first, "if" is no longer blocked, and a lightweight stemmer now treats "booleans"/"boolean" as the same word) and re-verified with the same battery plus a second, broader one — 100% on both afterward, with off-topic nonsense still correctly falling back rather than false-matching.</div>
+
+  <h3>Vault and Ledger's hardest extension challenges — the actual cause, not a vague "make it easier"</h3>
+  <div class="snag"><b>Both modules quietly introduced a brand new syntax element for the first time in an extension challenge, cold, with no warmup:</b> Vault's <code>applyLoyaltyDiscount</code> suddenly needed a ternary; <code>flagSuspiciousActivity</code> suddenly needed <code>&amp;&amp;</code>; Ledger's <code>sumByCategories</code> suddenly needed <code>.includes()</code>. None of these had appeared anywhere in the taster. For Vault, the tests never actually required the new syntax at all — they only check output values — so the hints now explicitly say "you already know how to do this with if/else, that works fine" before presenting the shortcut as optional, not required. Both approaches were verified through the real test-running code, not just reasoned about. Ledger's <code>.includes()</code> had no such familiar fallback, so instead the brief now introduces it in total isolation, with a standalone true/false example, before the real task ever appears.</div>
+  <div class="works"><b>Follow-up after continued difficulty reports on these same challenges:</b> all 6 of the hardest extension challenges (Vault's last 3, Ledger's last 3) now have a 4th hint tier, inserted just before the final full-answer hint — a completely worked example using real plugged-in numbers (e.g. flagSuspiciousActivity walks through amount=6000, country='US' step by step, arriving at true, then re-checks with country='UK' to show why it flips to false). This sits between "here's the concept" and "here's the code," rather than jumping straight from one to the other. All four tiers were confirmed to deliver correctly in sequence through the real hint-gating mechanism, not just read for accuracy.</div>
+  <div class="works"><b>Second follow-up, same 6 challenges:</b> now at 6 hint tiers total, not 4. A 5th ("fill in the blank," e.g. <code>return isPremium ? amount * ___ : amount;</code>) and a 6th ("a common slip on this one is...", naming a specific realistic mistake like writing <code>&amp;</code> instead of <code>&amp;&amp;</code>) were both added after repeated requests for more. All 6 tiers per challenge confirmed present in the shipped files and delivering correctly in sequence, not just assumed from having built them once before.</div>
+  <div class="works"><b>"Is the take-home actually different from the taster?" is no longer something to just explain — it's now visible on screen.</b> All 4 take-home files (Vault, Ledger, Construct, Front Extended) show a clear amber "🆕 New — not in the taster version" marker at the exact point new content begins. For Vault/Ledger/Construct that's per-challenge (challenges/levels 4 onward); for Front Extended, which is a single continuous page rather than one-at-a-time challenges, it's a banner near the top naming exactly which sections are new (1, 2, and 4) and which one substantially overlaps the taster (3, the Account Card). Confirmed the badge shows and hides at the correct boundary in each file, and correctly stays hidden during Construct's bonus round, which is a separate mechanic from this taster-vs-take-home comparison.</div>
+
+  <!-- ============ HELPDESK CHAT ============ -->
+  <h2 id="helpdesk-chat">Helpdesk chat — what works and what doesn't</h2>
+  <div class="card">
+    <p><b>This is now free-text only — there is no menu at all.</b> An earlier version added a clickable button menu (pick an area, then pick the symptom you'd observed) to make blind clicking less trivial, but feedback was that a 10-year-old still blitzed through it just by clicking. The whole menu was removed entirely, not just hidden — opening the chat shows a text box and nothing else. Describing a problem gets: a one-line summary, the fix applied directly into the code editor, and a red/green diff.</p>
+  </div>
+  <h3>How it behaves</h3>
+  <div class="works"><b>Recognised problems and improvements (7 total, see the answer key above):</b> each has roughly 7-12 different phrasings it recognises, across whichever of the two random variants is actually active that session.</div>
+  <div class="works"><b>"I'm stuck" is the only way to reach the progress-aware nudge now</b> — there's no dedicated button for it anymore, so the phrase list was deliberately widened ("what am I missing", "what's left", "not sure what else") since this is the sole door into that feature.</div>
+  <div class="works"><b>Fixes stack correctly:</b> describing a second problem after the first applies its fix on top, without undoing it.</div>
+  <div class="works"><b>General debugging questions are now answered too, not just bug descriptions:</b> "what is a bug", "what does the diff mean", "what does Check My Fixes do", "what is a function/variable" all get direct answers — added after feedback that this chat should "help like the others" do with general concepts. Checked in this order: stuck-phrase → bug/improvement match → general concept → honest fallback, so a real bug description is never mistaken for a concept question.</div>
+  <div class="trouble"><b>What it can't do — genuinely open-ended interpretation:</b> still keyword matching underneath, just with a wide net. It cannot diagnose a problem it wasn't built to recognise.</div>
+  <div class="trouble"><b>Manual editing still works alongside chat:</b> participants can type directly into the code window instead of using chat at all — "Check My Fixes" runs the same checks either way.</div>
+  <div class="works" style="margin-top:12px;"><b>Badges now exist here too:</b> finding and fixing all 5 real bugs shows a gold badge and an explicit Return Home button, matching every other module — this was missing for a while and has been added.</div>
+
+  <h3>Example exchanges</h3>
+  <div class="chatline"><span class="q">"clicking withdraw does nothing at all"</span><span class="a">→ diagnoses the handelWithdraw typo, fixes it, shows diff</span></div>
+  <div class="chatline"><span class="q">"large numbers are hard to read"</span><span class="a">→ works only after the rounding bug is already fixed; otherwise a graceful "can't find that" message</span></div>
+  <div class="chatline"><span class="q">"what is the weather today"</span><span class="a">→ honest fallback, no fabricated fix</span></div>
+
+  <h3>A separate "I'm stuck" path, for the harder-to-spot bugs</h3>
+  <div class="card">
+    <p>Feedback during testing was specific: for someone with no coding background, finding the last one or two bugs by clicking around is genuinely hard — the transfer-validation and missing-transaction bugs especially don't announce themselves the way a visibly broken button does. Rather than add them to a visible list (which would recreate the exact spoiler problem the redesign removed), there's now a second, separate detection path in the same chat.</p>
+  </div>
+  <div class="works"><b>How it works:</b> phrases like "I'm stuck", "help", "what should I look for", or "I can't find any more bugs" are checked <i>before</i> the normal fix-matching — if recognised, the chat looks at which of the 5 real bugs haven't been found yet and nudges toward exploring one of them, without naming it. "Try transferring something unusual — a negative amount, or more than the balance actually has. What should happen, and what does?"</div>
+  <div class="works"><b>It tracks real progress, not a script:</b> the nudge is generated from the same pass/fail state "Check My Fixes" already tracks — it will never point someone back at a bug they've already fixed, and once all 5 are genuinely found it says so plainly instead of repeating itself.</div>
+  <div class="chatline"><span class="q">"im stuck" (nothing fixed yet)</span><span class="a">→ nudges toward the deposit bug specifically</span></div>
+  <div class="chatline"><span class="q">"can't find any more bugs" (3 of 5 fixed)</span><span class="a">→ nudges toward one of the 2 remaining, never a fixed one</span></div>
+  <div class="chatline"><span class="q">"help" (all 5 fixed)</span><span class="a">→ "you've actually found everything I know about"</span></div>
+
+  <!-- ============ TROUBLESHOOTING ============ -->
+  <h2 id="copilot">The two CoPilot modules</h2>
+  <div class="card">
+    <p><b>These are genuinely different from the other seven</b> — no code, no tests, no hint system. The point is direct, hands-on proof that prompt quality changes output quality, using the same spreadsheet or inbox every time regardless of what's typed.</p>
+  </div>
+
+  <h3>Effective CoPilot Prompts (reference guide)</h3>
+  <p>A static guide, no interactivity beyond copy buttons — five techniques (specificity, context, format, breaking into steps, iterating), each with a genuine bad-vs-good prompt pair and a "why it works" note. Nothing to troubleshoot here; if a participant asks a question about it, the content is self-contained enough to read together on screen.</p>
+
+  <h3>Effective CoPilot — Excel &amp; Outlook (live exercise)</h3>
+  <div class="card">
+    <p><b>Redesigned since the original version — no typing anywhere now.</b> The original free-text version (where a participant typed their own prompt) was replaced after feedback that typing shouldn't be an option here. Every interaction is now a fixed, large, colour-coded choice card — 😕 Bad / 😐 Average / 😃 Great — showing the exact prompt text before you click it. There is still no real AI call happening: each button is wired to a specific, pre-verified response. If a participant asks "is this really CoPilot," the honest answer is no — it's a simulation built to demonstrate the <i>relationship</i> between prompt quality and output quality, not a live model.</p>
+  </div>
+
+  <h4>Excel exercise — three fixed tiers</h4>
+  <table>
+    <tr><th>Tier</th><th>Prompt shown</th><th>Response</th></tr>
+    <tr><td>😕 Bad</td><td>"Do something with this."</td><td>A confused, "what would you like me to do?" response — not just weak, genuinely stuck</td></tr>
+    <tr><td>😐 Average</td><td>"Summarise this data."</td><td>A generic text summary, no chart</td></tr>
+    <tr><td>😃 Great</td><td>"Build a dashboard with a chart of sales by region and the quarterly trend, and call out the best performer."</td><td>A full dashboard: two real SVG charts plus three stat callouts</td></tr>
+  </table>
+  <div class="works"><b>The numbers are genuinely computed, not decorative:</b> West is the real top region at £246,000 total; Q4 is the real strongest quarter at £209,000; the grand total is £731,000.</div>
+  <div class="snag"><b>The download link genuinely didn't work, and the first fix attempt was wrong.</b> First symptom reported: downloaded as <code>RegionalSales.html</code>. That was misdiagnosed as a missing filename on the <code>download</code> attribute; fixing that didn't help — the real symptom afterward was "couldn't download, no file," and the file never appeared as its own item anywhere accessible. <b>Actual cause:</b> the link used a normal relative path (<code>href="RegionalSales.xlsx"</code>), which only resolves when the whole output folder is downloaded and opened together as real sibling files — it has nothing to point to when the HTML page is being viewed on its own, e.g. in an in-chat preview, since there's no accompanying file present in that context. <b>Actual fix:</b> the spreadsheet's real binary data is now embedded directly in the page as a base64 <code>data:</code> URI, so the download works regardless of whether the file is sitting alongside it or not — genuinely self-contained, matching how every other flat-file page in this suite already works. Verified by extracting the embedded data back out of the shipped HTML and confirming it decodes to a byte-identical, fully valid spreadsheet with the correct figures.</div>
+  <div class="works" style="margin-top:8px;"><b>Worth remembering for any future file this suite ever needs to offer as a download:</b> a plain relative <code>href</code> to a sibling file is not reliable across every way these pages might be viewed. Embedding the data directly (as done here) is the dependable approach.</div>
+
+  <h4>Outlook exercise — two separate three-tier groups</h4>
+  <p>Find and Summarise are now two visually distinct groups of three cards each, not one combined box guessing at intent from wording.</p>
+  <table>
+    <tr><th>Group</th><th>Tier</th><th>Prompt</th><th>Response</th></tr>
+    <tr><td rowspan="3">Find</td><td>😕 Bad</td><td>"Find something."</td><td>Confused — nothing to search for</td></tr>
+    <tr><td>😐 Average</td><td>"Find the marketing email."</td><td>3 possible matches shown — genuinely ambiguous, there are 3 marketing emails</td></tr>
+    <tr><td>😃 Great</td><td>"Find the email that needs a signature before Friday."</td><td>Uniquely finds the Legal Team contract email</td></tr>
+    <tr><td rowspan="3">Summarise</td><td>😕 Bad</td><td>"Tell me what's going on."</td><td>Confused — no conversation named</td></tr>
+    <tr><td>😐 Average</td><td>"Summarise my emails."</td><td>"Too broad" response naming the separate conversations that exist, but summarising none of them</td></tr>
+    <tr><td>😃 Great</td><td>"Summarise the marketing campaign feedback thread."</td><td>Correctly merges all 3 thread messages into one summary</td></tr>
+  </table>
+  <div class="snag"><b>The confidence bug from the free-text version is fully retired along with that version</b> — since every response is now a fixed, individually-verified mapping rather than live scoring, the class of bug where an ambiguous prompt could be shown as a false single confident match can no longer occur here. Worth knowing the history if this comes up, but nothing to check for in this version.</div>
+
+  <h4>Two new closing sections, added after feedback</h4>
+  <div class="works"><b>"Prompts worth keeping"</b> — four copyable, reusable prompt templates a participant can take into real Excel or Outlook, not just this exercise.</div>
+  <div class="works"><b>A real downloadable file — RegionalSales.xlsx</b> — the exact same figures as the on-screen exercise, built as a genuine spreadsheet with live <code>SUM</code> formulas (not hardcoded totals), so it recalculates if someone edits it. Verified with LibreOffice's recalculation check (zero formula errors) and the computed totals independently confirmed to match the browser exercise exactly. Meant for participants to open in real Excel and try prompting on their own data afterward.</div>
+  <div class="works"><b>"Finding old chats and files" section</b> — five example prompts for searching Teams and Outlook history specifically (a person + topic + rough date; a half-remembered file name; searching both apps at once; summarising a dormant channel; checking your own history before re-asking a colleague). This was requested content, not an interactive exercise — read it together if it comes up, no verification mechanics involved.</div>
+
+  <h2 id="slides">The intro slide deck</h2>
+  <div class="card">
+    <p><code>intro-slides.html</code>, linked from the dashboard header — a 7-slide presentation for opening a session live, distinct from <code>start-here.html</code> (which participants read at their own pace). Dark theme, arrow-key and click navigation, a progress bar, and clickable dot navigation to jump to any slide directly.</p>
+  </div>
+  <div class="snag"><b>The financial-stations slide originally never mentioned the CoPilot modules at all</b> — someone glancing at just that slide would reasonably think there were only 5 things on offer. Fixed with an explicit "✨ Plus 2 more on AI skills — next" teaser at the bottom of that slide, and the CoPilot slide itself was expanded from a single paragraph into two proper cards naming both modules directly.</div>
+  <div class="works"><b>Navigation logic is unchanged and re-verified across both redesigns, not just visually restyled:</b> the actual slide-advancing code was deliberately left untouched both times it was already tested — and re-run through the same boundary tests after each visual rebuild (can't overshoot the last slide, can't undershoot the first, dots and progress bar stay in sync) to confirm neither rebuild broke it.</div>
+  <div class="snag"><b>The first visual redesign wasn't bold enough — feedback was that it still read as "plain black slides."</b> Rebuilt a second time with a much more deliberate visual direction: a retro-terminal aesthetic leaning into the "Mainframe" name itself — scanline overlay, a subtle animated grid background, neon glow text (cyan/magenta/green), a blinking cursor on the title slide, and corner HUD brackets. Genuinely more dramatic than the first pass, not just an incremental tweak.</div>
+
+  <h2 id="troubleshooting">Troubleshooting — user error, not the build</h2>
+
+  <p>Every one of these has come up in testing and is a person doing something reasonable, not a bug in the files.</p>
+
+  <div class="trouble"><b>"I clicked Run and nothing happened."</b><span class="fix">Check the Error box beneath the buttons — a syntax error (missing bracket, missing semicolon) stops the code from running at all, and the message is usually specific enough to spot the line. If the Error box is empty too, check they actually edited the function body — an empty <code>// TODO</code> with nothing added runs fine and just does nothing.</span></div>
+  <div class="trouble"><b>"My answer looks right but it's still failing."</b><span class="fix">Almost always exact wording/case: <code>"Groceries"</code> won't match <code>"groceries"</code>, and a typo'd function name means the test can't find the function at all — the error message will say so directly.</span></div>
+  <div class="trouble"><b>"The page looks completely unstyled / broken, no colours, no layout."</b><span class="fix">These are self-contained single files with no other dependencies except a Google Fonts import — this is almost always a font failing to load over a blocked network. Check internet access on that machine.</span></div>
+  <div class="trouble"><b>"I can't type in the code box."</b><span class="fix">Click directly inside the text area first — cursor focus can land on a button instead, especially on a trackpad. Not a bug, just needs a click.</span></div>
+  <div class="trouble"><b>"I hit Reset and lost my code."</b><span class="fix">Working as intended — Reset wipes back to the starter code for that task, not just the visuals. Worth warning the room about this once up front rather than after someone loses a few minutes of work.</span></div>
+  <div class="trouble"><b>"The test console shows a weird value like NaN or undefined."</b><span class="fix"><code>NaN</code> usually means a maths operation happened on something that wasn't a number (often a typo'd property name). <code>undefined</code> almost always means a missing <code>return</code>.</span></div>
+  <div class="trouble"><b>"Nothing in The Front changes when I edit the CSS."</b><span class="fix">Check the selector actually matches — <code>.account-card</code> needs the dot; without it, it silently targets nothing.</span></div>
+  <div class="trouble"><b>"I copied the worked example exactly and it still failed."</b><span class="fix">Working as intended, not a bug — Front's worked examples deliberately use values too small (or, for Layout, a different value entirely) to pass the real checks. Explain this is on purpose: the pattern is right, the numbers need adjusting.</span></div>
+
+  <div class="snag" style="margin-top:24px;"><b>Construct taster vs. full build — genuinely different levels 4 and 5, not just "full has one extra":</b> both share Wake Up, The Path, and The Turn, but then diverge — the taster's own levels 4–5 are The Relay and The Repeat (documented above), while the full build has Agents and its own version of The Loop instead. The full build's Loop got the identical staircase redesign as the taster's Repeat, for the same reason (a straight line didn't feel meaningfully harder) — just slightly longer (5 diagonal cycles instead of 4), since it's untimed take-home work. Loop's answer is the same shape as Repeat's: a 4-line loop body of move/turn/move/turn-back, repeated, or the fully manual 20-line equivalent — both genuinely pass. The taster is a genuinely different file (<code>mission-control-taster.html</code>) with its own 6-minute timer. Don't hand out the full <code>mission-control.html</code> link during the live event by mistake — its timer now counts up with no deadline, which will look odd if someone's expecting a countdown.</div>
+
+  <!-- ============ FILES ============ -->
+  <h2 id="files">All files</h2>
+  <div class="card">
+    <div class="linklist">
+      <a href="start-here.html">start-here.html</a> <span>— session intro, show this first</span>
+      <a href="index.html">index.html</a> <span>— the dashboard</span>
+      <a href="mission-control-taster.html">mission-control-taster.html</a> <span>— Construct, live taster (5 tasks + bonus)</span>
+      <a href="mission-control.html">mission-control.html</a> <span>— Construct, full/take-home (6 levels: shares 1–3 with the taster, diverges at Agents/The Loop, plus new 6th level The Rectangle)</span>
+      <a href="the-vault.html">the-vault.html</a> <span>— Vault, live taster (5 challenges)</span>
+      <a href="the-vault-extended.html">the-vault-extended.html</a> <span>— Vault, take-home (6 challenges)</span>
+      <a href="the-ledger.html">the-ledger.html</a> <span>— Ledger, live taster</span>
+      <a href="the-ledger-extended.html">the-ledger-extended.html</a> <span>— Ledger, take-home</span>
+      <a href="the-front.html">the-front.html</a> <span>— Front, live taster (colour picker, extensions)</span>
+      <a href="the-front-extended.html">the-front-extended.html</a> <span>— Front, take-home</span>
+      <a href="the-helpdesk.html">the-helpdesk.html</a> <span>— Helpdesk, chat-driven auto-fix, randomised bugs</span>
+      <a href="copilot-prompts-guide.html">copilot-prompts-guide.html</a> <span>— CoPilot prompting reference guide, no code</span>
+      <a href="copilot-excel-outlook.html">copilot-excel-outlook.html</a> <span>— CoPilot live exercise, Excel dashboard + Outlook find/summarise</span>
+      <a href="intro-slides.html">intro-slides.html</a> <span>— interactive intro slide deck for presenting the session live, linked from the dashboard header</span>
+      <a href="construct-guide.html">construct-guide.html</a> <span>— participant reference</span>
+      <a href="vault-guide.html">vault-guide.html</a> <span>— participant reference</span>
+      <a href="ledger-guide.html">ledger-guide.html</a> <span>— participant reference</span>
+      <a href="front-guide.html">front-guide.html</a> <span>— participant reference</span>
+      <a href="construct-help.json">construct-help.json</a> <span>— chat knowledge base + synonym table, edit then re-embed</span>
+      <a href="vault-help.json">vault-help.json</a> <span>— chat knowledge base + synonym table, edit then re-embed</span>
+      <a href="ledger-help.json">ledger-help.json</a> <span>— chat knowledge base + synonym table, edit then re-embed</span>
+      <a href="front-help.json">front-help.json</a> <span>— chat knowledge base + synonym table, edit then re-embed</span>
+    </div>
+  </div>
+
+  <footer>All files are flat, self-contained HTML — no server or build step. Copy the whole folder anywhere and it works.</footer>
+</div>
+</body>
+</html>

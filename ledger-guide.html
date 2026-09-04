@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide — The Ledger</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --danger:#F04438; --danger-bg:#FEF3F2;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:40px 20px 70px;line-height:1.6;}
+.wrap{max-width:760px;margin:0 auto;}
+a{color:var(--accent);font-weight:600;}
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px;}
+h1{font-size:28px;font-weight:800;letter-spacing:-0.01em;margin:0 0 8px;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0 0 20px;}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px;}
+.toc a{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;}
+.toc a:hover{color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg);}
+
+section{margin:0 0 44px;scroll-margin-top:20px;}
+.snum{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;margin-right:9px;}
+h2{font-size:16px;text-transform:uppercase;letter-spacing:.03em;color:var(--text);font-weight:700;border-bottom:1px solid var(--border);padding-bottom:11px;margin:0 0 16px;display:flex;align-items:center;}
+p{font-size:14.5px;color:var(--text-secondary);}
+code{font-family:'JetBrains Mono',monospace;background:var(--surface-alt);color:#7C3AED;padding:2px 6px;border-radius:4px;font-size:13px;}
+
+.code-block{position:relative;margin:10px 0;}
+pre{background:#0D1117;border:none;border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:#E6EDF3;line-height:1.6;margin:0;}
+pre .cm{color:#8B949E;}
+.copy-btn{position:absolute;top:8px;right:8px;font-size:10.5px;font-weight:600;background:rgba(255,255,255,0.08);color:#C9D1D9;border:1px solid rgba(255,255,255,0.15);padding:4px 9px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+.copy-btn:hover{background:rgba(255,255,255,0.15);}
+.copy-btn.copied{color:var(--success);border-color:var(--success);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,24,40,0.05);}
+.card h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);font-weight:700;margin:0 0 8px;}
+.mistake{border-left:3px solid var(--danger);padding:11px 14px;background:var(--danger-bg);border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13.5px;color:var(--text);}
+.mistake b{color:#B42318;}
+
+/* try-it widget: editable array items + real result */
+.tryit{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;padding:16px 18px;margin:14px 0;}
+.tryit .tt-label{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.03em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.tryit textarea{width:100%;min-height:100px;background:#0D1117;color:#E6EDF3;border:none;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;padding:12px 14px;resize:vertical;}
+.tryit textarea:focus{outline:2px solid var(--accent);}
+.tryit .tt-actions{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.tryit .tt-items{display:flex;gap:8px;flex-wrap:wrap;}
+.tryit .tt-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.tryit .tt-item-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;font-weight:600;}
+.tryit .tt-items input{width:60px;padding:6px 8px;border-radius:6px;border:1px solid var(--accent-border);font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#fff;text-align:center;}
+.tryit button.run{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:7px;font-weight:600;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;}
+.tryit button.run:hover{background:var(--accent-hover);}
+.tryit .tt-console{background:#0D1117;border-radius:8px;padding:10px 14px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#86EFAC;min-height:20px;}
+.tryit .tt-console .err{color:#FDA29B;}
+.tryit .tt-console .muted{color:#6B7280;}
+
+/* quiz */
+.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+.quiz-q p.qtext{font-size:14px;color:var(--text);font-weight:600;margin:0 0 12px;}
+.quiz-opt{display:block;width:100%;text-align:left;background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;}
+.quiz-opt:hover{border-color:var(--accent-border);background:var(--accent-bg);}
+.quiz-opt.correct{background:var(--success-bg);border-color:var(--success);color:#067647;font-weight:600;}
+.quiz-opt.wrong{background:var(--danger-bg);border-color:var(--danger);color:#B42318;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-feedback{font-size:13px;color:var(--text-secondary);margin-top:8px;display:none;}
+.quiz-feedback.show{display:block;}
+
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Guide · Reference</div>
+  <h1>The Ledger</h1>
+  <p class="sub">Arrays, objects, and looping through data — the building blocks of the queries, not the answers to any specific one. The examples below run for real against small editable lists.</p>
+
+  <div class="toc">
+    <a href="#arrays">1. Arrays</a>
+    <a href="#objects">2. Objects</a>
+    <a href="#looping">3. Looping through an array</a>
+    <a href="#accumulator">4. The accumulator pattern</a>
+    <a href="#filtering">5. Filtering inside a loop</a>
+    <a href="#quiz">Check yourself</a>
+  </div>
+
+  <section id="arrays">
+    <h2><span class="snum">1</span>Arrays — a list of things</h2>
+    <p>An array holds a list of values in order. You get one item out with square brackets and a position (starting at 0).</p>
+    <div class="code-block">
+      <pre id="code-1">const fruits = ["apple", "pear", "plum"];
+fruits[0]; <span class="cm">// "apple"</span>
+fruits.length; <span class="cm">// 3</span></pre>
+      <button class="copy-btn" onclick="copyCode('code-1', this)">Copy</button>
+    </div>
+  </section>
+
+  <section id="objects">
+    <h2><span class="snum">2</span>Objects — a bundle of named values</h2>
+    <p>An object holds named properties. You get one out with a dot and the name.</p>
+    <div class="code-block">
+      <pre id="code-2">const person = { name: "Sam", age: 34 };
+person.name; <span class="cm">// "Sam"</span>
+person.age;  <span class="cm">// 34</span></pre>
+      <button class="copy-btn" onclick="copyCode('code-2', this)">Copy</button>
+    </div>
+    <p>An array of objects — like the ledger you're working with — combines both: a list, where each item has named fields.</p>
+    <div class="code-block">
+      <pre id="code-2b">const orders = [
+  { item: "desk", price: 120 },
+  { item: "lamp", price: 25 }
+];
+orders[0].item;  <span class="cm">// "desk"</span>
+orders[1].price; <span class="cm">// 25</span></pre>
+      <button class="copy-btn" onclick="copyCode('code-2b', this)">Copy</button>
+    </div>
+  </section>
+
+  <section id="looping">
+    <h2><span class="snum">3</span>Looping through an array</h2>
+    <p><code>orders.length</code> tells you how many items there are, so the loop always covers exactly the right number regardless of how big the list is.</p>
+    <div class="code-block">
+      <pre id="code-3">for (let i = 0; i < orders.length; i++) {
+  console.log(orders[i].item);
+}</pre>
+      <button class="copy-btn" onclick="copyCode('code-3', this)">Copy</button>
+    </div>
+  </section>
+
+  <section id="accumulator">
+    <h2><span class="snum">4</span>The accumulator pattern</h2>
+    <p>To build up a total (or a count) across a loop, start a variable before the loop, then add to it inside.</p>
+    <div class="code-block">
+      <pre id="code-4">let total = 0;
+for (let i = 0; i < orders.length; i++) {
+  total += orders[i].price;
+}
+<span class="cm">// total is now 145</span></pre>
+      <button class="copy-btn" onclick="copyCode('code-4', this)">Copy</button>
+    </div>
+    <div class="card">
+      <h3>total += x</h3>
+      <p style="margin-bottom:0;">Shorthand for <code>total = total + x</code>. Same idea works for counting: <code>count++</code> is shorthand for <code>count = count + 1</code>.</p>
+    </div>
+    <div class="mistake"><b>Common mistake:</b> declaring <code>let total = 0</code> <i>inside</i> the loop — it resets to 0 every time round, so you only ever get the last item's value.</div>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — edit the prices below, watch the total change</div>
+      <textarea id="tt1-code" spellcheck="false">function sumPrices(orders) {
+  let total = 0;
+  for (let i = 0; i < orders.length; i++) {
+    total += orders[i].price;
+  }
+  return total;
+}</textarea>
+      <div class="tt-actions">
+        <div class="tt-items" id="tt1-items">
+          <div class="tt-item"><span class="tt-item-label">desk</span><input type="number" id="tt1-item0" value="120"></div>
+          <div class="tt-item"><span class="tt-item-label">lamp</span><input type="number" id="tt1-item1" value="25"></div>
+          <div class="tt-item"><span class="tt-item-label">chair</span><input type="number" id="tt1-item2" value="60"></div>
+        </div>
+        <button class="run" onclick="runArrayFn('tt1-code','sumPrices',['tt1-item0','tt1-item1','tt1-item2'],'price','tt1-console')">▶ Run</button>
+      </div>
+      <div class="tt-console" id="tt1-console"><span class="muted">result appears here</span></div>
+    </div>
+  </section>
+
+  <section id="filtering">
+    <h2><span class="snum">5</span>Filtering inside a loop</h2>
+    <p>Combine the accumulator with an <code>if</code> to only add matching items.</p>
+    <div class="code-block">
+      <pre id="code-5">let total = 0;
+for (let i = 0; i < orders.length; i++) {
+  if (orders[i].item === "desk") {
+    total += orders[i].price;
+  }
+}</pre>
+      <button class="copy-btn" onclick="copyCode('code-5', this)">Copy</button>
+    </div>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — only "food" prices count, edit and see</div>
+      <textarea id="tt2-code" spellcheck="false">function sumFood(purchases) {
+  let total = 0;
+  for (let i = 0; i < purchases.length; i++) {
+    if (purchases[i].type === "food") {
+      total += purchases[i].cost;
+    }
+  }
+  return total;
+}</textarea>
+      <div class="tt-actions">
+        <div class="tt-items">
+          <div class="tt-item"><span class="tt-item-label">food</span><input type="number" id="tt2-item0" value="12"></div>
+          <div class="tt-item"><span class="tt-item-label">food</span><input type="number" id="tt2-item1" value="30"></div>
+          <div class="tt-item"><span class="tt-item-label">other</span><input type="number" id="tt2-item2" value="45"></div>
+        </div>
+        <button class="run" onclick="runFilterFn('tt2-code','sumFood','tt2-console')">▶ Run</button>
+      </div>
+      <div class="tt-console" id="tt2-console"><span class="muted">result appears here — try pushing "other" way up, it still shouldn't count</span></div>
+    </div>
+  </section>
+
+  <section id="quiz">
+    <h2>Check yourself</h2>
+    <div class="quiz-q">
+      <p class="qtext">1. Why does <code>let total = 0</code> need to sit outside (before) the loop, not inside it?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">It doesn't matter either way</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">Inside the loop it resets to 0 every single time round</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">Inside the loop it causes a syntax error</button>
+      <div class="quiz-feedback">If it's declared inside, every iteration wipes it back to 0 before adding — you'd only ever end up with the last item's value, not a real running total.</div>
+    </div>
+    <div class="quiz-q">
+      <p class="qtext">2. What does <code>orders[1].price</code> actually mean?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">The price field on the first order in the list</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">The price field on the second order in the list</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">The total of all prices</button>
+      <div class="quiz-feedback">Arrays count from 0, so index 1 is actually the second item — orders[0] is the first.</div>
+    </div>
+    <div class="quiz-q">
+      <p class="qtext">3. Inside a loop, what does <code>if (purchases[i].type === "food")</code> do?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">Adds up every purchase regardless of type</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">Only lets the code inside run for purchases where type is exactly "food"</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">Deletes every non-food purchase from the list</button>
+      <div class="quiz-feedback">The if condition gates what's inside it — only rows matching "food" exactly get counted, everything else is skipped without being changed.</div>
+    </div>
+  </section>
+
+  <footer>Part of <a href="index.html">The Mainframe</a> — financial systems training terminal.</footer>
+</div>
+
+<script>
+function copyCode(id, btn){
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+  }).catch(()=>{});
+}
+
+function runArrayFn(codeId, fnName, itemIds, field, consoleId){
+  const out = document.getElementById(consoleId);
+  const src = document.getElementById(codeId).value;
+  try{
+    const fn = new Function(src + `\nreturn ${fnName};`)();
+    const arr = itemIds.map(id => {
+      const obj = {};
+      obj[field] = Number(document.getElementById(id).value);
+      return obj;
+    });
+    const result = fn(arr);
+    out.innerHTML = `→ ${fnName}([...]) = <b>${JSON.stringify(result)}</b>`;
+  }catch(e){
+    out.innerHTML = `<span class="err">Error: ${e.message}</span>`;
+  }
+}
+
+function runFilterFn(codeId, fnName, consoleId){
+  const out = document.getElementById(consoleId);
+  const src = document.getElementById(codeId).value;
+  try{
+    const fn = new Function(src + `\nreturn ${fnName};`)();
+    const arr = [
+      { type: 'food', cost: Number(document.getElementById('tt2-item0').value) },
+      { type: 'food', cost: Number(document.getElementById('tt2-item1').value) },
+      { type: 'other', cost: Number(document.getElementById('tt2-item2').value) }
+    ];
+    const result = fn(arr);
+    out.innerHTML = `→ ${fnName}([...]) = <b>${JSON.stringify(result)}</b>`;
+  }catch(e){
+    out.innerHTML = `<span class="err">Error: ${e.message}</span>`;
+  }
+}
+
+function answerQuiz(btn){
+  const group = btn.parentElement;
+  const opts = group.querySelectorAll('.quiz-opt');
+  const isCorrect = btn.dataset.correct === 'true';
+  opts.forEach(o => o.disabled = true);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if(!isCorrect){
+    opts.forEach(o => { if(o.dataset.correct === 'true') o.classList.add('correct'); });
+  }
+  group.querySelector('.quiz-feedback').classList.add('show');
+}
+</script>
+</body>
+</html>

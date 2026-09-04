@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide — The Front</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --danger:#F04438; --danger-bg:#FEF3F2;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:40px 20px 70px;line-height:1.6;}
+.wrap{max-width:760px;margin:0 auto;}
+a{color:var(--accent);font-weight:600;}
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px;}
+h1{font-size:28px;font-weight:800;letter-spacing:-0.01em;margin:0 0 8px;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0 0 20px;}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px;}
+.toc a{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;}
+.toc a:hover{color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg);}
+
+section{margin:0 0 44px;scroll-margin-top:20px;}
+.snum{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;margin-right:9px;}
+h2{font-size:16px;text-transform:uppercase;letter-spacing:.03em;color:var(--text);font-weight:700;border-bottom:1px solid var(--border);padding-bottom:11px;margin:0 0 16px;display:flex;align-items:center;}
+p{font-size:14.5px;color:var(--text-secondary);}
+code{font-family:'JetBrains Mono',monospace;background:var(--surface-alt);color:#7C3AED;padding:2px 6px;border-radius:4px;font-size:13px;}
+
+.code-block{position:relative;margin:10px 0;}
+pre{background:#0D1117;border:none;border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:#E6EDF3;line-height:1.6;margin:0;}
+.copy-btn{position:absolute;top:8px;right:8px;font-size:10.5px;font-weight:600;background:rgba(255,255,255,0.08);color:#C9D1D9;border:1px solid rgba(255,255,255,0.15);padding:4px 9px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+.copy-btn:hover{background:rgba(255,255,255,0.15);}
+.copy-btn.copied{color:var(--success);border-color:var(--success);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,24,40,0.05);}
+.card h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);font-weight:700;margin:0 0 8px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0;}
+th{text-align:left;color:var(--text-muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;padding:7px 10px;border-bottom:1px solid var(--border);}
+td{padding:9px 10px;border-bottom:1px solid var(--surface-alt);color:var(--text);}
+td code{background:transparent;padding:0;}
+.mistake{border-left:3px solid var(--danger);padding:11px 14px;background:var(--danger-bg);border-radius:0 8px 8px 0;margin-bottom:10px;font-size:13.5px;color:var(--text);}
+.mistake b{color:#B42318;}
+.boxdemo{background:#eef1f5;border-radius:8px;padding:20px;margin:12px 0;}
+.boxdemo .box{background:#1a1f29;color:#fff;border-radius:10px;padding:18px;font-family:'JetBrains Mono',monospace;font-size:12px;text-align:center;border:2px dashed #4F46E5;}
+
+/* try-it widget: editable CSS + real live preview */
+.tryit{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;padding:16px 18px;margin:14px 0;}
+.tryit .tt-label{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.03em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.tryit textarea{width:100%;min-height:100px;background:#0D1117;color:#E6EDF3;border:none;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;padding:12px 14px;resize:vertical;}
+.tryit textarea:focus{outline:2px solid var(--accent);}
+.tryit .tt-preview-wrap{margin-top:10px;background:#eef1f5;border-radius:8px;padding:18px;min-height:60px;display:flex;align-items:center;justify-content:center;}
+.tryit .tt-hint{font-size:11.5px;color:var(--text-muted);margin-top:6px;}
+
+/* quiz */
+.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+.quiz-q p.qtext{font-size:14px;color:var(--text);font-weight:600;margin:0 0 12px;}
+.quiz-opt{display:block;width:100%;text-align:left;background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;}
+.quiz-opt:hover{border-color:var(--accent-border);background:var(--accent-bg);}
+.quiz-opt.correct{background:var(--success-bg);border-color:var(--success);color:#067647;font-weight:600;}
+.quiz-opt.wrong{background:var(--danger-bg);border-color:var(--danger);color:#B42318;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-feedback{font-size:13px;color:var(--text-secondary);margin-top:8px;display:none;}
+.quiz-feedback.show{display:block;}
+
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Guide · Reference</div>
+  <h1>The Front</h1>
+  <p class="sub">CSS selectors, the box model, and flexbox — the general patterns, with generic examples rather than the account card itself. The boxes below update live as you type.</p>
+
+  <div class="toc">
+    <a href="#selectors">1. Targeting an element</a>
+    <a href="#boxmodel">2. The box model</a>
+    <a href="#typography">3. Typography</a>
+    <a href="#flexbox">4. Flexbox</a>
+    <a href="#quiz">Check yourself</a>
+  </div>
+
+  <section id="selectors">
+    <h2><span class="snum">1</span>Targeting an element</h2>
+    <p>A class selector starts with a dot and matches anything on the page marked with that class name. Everything between the braces is a property/value pair, ending in a semicolon.</p>
+    <div class="code-block">
+      <pre id="code-1">.my-box {
+  background: #1a1f29;
+  padding: 20px;
+}</pre>
+      <button class="copy-btn" onclick="copyCode('code-1', this)">Copy</button>
+    </div>
+    <div class="mistake"><b>Common mistake:</b> forgetting the semicolon between properties, or the dot before a class name — <code>my-box</code> without the dot targets an element literally named <code>my-box</code>, which doesn't exist.</div>
+  </section>
+
+  <section id="boxmodel">
+    <h2><span class="snum">2</span>The box model</h2>
+    <div class="boxdemo"><div class="box">padding pushes this text<br>away from the edges</div></div>
+    <table>
+      <tr><th>Property</th><th>What it controls</th></tr>
+      <tr><td><code>background</code></td><td>fill colour behind the content</td></tr>
+      <tr><td><code>padding</code></td><td>space between the content and the edge of the box</td></tr>
+      <tr><td><code>border-radius</code></td><td>how rounded the corners are (in px)</td></tr>
+      <tr><td><code>margin</code></td><td>space outside the box, between it and other elements</td></tr>
+    </table>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — edit the CSS, watch the box below update live</div>
+      <textarea id="tt1-css" oninput="applyPreview('tt1-css','tt1-style')">.demo-box {
+  background: #1a1f29;
+  border-radius: 12px;
+  padding: 24px;
+}</textarea>
+      <div class="tt-preview-wrap">
+        <div id="tt1-target" class="demo-box" style="color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;">Edit the CSS above</div>
+      </div>
+      <div class="tt-hint">Try changing the numbers, or the background colour — updates as you type.</div>
+    </div>
+    <style id="tt1-style"></style>
+  </section>
+
+  <section id="typography">
+    <h2><span class="snum">3</span>Typography</h2>
+    <table>
+      <tr><th>Property</th><th>What it controls</th></tr>
+      <tr><td><code>font-size</code></td><td>text size, usually in px</td></tr>
+      <tr><td><code>font-weight</code></td><td>thickness — <code>400</code> normal, <code>700</code> or <code>bold</code> is bold</td></tr>
+      <tr><td><code>color</code></td><td>text colour (not background)</td></tr>
+    </table>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — push the size and weight up, see it become a headline</div>
+      <textarea id="tt2-css" oninput="applyPreview('tt2-css','tt2-style')">.demo-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: #1a1f29;
+}</textarea>
+      <div class="tt-preview-wrap">
+        <div id="tt2-target" class="demo-text">£4,231.09</div>
+      </div>
+      <div class="tt-hint">Compare font-size: 16px vs 32px, or font-weight: 400 vs 700.</div>
+    </div>
+    <style id="tt2-style"></style>
+  </section>
+
+  <section id="flexbox">
+    <h2><span class="snum">4</span>Flexbox — real layout</h2>
+    <p>Turning an element into a flex container changes how its <i>children</i> are arranged — in a row by default, instead of stacked.</p>
+    <div class="code-block">
+      <pre id="code-4">.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}</pre>
+      <button class="copy-btn" onclick="copyCode('code-4', this)">Copy</button>
+    </div>
+    <table>
+      <tr><th>Property</th><th>What it does</th></tr>
+      <tr><td><code>display: flex</code></td><td>turns on flex layout for this element's children</td></tr>
+      <tr><td><code>justify-content</code></td><td>spacing along the row — <code>space-between</code> pushes items to both edges</td></tr>
+      <tr><td><code>align-items: center</code></td><td>vertically centres items within the row</td></tr>
+      <tr><td><code>gap</code></td><td>space between items, without needing margin on each one</td></tr>
+    </table>
+    <div class="mistake"><b>Common mistake:</b> setting <code>display: flex</code> on the wrong element — it needs to go on the <i>parent</i> (the container), not the items inside it.</div>
+
+    <div class="tryit">
+      <div class="tt-label">▶ Try it — toggle flex on and off, change justify-content</div>
+      <textarea id="tt3-css" oninput="applyPreview('tt3-css','tt3-style')">.demo-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #eef1f5;
+  padding: 10px;
+}</textarea>
+      <div class="tt-preview-wrap" style="padding:0;">
+        <div id="tt3-target" class="demo-row">
+          <div style="background:#1a1f29;color:#fff;padding:6px 10px;border-radius:6px;font-size:11px;">Item A</div>
+          <div style="background:#1a1f29;color:#fff;padding:6px 10px;border-radius:6px;font-size:11px;">Item B</div>
+        </div>
+      </div>
+      <div class="tt-hint">Try removing display: flex entirely and see the items stack instead of sitting side by side.</div>
+    </div>
+    <style id="tt3-style"></style>
+  </section>
+
+  <section id="quiz">
+    <h2>Check yourself</h2>
+    <div class="quiz-q">
+      <p class="qtext">1. What does forgetting the dot in <code>my-box { ... }</code> actually target?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">Nothing changes — the dot is optional</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">An element literally named my-box, which doesn't exist — so nothing gets styled</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">Every element on the page</button>
+      <div class="quiz-feedback">Without the dot, the browser reads it as a tag name selector, not a class — since no element is actually called "my-box", the rule silently matches nothing.</div>
+    </div>
+    <div class="quiz-q">
+      <p class="qtext">2. Where does <code>display: flex</code> need to go to lay out two items side by side?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">On each of the two items individually</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">On their shared parent container</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">Anywhere in the stylesheet — position doesn't matter</button>
+      <div class="quiz-feedback">Flex is a layout mode for a container's direct children — it has to sit on the parent, not the items you're trying to arrange.</div>
+    </div>
+    <div class="quiz-q">
+      <p class="qtext">3. Which font-weight reads as genuinely bold?</p>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">400</button>
+      <button class="quiz-opt" data-correct="true" onclick="answerQuiz(this)">700</button>
+      <button class="quiz-opt" data-correct="false" onclick="answerQuiz(this)">100</button>
+      <div class="quiz-feedback">400 is normal weight. 700 (or the keyword bold) is what actually renders as bold text.</div>
+    </div>
+  </section>
+
+  <footer>Part of <a href="index.html">The Mainframe</a> — financial systems training terminal.</footer>
+</div>
+
+<script>
+function copyCode(id, btn){
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+  }).catch(()=>{});
+}
+
+function applyPreview(taId, styleTagId){
+  const css = document.getElementById(taId).value;
+  document.getElementById(styleTagId).textContent = css;
+}
+
+// initial paint so the boxes reflect their starting CSS on load
+applyPreview('tt1-css','tt1-style');
+applyPreview('tt2-css','tt2-style');
+applyPreview('tt3-css','tt3-style');
+
+function answerQuiz(btn){
+  const group = btn.parentElement;
+  const opts = group.querySelectorAll('.quiz-opt');
+  const isCorrect = btn.dataset.correct === 'true';
+  opts.forEach(o => o.disabled = true);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if(!isCorrect){
+    opts.forEach(o => { if(o.dataset.correct === 'true') o.classList.add('correct'); });
+  }
+  group.querySelector('.quiz-feedback').classList.add('show');
+}
+</script>
+</body>
+</html>

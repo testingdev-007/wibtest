@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide — Effective CoPilot Prompts</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --danger:#F04438; --danger-bg:#FEF3F2;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:40px 20px 70px;line-height:1.6;}
+.wrap{max-width:760px;margin:0 auto;}
+a{color:var(--accent);font-weight:600;}
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px;}
+h1{font-size:28px;font-weight:800;letter-spacing:-0.01em;margin:0 0 8px;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0 0 20px;}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px;}
+.toc a{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;}
+.toc a:hover{color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg);}
+
+section{margin:0 0 44px;scroll-margin-top:20px;}
+.snum{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;margin-right:9px;}
+h2{font-size:16px;text-transform:uppercase;letter-spacing:.03em;color:var(--text);font-weight:700;border-bottom:1px solid var(--border);padding-bottom:11px;margin:0 0 16px;display:flex;align-items:center;}
+p{font-size:14.5px;color:var(--text-secondary);}
+code{font-family:'JetBrains Mono',monospace;background:var(--surface-alt);color:#7C3AED;padding:2px 6px;border-radius:4px;font-size:13px;}
+
+.prompt-pair{margin:14px 0;}
+.prompt-box{position:relative;border-radius:10px;padding:14px 44px 14px 16px;margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;}
+.prompt-box.bad{background:var(--danger-bg);border:1px solid #FECDCA;color:#7A271A;}
+.prompt-box.good{background:var(--success-bg);border:1px solid #A6F4C5;color:#065F46;}
+.prompt-label{position:absolute;top:-9px;left:12px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:1px 8px;border-radius:8px;}
+.prompt-label.bad{background:var(--danger);color:#fff;}
+.prompt-label.good{background:var(--success);color:#fff;}
+.prompt-copy{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.1);padding:4px 8px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+.prompt-copy:hover{background:rgba(255,255,255,0.9);}
+.prompt-copy.copied{background:var(--success);color:#fff;border-color:var(--success);}
+.why{font-size:13px;color:var(--text-secondary);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-top:2px;}
+.why b{color:var(--accent);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,24,40,0.05);}
+.card h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);font-weight:700;margin:0 0 8px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0;}
+th{text-align:left;color:var(--text-muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;padding:7px 10px;border-bottom:1px solid var(--border);}
+td{padding:9px 10px;border-bottom:1px solid var(--surface-alt);color:var(--text);vertical-align:top;}
+td code{background:transparent;padding:0;}
+
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Guide · AI Prompting</div>
+  <h1>Effective CoPilot Prompts</h1>
+  <p class="sub">CoPilot is only as useful as what you tell it. These are the habits that make the biggest difference — every example below is ready to copy, paste, and try for real.</p>
+
+  <div class="toc">
+    <a href="#specific">1. Be specific</a>
+    <a href="#context">2. Give it context</a>
+    <a href="#format">3. Ask for a format</a>
+    <a href="#steps">4. Break it into steps</a>
+    <a href="#iterate">5. Iterate</a>
+    <a href="#reference">Quick reference</a>
+  </div>
+
+  <section id="specific">
+    <h2><span class="snum">1</span>Be specific about what you want</h2>
+    <p>A vague prompt gets a vague, generic answer — CoPilot fills the gaps with guesses. The fix is almost always to say more, not less.</p>
+    <div class="prompt-pair">
+      <div class="prompt-box bad">
+        <span class="prompt-label bad">Too vague</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Write something about our Q3 numbers.</span>
+      </div>
+      <div class="prompt-box good">
+        <span class="prompt-label good">Much better</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Write a 3-sentence summary of our Q3 sales results for a Monday team update. Keep the tone upbeat but factual — no exaggeration.</span>
+      </div>
+      <div class="why"><b>Why it works:</b> length, audience, tone, and purpose are all specified — CoPilot doesn't have to guess what "something" means or who it's for.</div>
+    </div>
+  </section>
+
+  <section id="context">
+    <h2><span class="snum">2</span>Give it context it can't already know</h2>
+    <p>CoPilot doesn't know your team's history, your usual style, or what "the client" refers to unless you tell it — or unless it's reading a document you've pointed it at.</p>
+    <div class="prompt-pair">
+      <div class="prompt-box bad">
+        <span class="prompt-label bad">Too vague</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Reply to this email politely.</span>
+      </div>
+      <div class="prompt-box good">
+        <span class="prompt-label good">Much better</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Reply to this email. We can't hit the Friday deadline they're asking about — realistically it'll be the following Wednesday. Be apologetic but not over the top, and offer the new date clearly.</span>
+      </div>
+      <div class="why"><b>Why it works:</b> the actual facts of the situation are in the prompt — CoPilot isn't left inventing an outcome, it's just wording one you've already decided.</div>
+    </div>
+  </section>
+
+  <section id="format">
+    <h2><span class="snum">3</span>Ask for the format you actually want back</h2>
+    <p>If you don't specify, you'll often get a wall of paragraph text — even when a table, a list, or a short email would genuinely be more useful.</p>
+    <div class="prompt-pair">
+      <div class="prompt-box bad">
+        <span class="prompt-label bad">Too vague</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Summarise the attached meeting notes.</span>
+      </div>
+      <div class="prompt-box good">
+        <span class="prompt-label good">Much better</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Summarise the attached meeting notes as bullet points, grouped under three headings: Decisions Made, Action Items (with who's responsible), and Open Questions.</span>
+      </div>
+      <div class="why"><b>Why it works:</b> naming the exact shape of the output — headings, grouping, what goes under each one — means you get something usable immediately, not something you have to restructure yourself.</div>
+    </div>
+  </section>
+
+  <section id="steps">
+    <h2><span class="snum">4</span>Break a big ask into steps</h2>
+    <p>One giant prompt trying to do five things at once usually does all five things badly. Asking for one thing at a time, building on the last answer, gets you further.</p>
+    <div class="prompt-pair">
+      <div class="prompt-box bad">
+        <span class="prompt-label bad">Too vague</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Write a full report on our expenses this quarter with charts and recommendations and an executive summary.</span>
+      </div>
+      <div class="prompt-box good">
+        <span class="prompt-label good">Much better</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">First, just list the top 5 expense categories from the attached data, largest to smallest, with the total for each.</span>
+      </div>
+      <div class="why"><b>Why it works:</b> you check the first, small piece is actually right before building the next one on top of it — a report built from five verified small steps is more trustworthy than one built in a single leap.</div>
+    </div>
+  </section>
+
+  <section id="iterate">
+    <h2><span class="snum">5</span>Treat the first answer as a draft</h2>
+    <p>The first response is a starting point, not a final answer. Telling CoPilot exactly what to change is almost always faster than starting over.</p>
+    <div class="prompt-pair">
+      <div class="prompt-box bad">
+        <span class="prompt-label bad">Starting over</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">That's not right, try again.</span>
+      </div>
+      <div class="prompt-box good">
+        <span class="prompt-label good">Much better</span>
+        <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        <span class="ptext">Good structure, but it's too long — cut it to half the length, and drop the second paragraph entirely, it's not relevant here.</span>
+      </div>
+      <div class="why"><b>Why it works:</b> "try again" throws away everything that was already right. Naming exactly what to keep and what to change means CoPilot only touches what actually needs fixing.</div>
+    </div>
+  </section>
+
+  <section id="reference">
+    <h2>Quick reference</h2>
+    <table>
+      <tr><th>Instead of</th><th>Try</th></tr>
+      <tr><td>"make it better"</td><td>"make it shorter" / "make it more formal" / "make it punchier"</td></tr>
+      <tr><td>"summarise this"</td><td>"summarise this in 3 bullet points for someone who hasn't read it"</td></tr>
+      <tr><td>"write an email"</td><td>"write a short, friendly email declining, but leaving the door open for next quarter"</td></tr>
+      <tr><td>"analyse this data"</td><td>"what are the 3 biggest changes in this data compared to last month, and why might they matter"</td></tr>
+    </table>
+    <div class="card">
+      <h3>One habit worth keeping</h3>
+      <p style="margin-bottom:0;">If an answer isn't quite right, ask yourself what specifically is missing — the audience, the length, the tone, the format — then add just that one thing to your next prompt. Most bad results are one missing detail away from a good one.</p>
+    </div>
+  </section>
+
+  <footer>Part of <a href="index.html">The Mainframe</a> — digital skills training terminal.</footer>
+</div>
+
+<script>
+function copyPrompt(btn){
+  const text = btn.parentElement.querySelector('.ptext').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+  }).catch(()=>{});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome — The Mainframe</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --border-strong:#D0D5DD;
+  --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.05);
+  --shadow-md: 0 4px 16px rgba(16,24,40,0.07);
+  --shadow-lg: 0 12px 40px rgba(16,24,40,0.10);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+a{color:inherit;}
+code{font-family:'JetBrains Mono',monospace;background:var(--surface-alt);color:#7C3AED;padding:2px 7px;border-radius:5px;font-size:0.85em;}
+
+/* ---- Hero ---- */
+.hero{padding:80px 0 60px;text-align:center;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:22px;}
+.eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--success);}
+.hero h1{font-size:clamp(36px,6vw,58px);font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin:0 0 20px;color:var(--text);}
+.hero h1 span{color:var(--accent);}
+.hero p{font-size:18px;color:var(--text-secondary);max-width:640px;margin:0 auto 36px;line-height:1.6;}
+.reassure{display:inline-flex;align-items:center;gap:10px;background:var(--success-bg);border:1px solid #A6F4C5;color:#067647;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:30px;}
+
+/* ---- Section shell ---- */
+section{padding:56px 0;border-top:1px solid var(--border);}
+.section-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:10px;}
+h2{font-size:28px;font-weight:800;letter-spacing:-0.02em;margin:0 0 14px;color:var(--text);}
+section > p.lead{font-size:16px;color:var(--text-secondary);max-width:640px;margin:0 0 32px;line-height:1.65;}
+
+/* ---- How today works ---- */
+.flow{display:flex;gap:14px;flex-wrap:wrap;}
+.flow-step{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 20px;box-shadow:var(--shadow-sm);}
+.flow-step .num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;margin-bottom:14px;}
+.flow-step h3{font-size:15px;font-weight:700;margin:0 0 6px;color:var(--text);}
+.flow-step p{font-size:13.5px;color:var(--text-secondary);margin:0;line-height:1.5;}
+
+/* ---- Activities ---- */
+.activity-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:640px){.activity-grid{grid-template-columns:1fr;}}
+.activity-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;box-shadow:var(--shadow-sm);position:relative;}
+.activity-card .anum{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:.03em;}
+.activity-card h3{font-size:19px;font-weight:800;margin:6px 0 10px;color:var(--text);letter-spacing:-0.01em;}
+.activity-card p{font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0 0 14px;}
+.activity-card .tags{display:flex;gap:6px;flex-wrap:wrap;}
+.activity-card .tag{font-size:10.5px;font-weight:600;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-border);padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.02em;}
+.activity-card.full{grid-column:1/-1;}
+.activity-card.full{background:linear-gradient(135deg,#4F46E5,#7C3AED);border:none;}
+.activity-card.full h3, .activity-card.full .anum{color:#fff;}
+.activity-card.full p{color:rgba(255,255,255,0.85);}
+.activity-card.full .tag{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:#fff;}
+
+/* ---- Support ---- */
+.support-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media (max-width:700px){.support-grid{grid-template-columns:1fr;}}
+.support-item{text-align:center;padding:26px 18px;}
+.support-item .icon{width:52px;height:52px;border-radius:14px;background:var(--accent-bg);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 16px;}
+.support-item h3{font-size:15px;font-weight:700;margin:0 0 8px;color:var(--text);}
+.support-item p{font-size:13px;color:var(--text-secondary);line-height:1.55;margin:0;}
+
+/* ---- CTA ---- */
+.cta{text-align:center;padding:70px 0 90px;}
+.cta h2{font-size:32px;}
+.cta p.lead{margin-left:auto;margin-right:auto;text-align:center;}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;font-weight:700;font-size:17px;padding:18px 40px;border-radius:14px;text-decoration:none;box-shadow:var(--shadow-lg);transition:transform .15s ease, box-shadow .15s ease;}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 16px 48px rgba(79,70,229,0.25);background:var(--accent-hover);}
+.cta-note{margin-top:18px;font-size:13px;color:var(--text-muted);}
+
+footer{text-align:center;padding:30px 0 50px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Digital Skills · Training Session</div>
+    <h1>Welcome to<br><span>The Mainframe</span></h1>
+    <p>Start with a 3-minute warm-up, then pick from short, self-contained activities covering coding, web design, and getting more out of AI tools. Today you'll write real code, patch real logic, and fix a real live app — one small task at a time.</p>
+    <div class="reassure">✓ You don't need any coding experience for this — genuinely none.</div>
+  </div>
+
+  <section>
+    <div class="section-label">Step one, before anything else</div>
+    <h2>Start with Hello, Computer</h2>
+    <p class="lead">A 3-minute warm-up that explains what a "console" actually is and walks you through your first ever line of code. Everything else today assumes you've done this — it's genuinely the starting point, not an optional extra.</p>
+    <div class="activity-grid">
+      <div class="activity-card full">
+        <div class="anum">00</div>
+        <h3>Hello, Computer</h3>
+        <p>Type one instruction, see it work immediately. No experience assumed at all.</p>
+        <div class="tags"><span class="tag">what is a console</span><span class="tag">your first instruction</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">How today works</div>
+    <h2>Short activities, try them in any order</h2>
+    <p class="lead">Nobody needs to finish every task in every one — the point is a real taste of each, not full completion. Every coding activity has a longer take-home version if you want to go further afterward.</p>
+    <div class="flow">
+      <div class="flow-step"><div class="num">1</div><h3>Try it</h3><p>Play with what's on screen before writing anything — click around, see what happens.</p></div>
+      <div class="flow-step"><div class="num">2</div><h3>See an example</h3><p>Every task shows a worked example first — a solved pattern to copy the shape of, not the answer.</p></div>
+      <div class="flow-step"><div class="num">3</div><h3>Write some code</h3><p>Small, guided steps. Nothing assumes you've coded before.</p></div>
+      <div class="flow-step"><div class="num">4</div><h3>Get unstuck</h3><p>Hints escalate gradually, and a support chat is always one click away.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Core activities</div>
+    <h2>What you'll actually do</h2>
+    <p class="lead">Each one teaches a different flavour of real tech work — pick your favourite, or try them all.</p>
+    <div class="activity-grid">
+      <div class="activity-card">
+        <div class="anum">01</div>
+        <h3>The Construct</h3>
+        <p>Guide a hidden rover across a grid using real JavaScript — one command at a time, then combined, then repeated with a loop.</p>
+        <div class="tags"><span class="tag">step-by-step instructions</span><span class="tag">repeating steps</span></div>
+      </div>
+      <div class="activity-card">
+        <div class="anum">02</div>
+        <h3>The Front</h3>
+        <p>Style a real account card with CSS — colour, spacing, typography, and a proper flexbox layout.</p>
+        <div class="tags"><span class="tag">colours &amp; spacing</span><span class="tag">making things line up</span></div>
+      </div>
+      <div class="activity-card full">
+        <div class="anum">03</div>
+        <h3>The Helpdesk</h3>
+        <p>A live banking app is broken in five ways. Describe what's wrong to a support chat in your own words — it works out the fix, applies it, and shows you exactly what changed.</p>
+        <div class="tags"><span class="tag">spotting what's wrong</span><span class="tag">describing a problem clearly</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Plus: two AI skills exercises</div>
+    <h2>Getting more out of CoPilot</h2>
+    <p class="lead">A different kind of activity — no code, no tests. Just a direct look at how much the quality of your prompt changes the quality of what you get back.</p>
+    <div class="activity-grid">
+      <div class="activity-card">
+        <div class="anum">04</div>
+        <h3>Effective CoPilot Prompts</h3>
+        <p>A short reference guide — the handful of habits that turn a generic answer into a genuinely useful one, with real prompt examples you can copy and try yourself.</p>
+        <div class="tags"><span class="tag">guide</span><span class="tag">copyable examples</span></div>
+      </div>
+      <div class="activity-card">
+        <div class="anum">05</div>
+        <h3>Effective CoPilot — Excel &amp; Outlook</h3>
+        <p>The same spreadsheet and the same inbox, every time — pick a bad prompt and watch it guess; pick a great one and watch it build a real dashboard or find the exact email.</p>
+        <div class="tags"><span class="tag">dashboards</span><span class="tag">search</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Advanced extensions</div>
+    <h2>More involved — a good next step, not a starting point</h2>
+    <p class="lead">Once you're comfortable with the core activities above, these two go further with the same ideas.</p>
+    <div class="activity-grid">
+      <div class="activity-card">
+        <div class="anum">06</div>
+        <h3>The Vault</h3>
+        <p>Patch broken logic in a bank's risk-checking system — real business rules, real functions, real tests.</p>
+        <div class="tags"><span class="tag">writing your own logic</span><span class="tag">true/false decisions</span></div>
+      </div>
+      <div class="activity-card">
+        <div class="anum">07</div>
+        <h3>The Ledger</h3>
+        <p>Answer real questions about a feed of transactions — totals, filters, counts, straight from the data.</p>
+        <div class="tags"><span class="tag">working with lists of data</span><span class="tag">totals &amp; filtering</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">You're not on your own</div>
+    <h2>Support is built into every task</h2>
+    <p class="lead">Two layers of help, always available, neither requiring you to ask a facilitator first — for every coding activity above.</p>
+    <div class="support-grid">
+      <div class="support-item">
+        <div class="icon">📎</div>
+        <h3>Worked examples</h3>
+        <p>A complete, solved example shown before every task — the pattern, not the answer.</p>
+      </div>
+      <div class="support-item">
+        <div class="icon">💡💬</div>
+        <h3>Hints &amp; chat, in one place</h3>
+        <p>Click Hint for a step-by-step nudge, or just type "I'm stuck" straight into the chat — same help either way, opening in the same panel. Ask a genuine question in your own words too — everyday phrasing works fine, not just technical terms.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <h2>Ready when you are</h2>
+    <p class="lead">Head to the dashboard to pick your first station.</p>
+    <a class="cta-btn" href="index.html">Enter The Mainframe →</a>
+    <p class="cta-note">Or ask a facilitator if you're not sure where to start.</p>
+  </div>
+
+  <footer>The Mainframe — Financial Systems Training Hub</footer>
+</div>
+
+</body>
+</html>

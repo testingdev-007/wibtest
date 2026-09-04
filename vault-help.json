@@ -1,0 +1,110 @@
+{
+  "module": "vault",
+  "entries": [
+    {
+      "id": "what-is-function-def",
+      "keywords": [
+        "how do i write a function",
+        "define a function",
+        "function syntax",
+        "writing a function",
+        "what does function mean",
+        "what is a parameter",
+        "what is an argument",
+        "function argument meaning",
+        "what goes in the brackets"
+      ],
+      "response": "function name(parameter) { return something; } \u2014 the name is what you call it by, the parameter is the input, and return sends a value back out. Nothing after return runs."
+    },
+    {
+      "id": "missing-return",
+      "keywords": [
+        "undefined",
+        "returns undefined",
+        "forgot return",
+        "nothing comes back",
+        "no return value"
+      ],
+      "response": "If a test shows 'got undefined', your function ran but never hit a return statement \u2014 the logic might be right, it's just not being sent back. Add return in front of the value."
+    },
+    {
+      "id": "boolean-explain",
+      "keywords": [
+        "what is a boolean",
+        "true false",
+        "what does boolean mean",
+        "return true or false"
+      ],
+      "response": "A boolean is just true or false. A comparison like amount > 10000 already produces one \u2014 you can return it directly, no need for an if statement just to say 'if this is true, return true'."
+    },
+    {
+      "id": "comparison-operators",
+      "keywords": [
+        "greater than",
+        "less than",
+        "what does gte mean",
+        ">= meaning",
+        "over or equal",
+        "strictly over",
+        "what does gte mean",
+        "gte meaning"
+      ],
+      "response": "> means strictly greater than (10000 itself doesn't count). >= means greater than or equal to (10000 itself does count). Read the brief's exact wording \u2014 'over' and 'or more' mean different things here."
+    },
+    {
+      "id": "if-else-syntax",
+      "keywords": [
+        "if else syntax",
+        "how does if else work",
+        "multiple conditions",
+        "if else if",
+        "conditional chain",
+        "if statement",
+        "what is an if statement",
+        "how does if work",
+        "what is if"
+      ],
+      "response": "if (condition) { return x; } if (otherCondition) { return y; } return z; \u2014 checks run top to bottom, and the first one that matches wins. Put the most specific condition first."
+    },
+    {
+      "id": "test-console-explain",
+      "keywords": [
+        "what does the test console show",
+        "how do tests work",
+        "what is a test",
+        "pass fail meaning",
+        "why does my test fail",
+        "why is my test failing"
+      ],
+      "response": "Each row calls your function with specific input and checks whether what it actually returns matches what's expected. A red cross shows you exactly what your function returned, so compare that against what it should have been."
+    },
+    {
+      "id": "case-sensitive",
+      "keywords": [
+        "case sensitive",
+        "capital letters matter",
+        "uppercase lowercase"
+      ],
+      "response": "Text comparisons in JavaScript are case-sensitive \u2014 'Flagged' and 'flagged' are different values. Match the exact spelling and capitalisation shown in the brief."
+    },
+    {
+      "id": "function-name-typo",
+      "keywords": [
+        "function not found",
+        "isn't defined as a function",
+        "wrong function name",
+        "typo in function name",
+        "why isnt my function found",
+        "function isnt working"
+      ],
+      "response": "The function name in your code has to match exactly what's expected \u2014 check for typos, and make sure you haven't accidentally renamed it while editing."
+    }
+  ],
+  "synonyms": {
+    "cash": "amount",
+    "money": "amount",
+    "output": "return",
+    "percent": "rate",
+    "percentage": "rate"
+  }
+}

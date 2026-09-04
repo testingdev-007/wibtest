@@ -1,0 +1,122 @@
+{
+  "module": "front",
+  "entries": [
+    {
+      "id": "selector-syntax",
+      "keywords": [
+        "how do i target an element",
+        "css selector",
+        "dot before class name",
+        "what does .account-card mean"
+      ],
+      "response": ".account-card { property: value; } \u2014 the dot before a name matches an HTML class attribute. Without the dot, it tries to match a tag name that doesn't exist, and silently does nothing."
+    },
+    {
+      "id": "nothing-changes",
+      "keywords": [
+        "nothing changes in preview",
+        "preview not updating",
+        "css not applying",
+        "styles not showing"
+      ],
+      "response": "Check the selector spelling matches the class name exactly, including the leading dot. Also check for a missing semicolon on an earlier line \u2014 one missing semicolon can silently break every property after it in that block."
+    },
+    {
+      "id": "background-color",
+      "keywords": [
+        "how to set background",
+        "background colour property",
+        "background not showing"
+      ],
+      "response": "background: #1a1f29; (or any colour you like \u2014 named colours like 'navy' work too) sets the fill behind the element's content."
+    },
+    {
+      "id": "border-radius",
+      "keywords": [
+        "rounded corners",
+        "border radius property",
+        "how to round corners"
+      ],
+      "response": "border-radius: 12px; rounds all four corners by that amount \u2014 bigger number, more rounded."
+    },
+    {
+      "id": "padding-explain",
+      "keywords": [
+        "what is padding",
+        "padding vs margin",
+        "space inside box",
+        "space around text"
+      ],
+      "response": "padding: 24px; adds space between the content and the edge of its own box. margin does the same thing but on the outside, between this box and others nearby."
+    },
+    {
+      "id": "font-weight-bold",
+      "keywords": [
+        "how to make text bold",
+        "font weight property",
+        "bold text css"
+      ],
+      "response": "font-weight: 700; (or font-weight: bold;) makes text bold. 400 is normal weight, 700 and above reads as bold."
+    },
+    {
+      "id": "flexbox-explain",
+      "keywords": [
+        "what is flexbox",
+        "display flex meaning",
+        "how does flex work"
+      ],
+      "response": "display: flex; on a container arranges its direct children in a row instead of stacked on top of each other. It has to go on the parent, not the items inside it."
+    },
+    {
+      "id": "flex-wrong-element",
+      "keywords": [
+        "flex not working",
+        "display flex not doing anything",
+        "flex on wrong element"
+      ],
+      "response": "The single most common flexbox mistake: display: flex needs to be on the container (the parent), not on the items you're trying to lay out. Check which selector it's attached to."
+    },
+    {
+      "id": "justify-content-explain",
+      "keywords": [
+        "justify content meaning",
+        "space between explain",
+        "how to space out items"
+      ],
+      "response": "justify-content: space-between; pushes the first item to the left edge and the last to the right edge, spreading anything in between evenly."
+    },
+    {
+      "id": "align-items-explain",
+      "keywords": [
+        "align items meaning",
+        "vertically center",
+        "center items vertically"
+      ],
+      "response": "align-items: center; centres items vertically within a flex row \u2014 useful when items are different heights and you want them lined up in the middle."
+    },
+    {
+      "id": "extended-sections-stuck",
+      "keywords": [
+        "extended front stuck",
+        "continuous page help",
+        "which section am i on"
+      ],
+      "response": "Scroll the CSS editor \u2014 all four sections (Header, Nav, Card, Transaction List) are listed as comments in one file. Work through them in any order; nothing you write gets erased when you move to the next one."
+    },
+    {
+      "id": "gap-property",
+      "keywords": [
+        "what does gap do",
+        "gap property meaning",
+        "space between flex items"
+      ],
+      "response": "gap: 16px; adds space between flex items without needing margin on each individual one \u2014 much simpler when you've got several items in a row."
+    }
+  ],
+  "synonyms": {
+    "color": "colour",
+    "rounded": "radius",
+    "bold": "weight",
+    "thick": "weight"
+  }
+}

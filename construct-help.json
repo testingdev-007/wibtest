@@ -1,0 +1,164 @@
+{
+  "module": "construct",
+  "entries": [
+    {
+      "id": "what-is-function",
+      "keywords": [
+        "what is a function",
+        "what does a function do",
+        "how do i call a function",
+        "call function",
+        "function mean",
+        "what does moveforward do",
+        "how do i make it move forward",
+        "how do i move the rover",
+        "how do i make it move"
+      ],
+      "response": "A function does something when you call it. Write its name, then brackets, then a semicolon \u2014 like moveForward();. Nothing happens until you actually call it on its own line."
+    },
+    {
+      "id": "semicolon-brackets",
+      "keywords": [
+        "semicolon",
+        "missing bracket",
+        "syntax error",
+        "forgot semicolon",
+        "curly brace",
+        "compile error",
+        "unexpected token"
+      ],
+      "response": "That's usually a missing bracket or semicolon. Every function call needs both: moveForward(); \u2014 brackets even though nothing goes inside them, and a semicolon at the end. Check the line the error message points to first."
+    },
+    {
+      "id": "how-many-moves",
+      "keywords": [
+        "how many times",
+        "how far",
+        "how many moves",
+        "how many steps",
+        "count squares",
+        "how many cells"
+      ],
+      "response": "Count the cells between the rover and the exit on the grid \u2014 that's how many moveForward() calls you need. If it's more than a couple, a loop is worth using instead of writing the same line over and over."
+    },
+    {
+      "id": "turn-direction",
+      "keywords": [
+        "turnleft turnright",
+        "turnright",
+        "turnleft",
+        "which way to turn",
+        "turn direction",
+        "confused about turning",
+        "facing wrong way",
+        "wrong direction"
+      ],
+      "response": "Turning changes which way the rover is facing, not where it is on the grid. moveForward() always moves it one cell in whatever direction it's currently facing \u2014 so the order of turns and moves matters."
+    },
+    {
+      "id": "loop-syntax",
+      "keywords": [
+        "for loop",
+        "how does a loop work",
+        "loop syntax",
+        "repeat something",
+        "what does i mean",
+        "what is i",
+        "for let i"
+      ],
+      "response": "for (let i = 0; i < 6; i++) { moveForward(); } runs moveForward() 6 times. The middle number (6 here) is the one to change \u2014 it's how many times the loop repeats."
+    },
+    {
+      "id": "loop-count-wrong",
+      "keywords": [
+        "loop stops early",
+        "one short",
+        "loop too many times",
+        "off by one",
+        "rover stops short",
+        "not going far enough"
+      ],
+      "response": "Check the number in your loop condition against the actual distance to the exit \u2014 a loop that says i < 3 only runs 3 times, so if the exit is 4 cells away it'll stop one short."
+    },
+    {
+      "id": "bonus-glitch",
+      "keywords": [
+        "bonus",
+        "the glitch",
+        "debugging round",
+        "bug in the loop",
+        "fix the bug",
+        "bonus construct"
+      ],
+      "response": "The Glitch already has working code \u2014 the bug is just the number in the loop condition. Check how far the exit actually is versus how many times the loop currently runs."
+    },
+    {
+      "id": "nothing-happens",
+      "keywords": [
+        "nothing happens",
+        "run doesn't work",
+        "click run nothing",
+        "code doesn't run",
+        "run button not working"
+      ],
+      "response": "Check the Error box under the buttons first \u2014 a syntax error stops the code running at all. If there's no error and still nothing moves, make sure you've actually replaced the // TODO comment with a real command."
+    },
+    {
+      "id": "hint-button",
+      "keywords": [
+        "what does hint do",
+        "hint button",
+        "how do hints work",
+        "using the hint"
+      ],
+      "response": "The Hint button under Run and Reset opens this same chat and posts a nudge specific to the construct you're on \u2014 one click, no need to type anything."
+    },
+    {
+      "id": "reset-lost-code",
+      "keywords": [
+        "reset erased my code",
+        "lost my code",
+        "reset wiped everything",
+        "reset button"
+      ],
+      "response": "Reset puts the construct back to its starting code, not just the visuals \u2014 so yes, it clears anything you've written. Worth being careful with it if you want to keep what you've got."
+    },
+    {
+      "id": "rover-hit-wall",
+      "keywords": [
+        "rover blocked",
+        "hit a wall",
+        "blocked by edge",
+        "hit debris",
+        "hit an agent",
+        "cant move there"
+      ],
+      "response": "Walls, debris, and the edge of the grid all block movement \u2014 the rover just stops and the terminal log tells you what it hit. Check the grid and plan a route around it."
+    },
+    {
+      "id": "whats-javascript",
+      "keywords": [
+        "is this real code",
+        "is this real javascript",
+        "what language is this",
+        "real programming",
+        "actual coding"
+      ],
+      "response": "Yes \u2014 this is genuine JavaScript, the same language that runs on most websites you use. moveForward(), the loop, all of it would work the same way in a real script."
+    }
+  ],
+  "synonyms": {
+    "walk": "move",
+    "drive": "move",
+    "travel": "move",
+    "spin": "turn",
+    "rotate": "turn",
+    "repeat": "loop",
+    "square": "cell",
+    "tile": "cell",
+    "block": "wall",
+    "finish": "exit",
+    "destination": "exit",
+    "goal": "exit"
+  }
+}

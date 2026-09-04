@@ -1,0 +1,110 @@
+{
+  "module": "ledger",
+  "entries": [
+    {
+      "id": "what-is-function-general",
+      "keywords": [
+        "whats a function",
+        "what is a function",
+        "what does function mean",
+        "how do functions work"
+      ],
+      "response": "A function does something when you call it. function totalSpend(transactions) { ... } names it and says what input it takes \u2014 transactions here is the list you're working with."
+    },
+    {
+      "id": "what-is-array",
+      "keywords": [
+        "what is an array",
+        "what does array mean",
+        "square brackets",
+        "array syntax",
+        "what is an index",
+        "what does index mean",
+        "array index"
+      ],
+      "response": "An array is a list of values in order. transactions[0] gets the first item, transactions.length tells you how many items there are in total."
+    },
+    {
+      "id": "what-is-object",
+      "keywords": [
+        "what is an object",
+        "dot notation",
+        "what does .amount mean",
+        "object property",
+        "what does a row look like",
+        "what does a transaction look like",
+        "what does an entry look like"
+      ],
+      "response": "An object holds named fields. transactions[i].amount means 'the amount field of the i-th transaction' \u2014 the dot gets you the named value out."
+    },
+    {
+      "id": "accumulator-pattern",
+      "keywords": [
+        "accumulator",
+        "running total",
+        "how to add up",
+        "keep a total",
+        "total += "
+      ],
+      "response": "Declare let total = 0; before the loop starts, then inside the loop do total += transactions[i].amount; \u2014 that adds each amount onto the running total as you go."
+    },
+    {
+      "id": "total-reset-bug",
+      "keywords": [
+        "total keeps resetting",
+        "total always small",
+        "total not adding up",
+        "total wrong every time"
+      ],
+      "response": "Check where let total = 0 is written \u2014 if it's inside the loop instead of before it, it resets to zero on every single pass, so you only ever end up with the last item's value."
+    },
+    {
+      "id": "loop-through-array",
+      "keywords": [
+        "how to loop through array",
+        "for loop array",
+        "loop transactions",
+        "iterate array"
+      ],
+      "response": "for (let i = 0; i < transactions.length; i++) { ... } \u2014 using .length means the loop always covers the whole list, however many items it has."
+    },
+    {
+      "id": "filter-with-if",
+      "keywords": [
+        "filter inside loop",
+        "only count some",
+        "matching category",
+        "if inside for loop"
+      ],
+      "response": "Put an if check inside the loop before you add to the total \u2014 if (transactions[i].category === category) { total += transactions[i].amount; } \u2014 only matching items get added."
+    },
+    {
+      "id": "nan-error",
+      "keywords": [
+        "nan error",
+        "returns nan",
+        "not a number"
+      ],
+      "response": "NaN usually means a typo in a property name \u2014 like transactions[i].amout instead of .amount \u2014 so it's trying to do maths on something that doesn't exist."
+    },
+    {
+      "id": "hidden-test-fails",
+      "keywords": [
+        "hidden test fails",
+        "second test fails",
+        "works on ledger not hidden",
+        "hardcoded number"
+      ],
+      "response": "If the visible ledger test passes but the hidden one doesn't, that's usually a sign the number's been typed in directly rather than calculated \u2014 the function needs to work on any list it's given, not just this one."
+    }
+  ],
+  "synonyms": {
+    "list": "array",
+    "table": "array",
+    "row": "transaction",
+    "entry": "transaction",
+    "cash": "amount",
+    "money": "amount",
+    "tally": "total"
+  }
+}

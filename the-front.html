@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Front — Style the Interface</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --border-strong:#D0D5DD;
+  --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3; --success-border:#A6F4C5;
+  --warning:#F79009; --warning-bg:#FFFAEB;
+  --danger:#F04438; --danger-bg:#FEF3F2; --danger-border:#FDA29B;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.05);
+  --shadow-md: 0 4px 12px rgba(16,24,40,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 60px;}
+code,.mono{font-family:'JetBrains Mono',monospace;}
+
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;display:inline-flex;align-items:center;gap:7px;margin-bottom:10px;}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);}
+
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--border);}
+h1{font-size:26px;margin:0 0 8px;font-weight:700;letter-spacing:-0.01em;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0;max-width:600px;line-height:1.6;}
+
+.timeline{display:flex;align-items:center;gap:0;}
+.tl-seg{display:flex;align-items:center;}
+.tl-seg .dot{width:10px;height:10px;border-radius:50%;background:var(--surface-alt);border:2px solid var(--border-strong);}
+.tl-seg .dot.done{background:var(--success);border-color:var(--success);}
+.tl-seg .dot.active{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-bg);}
+.tl-line{width:26px;height:2px;background:var(--border-strong);}
+.tl-line.done{background:var(--success);}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+@media (max-width:860px){.cols{grid-template-columns:1fr;}}
+.right-col{position:sticky;top:20px;}
+@media (max-width:860px){.right-col{position:static;}}
+.right-col{display:flex;flex-direction:column;gap:20px;}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--shadow-sm);}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.panel h2{font-size:13px;margin:0;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:700;}
+.tag{font-size:11px;letter-spacing:.03em;color:var(--accent);border:1px solid var(--accent-border);background:var(--accent-bg);padding:3px 10px;border-radius:20px;text-transform:uppercase;font-weight:600;}
+.brief{color:var(--text-secondary);font-size:13.5px;line-height:1.65;margin:0 0 16px;}
+
+.worked-example{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.we-caveat{background:var(--warning-bg);border:1px solid #FEDF89;border-left:3px solid var(--warning);border-radius:0 8px 8px 0;padding:9px 12px;margin:0 14px 12px;font-size:12px;color:#B54708;font-weight:600;display:flex;align-items:center;gap:7px;}
+.worked-example summary{padding:11px 14px;cursor:pointer;font-size:13px;color:var(--accent);font-weight:600;list-style:none;}
+.worked-example summary::-webkit-details-marker{display:none;}
+.we-body{padding:2px 14px 14px;}
+.we-body pre{background:#0D1117;border:none;border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#E6EDF3;line-height:1.65;margin:0 0 10px;white-space:pre-wrap;}
+.we-body .we-line{font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:4px;}
+
+.color-tool{display:flex;align-items:center;gap:10px;background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;flex-wrap:wrap;}
+.color-tool label{font-size:12.5px;color:var(--text-secondary);font-weight:500;}
+.color-tool input[type=color]{width:34px;height:34px;padding:0;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:none;}
+.color-tool code{background:#0D1117;color:#E6EDF3;padding:5px 10px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+.jc-picker{background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;}
+.jc-picker .jc-label{font-size:12.5px;color:var(--text-secondary);font-weight:500;margin-bottom:9px;}
+.jc-picker .jc-options{display:flex;gap:8px;flex-wrap:wrap;}
+.jc-opt{background:#fff;border:1px solid var(--border);border-radius:7px;padding:8px 10px;cursor:pointer;text-align:center;font-family:'Inter',sans-serif;}
+.jc-opt:hover{border-color:var(--accent-border);background:var(--accent-bg);}
+.jc-opt.picked{border-color:var(--accent);background:var(--accent-bg);}
+.jc-opt .jc-preview{width:64px;height:20px;background:var(--surface-alt);border-radius:4px;display:flex;align-items:center;padding:0 4px;margin-bottom:5px;}
+.jc-opt .jc-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.jc-opt[data-val="flex-start"] .jc-preview{justify-content:flex-start;gap:4px;}
+.jc-opt[data-val="center"] .jc-preview{justify-content:center;gap:4px;}
+.jc-opt[data-val="space-between"] .jc-preview{justify-content:space-between;}
+.jc-opt[data-val="space-around"] .jc-preview{justify-content:space-around;}
+.jc-opt .jc-name{font-size:9.5px;color:var(--text-secondary);font-weight:600;font-family:'JetBrains Mono',monospace;}
+.mini-copy-btn{font-size:11px;font-weight:600;background:#fff;color:var(--accent);border:1px solid var(--accent-border);padding:5px 10px;border-radius:6px;cursor:pointer;}
+.mini-copy-btn:hover{background:var(--accent-bg);}
+.mini-copy-btn.copied{color:var(--success);border-color:var(--success-border);background:var(--success-bg);}
+.extensions-box{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;margin-top:14px;overflow:hidden;}
+.extensions-box summary{padding:11px 14px;cursor:pointer;font-size:13px;color:var(--accent);font-weight:600;list-style:none;}
+.extensions-box summary::-webkit-details-marker{display:none;}
+.ext-body{padding:2px 14px 14px;font-size:13px;color:var(--text-secondary);line-height:1.6;}
+.ext-body li{margin-bottom:6px;}
+.editor-chrome{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.editor-titlebar{padding:9px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;}
+.editor-titlebar span{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
+.editor-titlebar .syntax-status{font-size:11px;font-weight:600;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.editor-titlebar .syntax-status.ok{color:var(--success);}
+.editor-titlebar .syntax-status.error{color:var(--danger);cursor:help;}
+textarea{width:100%;min-height:170px;background:#0D1117;color:#E6EDF3;border:none;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;padding:14px 16px;resize:vertical;tab-size:2;}
+textarea:focus{outline:none;}
+.editor-chrome:focus-within{box-shadow:0 0 0 3px var(--accent-bg);}
+
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+button{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;cursor:pointer;padding:11px 20px;}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent);box-shadow:var(--shadow-sm);}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);}
+.btn-ghost{background:#fff;color:var(--text-secondary);border:1px solid var(--border-strong);}
+.btn-ghost:hover{background:var(--surface-alt);color:var(--text);}
+
+.help-msg.hint{background:var(--accent-bg);border:1px solid var(--accent-border);}
+.help-msg.blocked{background:var(--warning-bg);border:1px solid #FEDF89;color:#B54708;font-weight:600;}
+.error-box{margin-top:12px;font-size:13px;padding:12px 14px;border-radius:8px;display:none;line-height:1.6;white-space:pre-wrap;color:#B42318;background:var(--danger-bg);border:1px solid var(--danger-border);}
+
+.test-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.test-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;background:#fff;flex-wrap:wrap;}
+.test-row:last-child{border-bottom:none;}
+.test-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;border:1.5px solid var(--border-strong);color:transparent;}
+.test-row.pass{background:var(--success-bg);}
+.test-row.pass .test-icon{background:var(--success);border-color:var(--success);color:#fff;}
+.test-row.fail .test-icon{background:var(--danger);border-color:var(--danger);color:#fff;}
+.test-call,.test-desc{color:var(--text);flex:1;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+.test-expect,.test-prop{color:var(--text-muted);font-size:11.5px;}
+.test-actual{color:#B42318;width:100%;padding-left:30px;font-size:12px;}
+
+.status-line{margin-top:14px;font-size:13px;color:var(--text-secondary);text-align:center;}
+.status-line.pass{color:var(--success);font-weight:600;}
+
+#successOverlay{display:none;position:fixed;inset:0;background:rgba(16,24,40,0.45);backdrop-filter:blur(2px);align-items:center;justify-content:center;z-index:50;padding:20px;}
+.success-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;max-width:380px;text-align:center;box-shadow:var(--shadow-md);}
+.ping{width:56px;height:56px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:var(--success-bg);border:1px solid var(--success-border);}
+.ping-dot{width:14px;height:14px;border-radius:50%;background:var(--success);}
+.success-card h3{font-size:19px;margin:0 0 8px;color:var(--text);font-weight:700;}
+.success-card p{color:var(--text-secondary);font-size:13.5px;line-height:1.5;margin:0 0 22px;}
+
+#doneScreen{display:none;text-align:center;padding:50px 20px;}
+.done-card{max-width:520px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:44px 38px;box-shadow:var(--shadow-md);}
+.plenary{text-align:left;margin-top:22px;padding-top:20px;border-top:1px solid var(--border);}
+.plenary h4{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:700;margin:0 0 12px;}
+.plenary ul{margin:0 0 16px;padding-left:20px;}
+.plenary li{font-size:13.5px;color:var(--text);margin-bottom:8px;line-height:1.5;}
+.plenary .job-note{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:9px;padding:14px 16px;font-size:13.5px;color:var(--text);}
+.plenary .job-note b{color:var(--accent);}
+.learn-more{text-align:left;background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:20px;}
+.learn-more h4{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:700;margin:0 0 10px;}
+.learn-more a{display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:600;font-size:13px;text-decoration:none;padding:6px 0;}
+.learn-more a:hover{text-decoration:underline;}
+.learn-more a .lm-sub{color:var(--text-muted);font-weight:400;font-size:12px;}
+.done-card h2{font-size:22px;color:var(--text);margin:0 0 10px;font-weight:700;}
+.done-card p{color:var(--text-secondary);font-size:13.5px;line-height:1.6;margin:0 0 8px;}
+
+/* chat widget */
+.help-fab{position:fixed;bottom:22px;right:22px;z-index:80;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md);}
+.help-fab:hover{background:var(--accent-hover);}
+.help-fab .fab-dot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:var(--danger);border:2px solid #fff;display:none;}
+.help-fab .fab-dot.pulse{animation:fabpulse 1.4s ease-in-out infinite;}
+@keyframes fabpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.35);}}
+.help-panel{position:fixed;bottom:90px;right:22px;z-index:80;width:340px;max-width:calc(100vw - 40px);height:440px;max-height:calc(100vh - 130px);background:var(--surface);border:1px solid var(--border);border-radius:14px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(16,24,40,0.15);}
+.help-panel.open{display:flex;}
+.help-head{padding:12px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.help-head .htitle{font-size:13px;color:var(--text);font-weight:700;display:flex;align-items:center;gap:7px;}
+.help-head .htitle::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);}
+.help-head button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:2px 6px;}
+.help-head button:hover{color:var(--text);}
+.help-log{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+.help-msg{font-size:12.5px;line-height:1.55;padding:9px 11px;border-radius:8px;max-width:88%;}
+.help-msg.bot{background:var(--surface-alt);border:1px solid var(--border);color:var(--text);align-self:flex-start;}
+.help-msg.user{background:var(--accent);border:1px solid var(--accent);color:#fff;align-self:flex-end;}
+.help-inputrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);}
+.freetext-area{padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);}
+.freetext-area .help-inputrow{padding:0;border-top:none;background:none;}
+.menu-area{padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;}
+.menu-btn{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;text-align:left;width:100%;}
+.menu-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);}
+.menu-btn.back{color:var(--text-muted);font-weight:500;background:var(--surface-alt);}
+.menu-btn .mi{font-size:14px;flex-shrink:0;}
+.help-inputrow input{flex:1;background:#fff;border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12.5px;padding:9px 11px;border-radius:8px;}
+.help-inputrow input:focus{outline:none;border-color:var(--accent);}
+.help-inputrow button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0 14px;font-weight:600;font-size:12px;}
+.help-inputrow button:hover{background:var(--accent-hover);}
+
+.markup-ref{background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;white-space:pre;overflow-x:auto;font-family:'JetBrains Mono',monospace;}
+.markup-ref .tagname{color:#7C3AED;}
+.markup-ref .cls{color:var(--accent);}
+.preview-frame{background:#eef1f5;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.preview-chrome{background:#dde3ea;padding:9px 12px;display:flex;gap:6px;align-items:center;}
+.preview-chrome .pdot{width:8px;height:8px;border-radius:50%;background:#c7ced9;}
+.preview-chrome .purl{margin-left:8px;font-size:10.5px;color:#6b7684;font-family:'JetBrains Mono',monospace;}
+.preview-body{font-family:'Inter',sans-serif;min-height:150px;padding:36px 20px;display:flex;align-items:center;justify-content:center;}
+.section-label{font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;padding:10px 14px 4px;background:var(--surface-alt);}
+
+/* the actual demo element being styled */
+.account-card{background:transparent;margin-bottom:20px;}
+.account-label{font-size:13px;color:#8892a0;margin-bottom:4px;}
+.account-balance{font-size:18px;color:#1a1f29;}
+.account-action{background:#1a1f29;color:#fff;border:none;padding:9px 16px;border-radius:5px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:default;}
+.site-header{}
+.site-title{font-size:15px;color:#1a1f29;}
+.site-nav{font-size:12px;color:#5b6472;}
+.page-body{padding:24px 20px;background:#eef1f5;}
+.txn-list{margin:0;padding-left:20px;}
+.txn-list li{padding:8px 0;font-size:13px;color:#1a1f29;border-bottom:1px solid #dde3ea;}
+.txn-list li:last-child{border-bottom:none;}
+.txn-amount{color:#1a1f29;}
+
+.home-btn{position:fixed;top:16px;left:16px;z-index:90;width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;box-shadow:0 1px 2px rgba(16,24,40,0.05);color:var(--text-secondary);transition:border-color .15s ease, color .15s ease;}
+.home-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);color:var(--accent);}
+</style>
+</head>
+<body>
+<a href="index.html" class="home-btn" title="Back to dashboard">🏠</a>
+
+<!-- Help widget -->
+<button class="help-fab" id="helpFab" onclick="toggleHelp()">💬<span class="fab-dot" id="helpDot"></span></button>
+<div class="help-panel" id="helpPanel">
+  <div class="help-head">
+    <span class="htitle">Help &amp; Hints</span>
+    <button onclick="toggleHelp()">✕</button>
+  </div>
+  <div class="help-log" id="helpLog"></div>
+  <div class="menu-area" id="menuArea"></div>
+  <div class="freetext-area" id="freetextArea" style="display:none;">
+    <div class="help-inputrow">
+      <input type="text" id="helpInput" placeholder="Ask in your own words…" onkeydown="if(event.key==='Enter')sendFreeText()">
+      <button onclick="sendFreeText()">Send</button>
+    </div>
+    <button class="menu-btn back" onclick="renderMenu('root')" style="margin-top:8px;"><span class="mi">←</span>Back to menu</button>
+  </div>
+</div>
+
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Financial Systems · Live Taster</div>
+      <h1>The Front — Style the Interface</h1>
+      <p class="sub">You don't need any coding experience for this — genuinely none. The basic structure of an account card is already there for you, and each challenge shows you a worked example first, using a different element.</p>
+    </div>
+    <div class="timeline" id="dots"></div>
+  </div>
+
+  <div id="game">
+    <div class="cols">
+      <div class="panel">
+        <div class="panel-head">
+          <h2 id="challengeTitle">The Panel</h2>
+          <span class="tag" id="conceptTag">COLOUR &amp; SPACING</span>
+        </div>
+        <p class="brief" id="briefText"></p>
+        <div class="markup-ref">&lt;<span class="tagname">div</span> <span class="cls">class="account-card"</span>&gt;
+  &lt;<span class="tagname">div</span> <span class="cls">class="account-label"</span>&gt;Current Balance&lt;/<span class="tagname">div</span>&gt;
+  &lt;<span class="tagname">div</span> <span class="cls">class="account-balance"</span>&gt;£4,231.09&lt;/<span class="tagname">div</span>&gt;
+  &lt;<span class="tagname">button</span> <span class="cls">class="account-action"</span>&gt;Transfer&lt;/<span class="tagname">button</span>&gt;
+&lt;/<span class="tagname">div</span>&gt;</div>
+        <details class="worked-example" id="workedExample" open>
+          <summary>📎 See a worked example first</summary>
+          <div class="we-caveat">⚠️ Don't copy this exact code — the values here are deliberately off. Use it for the pattern, not the numbers.</div>
+          <div class="we-body" id="weBody"></div>
+        </details>
+        <div class="color-tool">
+          <label for="colorPicker">🎨 Not sure what colour to use? Pick one:</label>
+          <input type="color" id="colorPicker" value="#2b2f3a" oninput="updateColorReadout()">
+          <code id="colorReadout">#2b2f3a</code>
+          <button class="mini-copy-btn" onclick="copyColorValue(this)">Copy</button>
+        </div>
+        <div class="jc-picker">
+          <div class="jc-label">↔️ Not sure what justify-content value to use? Click one to see it:</div>
+          <div class="jc-options">
+            <button class="jc-opt" data-val="flex-start" onclick="pickJustify(this)">
+              <div class="jc-preview"><span class="jc-dot"></span><span class="jc-dot"></span><span class="jc-dot"></span></div>
+              <div class="jc-name">flex-start</div>
+            </button>
+            <button class="jc-opt" data-val="center" onclick="pickJustify(this)">
+              <div class="jc-preview"><span class="jc-dot"></span><span class="jc-dot"></span><span class="jc-dot"></span></div>
+              <div class="jc-name">center</div>
+            </button>
+            <button class="jc-opt" data-val="space-between" onclick="pickJustify(this)">
+              <div class="jc-preview"><span class="jc-dot"></span><span class="jc-dot"></span><span class="jc-dot"></span></div>
+              <div class="jc-name">space-between</div>
+            </button>
+            <button class="jc-opt" data-val="space-around" onclick="pickJustify(this)">
+              <div class="jc-preview"><span class="jc-dot"></span><span class="jc-dot"></span><span class="jc-dot"></span></div>
+              <div class="jc-name">space-around</div>
+            </button>
+          </div>
+          <div class="color-tool" id="jcReadoutRow" style="display:none;margin:10px 0 0;">
+            <code id="jcReadout">justify-content: space-between;</code>
+            <button class="mini-copy-btn" onclick="copyJustifyValue(this)">Copy</button>
+          </div>
+        </div>
+        <div class="editor-chrome">
+          <div class="editor-titlebar">
+            <div><span>style.css</span> — updates as you type</div>
+            <span class="syntax-status" id="syntaxStatus"></span>
+          </div>
+          <textarea id="codeInput" spellcheck="false"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="runChecks()">▶ Run Checks</button>
+          <button class="btn-ghost" onclick="resetChallenge()">↺ Reset</button>
+          <button class="btn-ghost" id="hintBtn" onclick="requestHint()">💡 Hint</button>
+        </div>
+        <div class="error-box" id="errorBox"></div>
+        <details class="extensions-box" id="extensionsBox">
+          <summary>🌟 Done? Try these extensions</summary>
+          <div class="ext-body" id="extBody"></div>
+        </details>
+      </div>
+
+      <div class="right-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Live Preview</h2></div>
+          <div class="preview-frame">
+            <div class="preview-chrome"><span class="pdot"></span><span class="pdot"></span><span class="pdot"></span><span class="purl">mockbank.internal/account</span></div>
+            <div class="preview-body">
+              <div class="account-card" id="previewCard">
+                <div class="account-label">Current Balance</div>
+                <div class="account-balance" id="previewBalance">£4,231.09</div>
+                <button class="account-action">Transfer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Your Checklist</h2></div>
+          <div class="test-list" id="testList"></div>
+          <div class="status-line" id="statusLine">awaiting check run</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="doneScreen">
+    <div class="done-card">
+      <div style="width:64px;height:64px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,#FFE066,#E8B923);box-shadow:0 6px 16px rgba(232,185,35,0.4);">🥇</div>
+      <div class="eyebrow" style="justify-content:center;">The Front</div>
+      <h2>Interface Deployed</h2>
+      <p>Background and spacing, typography, and a real flex layout — the three things almost every interface leans on.</p>
+      <div class="cert-claim" style="background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:16px;text-align:left;">
+        <label for="certNameInput" style="font-size:12.5px;font-weight:700;color:var(--text);display:block;margin-bottom:8px;">Your name, for the certificate:</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="certNameInput" placeholder="Type your name…" maxlength="40" style="flex:1;padding:10px 14px;border-radius:7px;border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:13.5px;">
+          <button class="btn-primary" id="claimBtn" onclick="claimTrophy()" style="border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;padding:11px 18px;">🏆 Claim Certificate</button>
+        </div>
+        <p id="claimNote" style="font-size:12.5px;color:var(--success,#12B76A);margin:8px 0 0;font-weight:600;"></p>
+      </div>
+      <p style="color:var(--text-muted);font-size:12.5px;margin-top:14px;">The take-home Front builds one continuous page instead of resetting between challenges.</p>
+      <div class="plenary">
+        <h4>💭 Before you go — what you just did</h4>
+        <ul>
+          <li>Set real <b>CSS properties</b> — colour, spacing, rounded corners.</li>
+          <li>Used <b>flexbox</b> to control how elements line up and space themselves out.</li>
+          <li>Saw your changes reflected <b>live</b>, the same way a real browser would show them.</li>
+        </ul>
+        <div class="job-note">🔧 <b>Where this shows up at work:</b> every website and app you've ever used had someone deciding exactly this — where things sit, what colour they are, how they line up. It's a genuinely in-demand, creative technical skill, not just "making things pretty."</div>
+      </div>
+      <div class="actions" style="justify-content:center;margin-top:18px;">
+        <button class="btn-ghost" onclick="resetAllChallenges()">↺ Try Again</button>
+        <button class="btn-primary" onclick="startBonus()">⚡ Bonus Round</button>
+        <a href="index.html" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;cursor:pointer;padding:11px 20px;">🏠 Return Home</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="bonusScreen" style="display:none;">
+    <div class="done-card">
+      <div class="eyebrow" style="justify-content:center;">The Front · Bonus</div>
+      <h2>Bug Squashed</h2>
+      <p>That's most of real debugging — not a new concept to learn, just a careful read to spot what's actually there versus what you assumed was there.</p>
+      <div class="actions" style="justify-content:center;margin-top:18px;">
+        <button class="btn-ghost" onclick="resetAllChallenges()">↺ Try Again</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style id="liveStyle"></style>
+
+<!-- SUCCESS OVERLAY -->
+<div id="successOverlay">
+  <div class="success-card">
+    <div class="ping"><div class="ping-dot"></div></div>
+    <h3 id="successTitle">Checks Passing</h3>
+    <p id="successText">All checks cleared.</p>
+    <button class="btn-primary" onclick="nextChallenge()" id="nextBtn">Next Screen →</button>
+  </div>
+</div>
+
+<script>
+
+/* ---------------- Challenges ---------------- */
+function isBoldWeight(fw){
+  if(fw === 'bold') return true;
+  const n = parseInt(fw, 10);
+  return !isNaN(n) && n >= 600;
+}
+function hasRealColor(colorStr){
+  return colorStr !== 'rgba(0, 0, 0, 0)' && colorStr !== 'transparent' && colorStr !== '';
+}
+
+const CHALLENGES = [
+  {
+    title: "The Panel",
+    concept: "COLOUR & SPACING",
+    brief: "Give .account-card a real background, rounded corners, and generous padding so the content isn't jammed against the edges. Any colour and sizing you like — a colour name like navy or forestgreen works just as well as a hex code, and the checks just look for real values, not exact ones.",
+    starter: `/* Style .account-card:
+   - give it a background colour
+   - round the corners by at least 8px
+   - add at least 16px of padding on every side
+*/
+
+.account-card {
+
+}`,
+    hints: [
+      "Three separate properties go on .account-card: a background colour, rounded corners, and padding on all sides.",
+      "background sets the fill colour. border-radius rounds corners (bigger number, more rounded). padding pushes content away from the edges.",
+      "background: #1a1f29;\nborder-radius: 12px;\npadding: 24px;"
+    ],
+    worked: `<pre>.notice-box {
+  background: #2b2f3a;
+  border-radius: 4px;
+  padding: 8px;
+}</pre>
+<div class="we-line">Three lines, three properties: a colour behind the content, rounded corners, and space pushing the content away from the edges. Same three properties you need below — but the actual sizes here are small, just illustrating the pattern. Your version needs bigger numbers to look right.</div>`,
+    checks: [
+      { desc: "background colour is set", prop: "background-color", test: ()=> hasRealColor(getComputedStyle(document.getElementById('previewCard')).backgroundColor) },
+      { desc: "corners rounded 8px or more", prop: "border-radius", test: ()=> parseFloat(getComputedStyle(document.getElementById('previewCard')).borderRadius) >= 8 },
+      { desc: "padding at least 16px on every side", prop: "padding", test: ()=>{
+          const cs = getComputedStyle(document.getElementById('previewCard'));
+          return ['paddingTop','paddingRight','paddingBottom','paddingLeft'].every(p=>parseFloat(cs[p])>=16);
+        }
+      }
+    ],
+    ext: [
+      "Add a subtle box-shadow to make the card look like it's floating slightly above the page.",
+      "Add a hover effect on the Transfer button so its background lightens when you point at it — .account-action:hover { }"
+    ]
+  },
+  {
+    title: "The Numbers",
+    concept: "TYPOGRAPHY",
+    brief: "Make .account-balance actually look like the headline figure on a banking app — bigger, bolder than the label above it.",
+    starter: `/* Style .account-balance:
+   - font-size at least 28px
+   - bold weight (600 or higher)
+*/
+
+.account-balance {
+
+}`,
+    hints: [
+      "Two properties control this: how big the text is, and how thick it looks.",
+      "font-size controls size in pixels. font-weight controls thickness — 400 is normal, 700 (or the word bold) is bold.",
+      "font-size: 32px;\nfont-weight: 700;"
+    ],
+    worked: `<pre>.headline {
+  font-size: 16px;
+  font-weight: 400;
+}</pre>
+<div class="we-line">font-size makes the text bigger, font-weight makes it thicker. This example uses small, normal-weight values just to show where the properties go — your version needs a bigger size and a heavier weight to actually look bold and prominent.</div>`,
+    checks: [
+      { desc: "font size is at least 28px", prop: "font-size", test: ()=> parseFloat(getComputedStyle(document.getElementById('previewBalance')).fontSize) >= 28 },
+      { desc: "text weight is bold (600+)", prop: "font-weight", test: ()=> isBoldWeight(getComputedStyle(document.getElementById('previewBalance')).fontWeight) }
+    ],
+    ext: [
+      "Try a different colour for the balance — something that stands out from the label text above it.",
+      "Add a subtle text-shadow to make the number feel like it lifts off the page."
+    ]
+  },
+  {
+    title: "The Layout",
+    concept: "FLEXBOX",
+    brief: "Lay .account-card out so the label and balance sit on the left and the Transfer button sits on the right, vertically centred — a real horizontal layout, not stacked text.",
+    starter: `/* Style .account-card as a flex row:
+   - display: flex
+   - space the content to both edges
+   - vertically centre everything
+*/
+
+.account-card {
+
+}`,
+    hints: [
+      "You need to turn .account-card into a flex row, then control how its contents are spaced.",
+      "display: flex; makes it a row. justify-content: space-between; pushes the first and last items to opposite edges. align-items: center; lines everything up vertically.",
+      "display: flex;\njustify-content: space-between;\nalign-items: center;"
+    ],
+    worked: `<pre>.toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}</pre>
+<div class="we-line">display: flex turns the container into a row. align-items: center lines items up vertically. This example centres everything with justify-content: center — but your task asks for content spaced to both edges, not bunched in the middle, so that one value needs to be different.</div>`,
+    checks: [
+      { desc: "card uses flexbox", prop: "display", test: ()=> ['flex','inline-flex'].includes(getComputedStyle(document.getElementById('previewCard')).display) },
+      { desc: "content spaced to both edges", prop: "justify-content", test: ()=> getComputedStyle(document.getElementById('previewCard')).justifyContent === 'space-between' },
+      { desc: "items vertically centred", prop: "align-items", test: ()=> getComputedStyle(document.getElementById('previewCard')).alignItems === 'center' }
+    ],
+    ext: [
+      "Add a gap between the label/balance block and the button, so they're not touching even before space-between spreads them out.",
+      "Try flex-direction: column instead of row and see how the layout changes — then switch it back."
+    ]
+  }
+];
+
+const BONUS = {
+  title: "The Stylesheet Bug",
+  concept: "DEBUGGING",
+  brief: "Someone already wrote this CSS — it's meant to lay the card out as a flex row, but the layout looks stacked instead. Find the mistake and fix it. Nothing new to learn here, just a real typo to spot.",
+  starter: `.account-card {
+  background: #1a1f29;
+  border-radius: 12px;
+  padding: 24px;
+  dispay: flex;
+  justify-content: space-between;
+  align-items: center;
+}`,
+  checks: [
+    { desc: "card uses flexbox", prop: "display", test: ()=> ['flex','inline-flex'].includes(getComputedStyle(document.getElementById('previewCard')).display) },
+    { desc: "content spaced to both edges", prop: "justify-content", test: ()=> getComputedStyle(document.getElementById('previewCard')).justifyContent === 'space-between' },
+    { desc: "items vertically centred", prop: "align-items", test: ()=> getComputedStyle(document.getElementById('previewCard')).alignItems === 'center' }
+  ],
+  hints: [
+    "The layout properties are all there — space-between, center, padding — but one of them isn't actually working. Which one?",
+    "Browsers silently ignore any CSS property they don't recognise — they don't throw an error, they just skip that one line.",
+    "dispay: flex; should be display: flex; — a single missing letter."
+  ]
+};
+
+let current = 0;
+let failCount = 0;
+let hintTier = 0;
+let proactiveShown = false;
+
+function buildDots(){
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  CHALLENGES.forEach((_,i)=>{
+    const seg = document.createElement('div');
+    seg.className = 'tl-seg';
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot'+i;
+    seg.appendChild(d);
+    if(i < CHALLENGES.length-1){
+      const line = document.createElement('div');
+      line.className = 'tl-line';
+      line.id = 'line'+i;
+      seg.appendChild(line);
+    }
+    dots.appendChild(seg);
+  });
+}
+function refreshDots(){
+  CHALLENGES.forEach((_,i)=>{
+    document.getElementById('dot'+i).className = 'dot' + (i<current?' done':i===current?' active':'');
+    const l = document.getElementById('line'+i);
+    if(l) l.className = 'tl-line' + (i<current?' done':'');
+  });
+}
+
+function applyLiveStyle(){
+  document.getElementById('liveStyle').textContent = document.getElementById('codeInput').value;
+}
+
+function updateColorReadout(){
+  const val = document.getElementById('colorPicker').value;
+  document.getElementById('colorReadout').textContent = val;
+}
+function copyColorValue(btn){
+  const val = document.getElementById('colorReadout').textContent;
+  navigator.clipboard.writeText(val).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+  }).catch(()=>{});
+}
+
+function pickJustify(btn){
+  document.querySelectorAll('.jc-opt').forEach(o => o.classList.remove('picked'));
+  btn.classList.add('picked');
+  const val = btn.dataset.val;
+  document.getElementById('jcReadout').textContent = `justify-content: ${val};`;
+  document.getElementById('jcReadoutRow').style.display = 'flex';
+}
+function copyJustifyValue(btn){
+  const val = document.getElementById('jcReadout').textContent;
+  navigator.clipboard.writeText(val).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+  }).catch(()=>{});
+}
+
+function loadChallenge(idx){
+  bonusMode = false;
+  document.getElementById('dots').style.visibility = 'visible';
+  current = idx;
+  failCount = 0;
+  hintTier = 0;
+  proactiveShown = false;
+  const c = CHALLENGES[idx];
+  document.getElementById('challengeTitle').textContent = c.title;
+  document.getElementById('conceptTag').textContent = c.concept;
+  document.getElementById('briefText').textContent = c.brief;
+  document.getElementById('codeInput').value = c.starter;
+  document.getElementById('weBody').innerHTML = c.worked;
+  document.getElementById('workedExample').style.display = '';
+  document.getElementById('workedExample').open = true;
+  document.getElementById('extBody').innerHTML = '<ul>' + c.ext.map(e=>`<li>${e}</li>`).join('') + '</ul>';
+  document.getElementById('extensionsBox').style.display = '';
+  document.getElementById('extensionsBox').open = false;
+  document.getElementById('hintBtn').textContent = '💡 Hint';
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('helpDot').style.display = 'none';
+  document.getElementById('syntaxStatus').textContent = '';
+  document.getElementById('syntaxStatus').className = 'syntax-status';
+  clearTimeout(syntaxCheckTimer);
+  refreshDots();
+  renderTests(c);
+  applyLiveStyle();
+  const status = document.getElementById('statusLine');
+  status.textContent = 'awaiting check run';
+  status.className = 'status-line';
+}
+function resetChallenge(){ loadChallenge(current); }
+
+function renderTests(c){
+  const list = document.getElementById('testList');
+  list.innerHTML = '';
+  c.checks.forEach((chk,i)=>{
+    const row = document.createElement('div');
+    row.className = 'test-row pending';
+    row.id = 'test-'+i;
+    row.innerHTML = `<span class="test-icon">○</span><span class="test-desc">${chk.desc}</span><span class="test-prop">${chk.prop}</span>`;
+    list.appendChild(row);
+  });
+}
+
+function activeChallenge(){
+  return bonusMode ? BONUS : CHALLENGES[current];
+}
+
+let hasRunSinceHint = true;
+function requestHint(){
+  if(!helpOpen) toggleHelp();
+  revealNextHint();
+}
+
+function revealNextHint(){
+  const c = activeChallenge();
+  const btn = document.getElementById('hintBtn');
+
+  if(hintTier > 0 && hintTier < c.hints.length && !hasRunSinceHint){
+    addHelpMsg('⏸ Try running your code first — click ▶ Run Checks, then I\u2019ll give you the next hint.', 'bot blocked');
+    return;
+  }
+
+  if(hintTier < c.hints.length){
+    hintTier++;
+    addHelpMsg(`${hintTier}. ${c.hints[hintTier-1]}`, 'bot hint');
+    hasRunSinceHint = false;
+  } else {
+    addHelpMsg('That\u2019s everything I\u2019ve got for this one \u2014 you\u2019ve already seen all the hints. Try running your code, or flag a facilitator if you\u2019re still stuck.', 'bot');
+  }
+  btn.textContent = hintTier >= c.hints.length ? '💡 That\u2019s the full hint' : '💡 Tell me more';
+}
+
+let pendingNudge = null;
+function maybeNudgeHint(){
+  const status = document.getElementById('statusLine');
+  if(failCount >= 2){
+    document.getElementById('helpDot').style.display = 'block';
+    if(hintTier === 0){
+      status.textContent = "No rush — try the 💡 Hint button below, it'll walk you through it step by step.";
+    }
+  }
+  if(failCount >= 3 && !proactiveShown){
+    proactiveShown = true;
+    document.getElementById('helpDot').classList.add('pulse');
+    const msg = "Hey — this one's putting up a fight. That's completely normal, not a sign you're doing anything wrong. Whenever you're ready, tell me what's happening or ask something specific about it.";
+    if(helpOpen){
+      addHelpMsg(msg, 'bot');
+    } else {
+      pendingNudge = msg;
+    }
+  }
+}
+
+function runChecks(){
+  hasRunSinceHint = true;
+  const c = activeChallenge();
+  const errorBox = document.getElementById('errorBox');
+  errorBox.style.display = 'none';
+  applyLiveStyle();
+
+  let allPass = true;
+  c.checks.forEach((chk,i)=>{
+    const row = document.getElementById('test-'+i);
+    let pass = false;
+    try{
+      pass = !!chk.test();
+    }catch(e){
+      pass = false;
+    }
+    row.className = 'test-row ' + (pass ? 'pass' : 'fail');
+    row.querySelector('.test-icon').textContent = pass ? '✓' : '✗';
+    if(!pass) allPass = false;
+  });
+
+  const status = document.getElementById('statusLine');
+  if(allPass){
+    failCount = 0;
+    status.textContent = 'all checks passing';
+    status.className = 'status-line pass';
+    showSuccess();
+  } else {
+    failCount++;
+    status.textContent = 'not quite yet — read the rows above and try again';
+    status.className = 'status-line';
+    maybeNudgeHint();
+  }
+}
+
+function showSuccess(){
+  if(bonusMode){
+    document.getElementById('successTitle').textContent = 'Bug Fixed';
+    document.getElementById('successText').textContent = "One missing letter, and the whole layout was stacked instead of spread out. That's most real debugging — small, findable, easy to miss.";
+    document.getElementById('nextBtn').textContent = 'Finish →';
+    document.getElementById('successOverlay').style.display = 'flex';
+    return;
+  }
+  const isLast = current === CHALLENGES.length - 1;
+  document.getElementById('successTitle').textContent = isLast ? 'Interface Deployed' : 'Checks Passing';
+  document.getElementById('successText').textContent = isLast
+    ? "The card is styled top to bottom. That's a real UI component."
+    : `${CHALLENGES[current].title} is done. One more screen to style.`;
+  document.getElementById('nextBtn').textContent = isLast ? 'Finish →' : 'Next Screen →';
+  document.getElementById('successOverlay').style.display = 'flex';
+}
+
+function nextChallenge(){
+  document.getElementById('successOverlay').style.display = 'none';
+  if(bonusMode){
+    endBonus();
+    return;
+  }
+  if(current === CHALLENGES.length - 1){
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('doneScreen').style.display = 'block';
+  } else {
+    loadChallenge(current + 1);
+  }
+}
+
+function claimTrophy(){
+  const nameInput = document.getElementById('certNameInput');
+  const name = (nameInput.value || '').trim() || 'Anonymous';
+  const existing = JSON.parse(localStorage.getItem('mainframe_trophies') || '[]');
+  existing.push({
+    module: 'The Front',
+    tier: 'Front Expert',
+    emoji: '🥇',
+    name: name,
+    date: new Date().toLocaleDateString()
+  });
+  localStorage.setItem('mainframe_trophies', JSON.stringify(existing));
+  document.getElementById('claimBtn').textContent = '✅ Saved!';
+  document.getElementById('claimBtn').disabled = true;
+  document.getElementById('claimNote').textContent = 'Saved — view it anytime from "My Trophies" on the dashboard.';
+}
+
+function resetAllChallenges(){
+  document.getElementById('doneScreen').style.display = 'none';
+  document.getElementById('bonusScreen').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  document.getElementById('certNameInput').value = '';
+  document.getElementById('claimBtn').textContent = '🏆 Claim Certificate';
+  document.getElementById('claimBtn').disabled = false;
+  document.getElementById('claimNote').textContent = '';
+  buildDots();
+  loadChallenge(0);
+}
+
+let bonusMode = false;
+function startBonus(){
+  bonusMode = true;
+  current = -1;
+  failCount = 0;
+  hintTier = 0;
+  proactiveShown = false;
+  document.getElementById('doneScreen').style.display = 'none';
+  document.getElementById('bonusScreen').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  document.getElementById('dots').style.visibility = 'hidden';
+  document.getElementById('challengeTitle').textContent = BONUS.title;
+  document.getElementById('conceptTag').textContent = BONUS.concept;
+  document.getElementById('briefText').textContent = BONUS.brief;
+  document.getElementById('codeInput').value = BONUS.starter;
+  document.getElementById('workedExample').style.display = 'none';
+  document.getElementById('extensionsBox').style.display = 'none';
+  document.getElementById('hintBtn').textContent = '💡 Hint';
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('helpDot').style.display = 'none';
+  document.getElementById('syntaxStatus').textContent = '';
+  document.getElementById('syntaxStatus').className = 'syntax-status';
+  clearTimeout(syntaxCheckTimer);
+  renderTests(BONUS);
+  applyLiveStyle();
+  const status = document.getElementById('statusLine');
+  status.textContent = 'awaiting check run';
+  status.className = 'status-line';
+}
+
+function endBonus(){
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('bonusScreen').style.display = 'block';
+}
+
+let syntaxCheckTimer;
+function checkSyntaxLive(){
+  clearTimeout(syntaxCheckTimer);
+  syntaxCheckTimer = setTimeout(()=>{
+    const code = document.getElementById('codeInput').value;
+    const statusEl = document.getElementById('syntaxStatus');
+    if(!code.trim()){
+      statusEl.textContent = '';
+      statusEl.className = 'syntax-status';
+      statusEl.title = '';
+      return;
+    }
+    const opens = (code.match(/\{/g) || []).length;
+    const closes = (code.match(/\}/g) || []).length;
+    if(opens !== closes){
+      statusEl.textContent = '⚠ braces don\u2019t match up';
+      statusEl.className = 'syntax-status error';
+      statusEl.title = opens > closes ? 'A { is missing its closing }' : 'There\u2019s an extra } somewhere';
+      return;
+    }
+    if(bonusMode){
+      statusEl.textContent = '🔍 spot-the-bug mode — checking paused';
+      statusEl.className = 'syntax-status';
+      statusEl.title = 'Live property checking is switched off here so it doesn\u2019t give away the bug — use Run Checks and the Hint button instead.';
+      return;
+    }
+    let badProp = null;
+    if(window.CSS && CSS.supports){
+      const declRegex = /([a-zA-Z-]+)\s*:\s*([^;{}]+);?/g;
+      let match;
+      while((match = declRegex.exec(code)) !== null){
+        const prop = match[1].trim();
+        const val = match[2].trim();
+        if(prop && val && !CSS.supports(prop, val)){
+          badProp = prop;
+          break;
+        }
+      }
+    }
+    if(badProp){
+      statusEl.textContent = `⚠ "${badProp}" isn\u2019t recognised`;
+      statusEl.className = 'syntax-status error';
+      statusEl.title = `Check the spelling of "${badProp}" — the browser doesn't recognise it as written.`;
+    } else {
+      statusEl.textContent = '✓ looks good';
+      statusEl.className = 'syntax-status ok';
+      statusEl.title = '';
+    }
+  }, 500);
+}
+document.getElementById('codeInput').addEventListener('input', checkSyntaxLive);
+document.getElementById('codeInput').addEventListener('input', applyLiveStyle);
+
+buildDots();
+loadChallenge(0);
+</script>
+
+
+<script>
+
+/* ---------------- Help widget ---------------- */
+const HELP_DATA = {
+  "module": "front",
+  "entries": [
+    {
+      "id": "selector-syntax",
+      "keywords": [
+        "how do i target an element",
+        "css selector",
+        "dot before class name",
+        "what does .account-card mean"
+      ],
+      "response": ".account-card { property: value; } \u2014 the dot before a name matches an HTML class attribute. Without the dot, it tries to match a tag name that doesn't exist, and silently does nothing."
+    },
+    {
+      "id": "nothing-changes",
+      "keywords": [
+        "nothing changes in preview",
+        "preview not updating",
+        "css not applying",
+        "styles not showing"
+      ],
+      "response": "Check the selector spelling matches the class name exactly, including the leading dot. Also check for a missing semicolon on an earlier line \u2014 one missing semicolon can silently break every property after it in that block."
+    },
+    {
+      "id": "background-color",
+      "keywords": [
+        "how to set background",
+        "background colour property",
+        "background not showing"
+      ],
+      "response": "background: #1a1f29; (or any colour you like \u2014 named colours like 'navy' work too) sets the fill behind the element's content."
+    },
+    {
+      "id": "border-radius",
+      "keywords": [
+        "rounded corners",
+        "border radius property",
+        "how to round corners"
+      ],
+      "response": "border-radius: 12px; rounds all four corners by that amount \u2014 bigger number, more rounded."
+    },
+    {
+      "id": "padding-explain",
+      "keywords": [
+        "what is padding",
+        "padding vs margin",
+        "space inside box",
+        "space around text"
+      ],
+      "response": "padding: 24px; adds space between the content and the edge of its own box. margin does the same thing but on the outside, between this box and others nearby."
+    },
+    {
+      "id": "font-weight-bold",
+      "keywords": [
+        "how to make text bold",
+        "font weight property",
+        "bold text css"
+      ],
+      "response": "font-weight: 700; (or font-weight: bold;) makes text bold. 400 is normal weight, 700 and above reads as bold."
+    },
+    {
+      "id": "flexbox-explain",
+      "keywords": [
+        "what is flexbox",
+        "display flex meaning",
+        "how does flex work"
+      ],
+      "response": "display: flex; on a container arranges its direct children in a row instead of stacked on top of each other. It has to go on the parent, not the items inside it."
+    },
+    {
+      "id": "flex-wrong-element",
+      "keywords": [
+        "flex not working",
+        "display flex not doing anything",
+        "flex on wrong element"
+      ],
+      "response": "The single most common flexbox mistake: display: flex needs to be on the container (the parent), not on the items you're trying to lay out. Check which selector it's attached to."
+    },
+    {
+      "id": "justify-content-explain",
+      "keywords": [
+        "justify content meaning",
+        "space between explain",
+        "how to space out items"
+      ],
+      "response": "justify-content: space-between; pushes the first item to the left edge and the last to the right edge, spreading anything in between evenly."
+    },
+    {
+      "id": "align-items-explain",
+      "keywords": [
+        "align items meaning",
+        "vertically center",
+        "center items vertically"
+      ],
+      "response": "align-items: center; centres items vertically within a flex row \u2014 useful when items are different heights and you want them lined up in the middle."
+    },
+    {
+      "id": "extended-sections-stuck",
+      "keywords": [
+        "extended front stuck",
+        "continuous page help",
+        "which section am i on"
+      ],
+      "response": "Scroll the CSS editor \u2014 all four sections (Header, Nav, Card, Transaction List) are listed as comments in one file. Work through them in any order; nothing you write gets erased when you move to the next one."
+    },
+    {
+      "id": "gap-property",
+      "keywords": [
+        "what does gap do",
+        "gap property meaning",
+        "space between flex items"
+      ],
+      "response": "gap: 16px; adds space between flex items without needing margin on each individual one \u2014 much simpler when you've got several items in a row."
+    }
+  ],
+  "synonyms": {
+    "color": "colour",
+    "rounded": "radius",
+    "bold": "weight",
+    "thick": "weight"
+  }
+};
+const HELP_GREETING = "Hi! Tap 💡 Hint for a step-by-step nudge on whatever you're working on, or ❓ Help for general syntax and troubleshooting — just click, no typing needed.";
+
+let helpOpen = false;
+let helpGreeted = false;
+
+function findHelpEntry(id){ return HELP_DATA.entries.find(e => e.id === id); }
+
+const STUCK_PHRASES = ["im stuck", "i'm stuck", "help", "dont know what to do", "don't know what to do", "confused", "not sure what to write", "no idea", "how do i even start", "where do i begin", "how do i start", "just tell me", "give me the answer", "tell me the answer", "im really stuck", "really stuck", "super stuck", "please just tell me", "just give me the code", "i give up", "cant figure it out", "cant work it out", "just show me", "give up"];
+const HELP_FALLBACK = "I'm not totally sure about that one — try asking it a different way, or use the Help menu's Syntax and Troubleshooting topics instead. You're doing fine.";
+function normalizeHelp(s){
+  let out = s.toLowerCase();
+  out = out.replace(/>=/g, ' gte ').replace(/<=/g, ' lte ')
+           .replace(/===/g, ' strictequal ').replace(/!==/g, ' notequal ')
+           .replace(/&&/g, ' and ').replace(/\|\|/g, ' or ')
+           .replace(/>/g, ' gt ').replace(/</g, ' lt ');
+  return out.replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+const HELP_STOPWORDS = new Set(["what","does","do","is","are","the","a","an","to","of","in","on","for","and","or","i","my","how","this","that","it","me","you","your","did","doing","can","help","meaning","mean","means","explain","understand","understanding","know","knowing","work","working","works","use","using","used","need","needs","needed","want","wanted","wants","sure","right","correct","wrong","thing","things","stuff","way","ways","doesnt","dont","isnt","not","get","got","getting","should","would","could","will","with","when","where","why","which","who","from","have","has","had","about","some","any","just","really","actually","supposed","stuck"]);
+function stem(w){
+  if(w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) return w.slice(0,-1);
+  return w;
+}
+function scoreHelpEntry(msgNorm, msgWords, entry){
+  let best = 0;
+  const msgStems = msgWords.map(stem);
+  entry.keywords.forEach(kw=>{
+    const kwNorm = normalizeHelp(kw);
+    let score = 0;
+    if(msgNorm.includes(kwNorm)) score += 4;
+    const kwWords = kwNorm.split(' ').filter(w=>w.length>1 && !HELP_STOPWORDS.has(w));
+    const overlap = kwWords.filter(w=>msgStems.includes(stem(w))).length;
+    score += overlap;
+    if(score > best) best = score;
+  });
+  return best;
+}
+function isStuckPhrase(msgNorm){
+  return STUCK_PHRASES.some(p => msgNorm.includes(p));
+}
+function applySynonyms(msgNorm){
+  const syns = HELP_DATA.synonyms || {};
+  return msgNorm.split(' ').map(w => syns[w] || w).join(' ');
+}
+function findHelpResponse(userMsg){
+  let msgNorm = normalizeHelp(userMsg);
+  msgNorm = applySynonyms(msgNorm);
+  const msgWords = msgNorm.split(' ');
+  let bestEntry = null, bestScore = 0;
+  HELP_DATA.entries.forEach(entry=>{
+    const s = scoreHelpEntry(msgNorm, msgWords, entry);
+    if(s > bestScore){ bestScore = s; bestEntry = entry; }
+  });
+  return (bestEntry && bestScore >= 1) ? bestEntry.response : null;
+}
+function sendFreeText(){
+  const input = document.getElementById('helpInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  addHelpMsg(msg, 'user');
+  input.value = '';
+  setTimeout(()=>{
+    const msgNorm = applySynonyms(normalizeHelp(msg));
+    if(isStuckPhrase(msgNorm)){
+      revealNextHint();
+    } else {
+      const response = findHelpResponse(msg);
+      addHelpMsg(response || HELP_FALLBACK, 'bot');
+    }
+  }, 220);
+}
+
+const MENU = {
+  root: {
+    prompt: null,
+    options: [
+      { label: "Hint for this challenge", icon: "💡", action: "hint" },
+      { label: "Help", icon: "❓", goto: "help" },
+      { label: "Write it yourself", icon: "✏️", action: "freetext" }
+    ]
+  },
+  help: {
+    prompt: "What kind of help?",
+    options: [
+      { label: "Syntax — how do I write this?", icon: "📖", goto: "syntax" },
+      { label: "Troubleshooting — why isn't this working?", icon: "🐛", goto: "trouble" },
+      { label: "Back", icon: "←", goto: "root", back: true }
+    ]
+  },
+  syntax: {
+    prompt: "Pick a topic:",
+    options: [
+      { label: "How do CSS selectors work?", icon: "📖", entry: "selector-syntax" },
+      { label: "How do I set a background colour?", icon: "📖", entry: "background-color" },
+      { label: "How do I round corners?", icon: "📖", entry: "border-radius" },
+      { label: "What does padding do?", icon: "📖", entry: "padding-explain" },
+      { label: "How do I make text bold?", icon: "📖", entry: "font-weight-bold" },
+      { label: "How does flexbox work?", icon: "📖", entry: "flexbox-explain" },
+      { label: "What does justify-content do?", icon: "📖", entry: "justify-content-explain" },
+      { label: "What does align-items do?", icon: "📖", entry: "align-items-explain" },
+      { label: "How do I space items apart?", icon: "📖", entry: "gap-property" },
+      { label: "Back", icon: "←", goto: "help", back: true }
+    ]
+  },
+  trouble: {
+    prompt: "Pick what's happening:",
+    options: [
+      { label: "My CSS isn't changing anything", icon: "🐛", entry: "nothing-changes" },
+      { label: "My flexbox isn't working", icon: "🐛", entry: "flex-wrong-element" },
+      { label: "Back", icon: "←", goto: "help", back: true }
+    ]
+  }
+};
+
+function renderMenu(state){
+  document.getElementById('freetextArea').style.display = 'none';
+  document.getElementById('menuArea').style.display = 'flex';
+  const area = document.getElementById('menuArea');
+  const menu = MENU[state];
+  area.innerHTML = '';
+  if(menu.prompt){
+    addHelpMsg(menu.prompt, 'bot');
+  }
+  menu.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'menu-btn' + (opt.back ? ' back' : '');
+    btn.innerHTML = `<span class="mi">${opt.icon}</span>${opt.label}`;
+    btn.onclick = () => selectMenuOption(opt);
+    area.appendChild(btn);
+  });
+}
+
+function selectMenuOption(opt){
+  if(!opt.back){
+    addHelpMsg(opt.label, 'user');
+  }
+  if(opt.goto){
+    renderMenu(opt.goto);
+    return;
+  }
+  if(opt.action === 'hint'){
+    setTimeout(()=>{
+      revealNextHint();
+      renderMenu('root');
+    }, 200);
+    return;
+  }
+  if(opt.action === 'freetext'){
+    document.getElementById('menuArea').style.display = 'none';
+    document.getElementById('freetextArea').style.display = 'block';
+    document.getElementById('helpInput').focus();
+    return;
+  }
+  if(opt.entry){
+    setTimeout(()=>{
+      addHelpMsg(findHelpEntry(opt.entry).response, 'bot');
+      renderMenu('root');
+    }, 200);
+  }
+}
+
+function toggleHelp(){
+  helpOpen = !helpOpen;
+  const panel = document.getElementById('helpPanel');
+  panel.classList.toggle('open', helpOpen);
+  if(helpOpen){
+    document.getElementById('helpDot').style.display = 'none';
+    document.getElementById('helpDot').classList.remove('pulse');
+  }
+  if(helpOpen && !helpGreeted){
+    addHelpMsg(HELP_GREETING, 'bot');
+    helpGreeted = true;
+    renderMenu('root');
+  }
+  if(helpOpen && pendingNudge){
+    addHelpMsg(pendingNudge, 'bot');
+    pendingNudge = null;
+  }
+}
+function addHelpMsg(text, who){
+  const log = document.getElementById('helpLog');
+  const div = document.createElement('div');
+  div.className = 'help-msg ' + who;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+</script>
+</body>
+</html>

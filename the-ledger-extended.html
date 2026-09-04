@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ledger: Extended — Load & Process</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --border-strong:#D0D5DD;
+  --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3; --success-border:#A6F4C5;
+  --warning:#F79009; --warning-bg:#FFFAEB;
+  --danger:#F04438; --danger-bg:#FEF3F2; --danger-border:#FDA29B;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.05);
+  --shadow-md: 0 4px 12px rgba(16,24,40,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 60px;}
+code,.mono{font-family:'JetBrains Mono',monospace;}
+
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;display:inline-flex;align-items:center;gap:7px;margin-bottom:10px;}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);}
+
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--border);}
+h1{font-size:26px;margin:0 0 8px;font-weight:700;letter-spacing:-0.01em;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0;max-width:600px;line-height:1.6;}
+
+.timeline{display:flex;align-items:center;gap:0;}
+.tl-seg{display:flex;align-items:center;}
+.tl-seg .dot{width:10px;height:10px;border-radius:50%;background:var(--surface-alt);border:2px solid var(--border-strong);}
+.tl-seg .dot.done{background:var(--success);border-color:var(--success);}
+.tl-seg .dot.active{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-bg);}
+.tl-line{width:26px;height:2px;background:var(--border-strong);}
+.tl-line.done{background:var(--success);}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media (max-width:860px){.cols{grid-template-columns:1fr;}}
+.right-col{display:flex;flex-direction:column;gap:20px;}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--shadow-sm);}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.panel h2{font-size:13px;margin:0;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:700;}
+.tag{font-size:11px;letter-spacing:.03em;color:var(--accent);border:1px solid var(--accent-border);background:var(--accent-bg);padding:3px 10px;border-radius:20px;text-transform:uppercase;font-weight:600;}
+.brief{color:var(--text-secondary);font-size:13.5px;line-height:1.65;margin:0 0 16px;}
+.fn-caption{color:var(--text-muted);font-size:12px;margin:2px 0 0;}
+.fn-caption code{background:var(--surface-alt);color:var(--accent);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11.5px;}
+#newContentBadge{background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDBA74;border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:700;color:#9A3412;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+
+.worked-example{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.worked-example summary{padding:11px 14px;cursor:pointer;font-size:13px;color:var(--accent);font-weight:600;list-style:none;}
+.worked-example summary::-webkit-details-marker{display:none;}
+.we-body{padding:2px 14px 14px;}
+.we-try{margin-top:12px;padding-top:12px;border-top:1px dashed var(--accent-border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.we-try-inputs{display:flex;gap:8px;flex-wrap:wrap;}
+.we-try-inputs .we-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.we-try-inputs .we-item-label{font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;font-weight:600;}
+.we-try-inputs input{width:64px;padding:6px 8px;border-radius:6px;border:1px solid var(--accent-border);font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#fff;text-align:center;}
+.we-try-inputs input:focus{outline:none;border-color:var(--accent);}
+.we-try-btn{padding:7px 14px !important;font-size:12.5px !important;}
+.we-try-result{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text-muted);font-weight:600;}
+.we-try-result.show{color:var(--success);}
+.we-body pre{background:#0D1117;border:none;border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#E6EDF3;line-height:1.65;margin:0 0 10px;white-space:pre-wrap;}
+.we-body .we-line{font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:4px;}
+
+.editor-chrome{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.editor-titlebar{padding:9px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;}
+.editor-titlebar span{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
+.editor-titlebar .syntax-status{font-size:11px;font-weight:600;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.editor-titlebar .syntax-status.ok{color:var(--success);}
+.editor-titlebar .syntax-status.error{color:var(--danger);cursor:help;}
+textarea{width:100%;min-height:170px;background:#0D1117;color:#E6EDF3;border:none;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;padding:14px 16px;resize:vertical;tab-size:2;}
+textarea:focus{outline:none;}
+.editor-chrome:focus-within{box-shadow:0 0 0 3px var(--accent-bg);}
+
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+button{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;cursor:pointer;padding:11px 20px;}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent);box-shadow:var(--shadow-sm);}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);}
+.btn-ghost{background:#fff;color:var(--text-secondary);border:1px solid var(--border-strong);}
+.btn-ghost:hover{background:var(--surface-alt);color:var(--text);}
+
+.help-msg.hint{background:var(--accent-bg);border:1px solid var(--accent-border);}
+.help-msg.blocked{background:var(--warning-bg);border:1px solid #FEDF89;color:#B54708;font-weight:600;}
+.error-box{margin-top:12px;font-size:13px;padding:12px 14px;border-radius:8px;display:none;line-height:1.6;white-space:pre-wrap;color:#B42318;background:var(--danger-bg);border:1px solid var(--danger-border);}
+
+.test-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.test-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;background:#fff;flex-wrap:wrap;}
+.test-row:last-child{border-bottom:none;}
+.test-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;border:1.5px solid var(--border-strong);color:transparent;}
+.test-row.pass{background:var(--success-bg);}
+.test-row.pass .test-icon{background:var(--success);border-color:var(--success);color:#fff;}
+.test-row.fail .test-icon{background:var(--danger);border-color:var(--danger);color:#fff;}
+.test-call,.test-desc{color:var(--text);flex:1;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+.test-expect,.test-prop{color:var(--text-muted);font-size:11.5px;}
+.test-actual{color:#B42318;width:100%;padding-left:30px;font-size:12px;}
+
+.status-line{margin-top:14px;font-size:13px;color:var(--text-secondary);text-align:center;}
+.status-line.pass{color:var(--success);font-weight:600;}
+
+#successOverlay{display:none;position:fixed;inset:0;background:rgba(16,24,40,0.45);backdrop-filter:blur(2px);align-items:center;justify-content:center;z-index:50;padding:20px;}
+.success-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;max-width:380px;text-align:center;box-shadow:var(--shadow-md);}
+.ping{width:56px;height:56px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:var(--success-bg);border:1px solid var(--success-border);}
+.ping-dot{width:14px;height:14px;border-radius:50%;background:var(--success);}
+.success-card h3{font-size:19px;margin:0 0 8px;color:var(--text);font-weight:700;}
+.success-card p{color:var(--text-secondary);font-size:13.5px;line-height:1.5;margin:0 0 22px;}
+
+#doneScreen{display:none;text-align:center;padding:50px 20px;}
+.done-card{max-width:520px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:44px 38px;box-shadow:var(--shadow-md);}
+.learn-more{text-align:left;background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:20px;}
+.plenary{text-align:left;margin-top:22px;padding-top:20px;border-top:1px solid var(--border);}
+.plenary h4{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:700;margin:0 0 12px;}
+.plenary ul{margin:0 0 16px;padding-left:20px;}
+.plenary li{font-size:13.5px;color:var(--text);margin-bottom:8px;line-height:1.5;}
+.plenary .job-note{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:9px;padding:14px 16px;font-size:13.5px;color:var(--text);}
+.plenary .job-note b{color:var(--accent);}
+.learn-more h4{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:700;margin:0 0 10px;}
+.learn-more a{display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:600;font-size:13px;text-decoration:none;padding:6px 0;}
+.learn-more a:hover{text-decoration:underline;}
+.learn-more a .lm-sub{color:var(--text-muted);font-weight:400;font-size:12px;}
+.done-card h2{font-size:22px;color:var(--text);margin:0 0 10px;font-weight:700;}
+.done-card p{color:var(--text-secondary);font-size:13.5px;line-height:1.6;margin:0 0 8px;}
+
+/* chat widget */
+.help-fab{position:fixed;bottom:22px;right:22px;z-index:80;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md);}
+.help-fab:hover{background:var(--accent-hover);}
+.help-fab .fab-dot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:var(--danger);border:2px solid #fff;display:none;}
+.help-fab .fab-dot.pulse{animation:fabpulse 1.4s ease-in-out infinite;}
+@keyframes fabpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.35);}}
+.help-panel{position:fixed;bottom:90px;right:22px;z-index:80;width:340px;max-width:calc(100vw - 40px);height:440px;max-height:calc(100vh - 130px);background:var(--surface);border:1px solid var(--border);border-radius:14px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(16,24,40,0.15);}
+.help-panel.open{display:flex;}
+.help-head{padding:12px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.help-head .htitle{font-size:13px;color:var(--text);font-weight:700;display:flex;align-items:center;gap:7px;}
+.help-head .htitle::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);}
+.help-head button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:2px 6px;}
+.help-head button:hover{color:var(--text);}
+.help-log{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+.help-msg{font-size:12.5px;line-height:1.55;padding:9px 11px;border-radius:8px;max-width:88%;}
+.help-msg.bot{background:var(--surface-alt);border:1px solid var(--border);color:var(--text);align-self:flex-start;}
+.help-msg.user{background:var(--accent);border:1px solid var(--accent);color:#fff;align-self:flex-end;}
+.help-inputrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);}
+.freetext-area{padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);}
+.freetext-area .help-inputrow{padding:0;border-top:none;background:none;}
+.menu-area{padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;}
+.menu-btn{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;text-align:left;width:100%;}
+.menu-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);}
+.menu-btn.back{color:var(--text-muted);font-weight:500;background:var(--surface-alt);}
+.menu-btn .mi{font-size:14px;flex-shrink:0;}
+.help-inputrow input{flex:1;background:#fff;border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12.5px;padding:9px 11px;border-radius:8px;}
+.help-inputrow input:focus{outline:none;border-color:var(--accent);}
+.help-inputrow button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0 14px;font-weight:600;font-size:12px;}
+.help-inputrow button:hover{background:var(--accent-hover);}
+
+.ledger-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.ledger-table th{text-align:left;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;padding:7px 8px;border-bottom:1px solid var(--border);}
+.ledger-table th.num,.ledger-table td.num{text-align:right;}
+.ledger-table td{padding:8px;border-bottom:1px solid var(--surface-alt);color:var(--text);}
+.ledger-table tr:last-child td{border-bottom:none;}
+.ledger-table td.cat{color:var(--text-secondary);}
+.ledger-note{color:var(--text-muted);font-size:12px;margin-top:10px;line-height:1.5;}
+
+.home-btn{position:fixed;top:16px;left:16px;z-index:90;width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;box-shadow:0 1px 2px rgba(16,24,40,0.05);color:var(--text-secondary);transition:border-color .15s ease, color .15s ease;}
+.home-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);color:var(--accent);}
+</style>
+</head>
+<body>
+<a href="index.html" class="home-btn" title="Back to dashboard">🏠</a>
+
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Financial Systems · Live Taster</div>
+      <h1>The Ledger: Extended — Load & Process</h1>
+      <p class="sub">A bigger feed — 15 transactions, 10 categories — and six queries instead of three. Averages, running maximums, and filtering against a list of categories at once.</p>
+    </div>
+    <div class="timeline" id="dots"></div>
+  </div>
+
+  <div id="game">
+    <div class="cols">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 id="challengeTitle">Add Up Every Transaction</h2>
+            <p class="fn-caption">You'll write a function called <code id="fnNameCaption">totalSpend</code></p>
+          </div>
+          <span class="tag" id="conceptTag">LOOPS</span>
+        </div>
+        <div id="newContentBadge" style="display:none;"></div>
+        <p class="brief" id="briefText"></p>
+        <details class="worked-example" id="workedExample" open>
+          <summary>📎 See a worked example — then try it yourself</summary>
+          <div class="we-body">
+            <pre id="weCode"></pre>
+            <div id="weExplain"></div>
+            <div class="we-try">
+              <div class="we-try-inputs" id="weTryInputs"></div>
+              <button class="btn-ghost we-try-btn" onclick="runWorkedExample()">▶ Try it</button>
+              <span class="we-try-result" id="weTryResult"></span>
+            </div>
+          </div>
+        </details>
+        <div class="editor-chrome">
+          <div class="editor-titlebar">
+            <div><span>query.js</span> — updates as you type</div>
+            <span class="syntax-status" id="syntaxStatus"></span>
+          </div>
+          <textarea id="codeInput" spellcheck="false" oninput="checkSyntaxLive()"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="runTests()">▶ Run Query</button>
+          <button class="btn-ghost" onclick="resetChallenge()">↺ Reset</button>
+          <button class="btn-ghost" id="hintBtn" onclick="requestHint()">💡 Hint</button>
+        </div>
+        <div class="error-box" id="errorBox"></div>
+      </div>
+
+      <div class="right-col">
+        <div class="panel">
+          <div class="panel-head"><h2>Data Feed — ledger</h2></div>
+          <table class="ledger-table" id="ledgerTable"></table>
+          <p class="ledger-note">This exact array is passed into your function as <code>transactions</code>. A couple of test rows use a second, hidden set of data too — so the logic has to actually work, not just match these numbers.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Your Checklist</h2></div>
+          <div class="test-list" id="testList"></div>
+          <div class="status-line" id="statusLine">awaiting query run</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="doneScreen">
+    <div class="done-card">
+      <div style="width:64px;height:64px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,#FFE066,#E8B923);box-shadow:0 6px 16px rgba(232,185,35,0.4);">🥇</div>
+      <div class="eyebrow" style="justify-content:center;">The Ledger · Take-Home</div>
+      <h2>Feed Processed</h2>
+      <p>Every query passed against the real ledger and against data you never saw. That's the actual job — write logic that works on the data in front of you AND the data you haven't seen yet.</p>
+      <div class="cert-claim" style="background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:16px;text-align:left;">
+        <label for="certNameInput" style="font-size:12.5px;font-weight:700;color:var(--text);display:block;margin-bottom:8px;">Your name, for the certificate:</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="certNameInput" placeholder="Type your name…" maxlength="40" style="flex:1;padding:10px 14px;border-radius:7px;border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:13.5px;">
+          <button class="btn-primary" id="claimBtn" onclick="claimTrophy()" style="border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;padding:11px 18px;">🏆 Claim Certificate</button>
+        </div>
+        <p id="claimNote" style="font-size:12.5px;color:var(--success,#12B76A);margin:8px 0 0;font-weight:600;"></p>
+      </div>
+      <p style="color:var(--text-muted);margin-top:14px;">You've now done every Ledger query that exists — nice work.</p>
+      <div class="learn-more">
+        <h4>Keep learning</h4>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections" target="_blank" rel="noopener">MDN — Arrays <span class="lm-sub">the full reference on what you just practiced</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener">MDN — Array methods <span class="lm-sub">everything arrays can do beyond looping</span></a>
+        <a href="https://javascript.info/" target="_blank" rel="noopener">javascript.info <span class="lm-sub">a free, beginner-friendly full course</span></a>
+      </div>
+      <div class="plenary">
+        <h4>💭 Before you go — what you just did</h4>
+        <ul>
+          <li>Worked with a whole <b>list of data</b> at once, not just one value at a time.</li>
+          <li>Used <b>loops</b> to check every item in that list, tracking a running total, a running maximum, and an average along the way.</li>
+          <li>Checked values against a whole <b>list of categories</b> at once, not just one fixed thing to match.</li>
+        </ul>
+        <div class="job-note">🔧 <b>Where this shows up at work:</b> nearly every business role today touches data like this — sales figures, customer records, transaction logs. Someone has to be able to ask a specific question of a big list and get a specific, correct answer back. That's exactly what you just did.</div>
+      </div>
+      <div class="actions" style="justify-content:center;margin-top:18px;">
+        <a href="index.html" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;cursor:pointer;padding:11px 20px;">🏠 Return Home</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="successOverlay">
+  <div class="success-card">
+    <div class="ping"><div class="ping-dot"></div></div>
+    <h3 id="successTitle">Query Correct</h3>
+    <p id="successText">All checks cleared.</p>
+    <button class="btn-primary" onclick="nextChallenge()" id="nextBtn">Next Query →</button>
+  </div>
+</div>
+
+<script>
+
+/* ---------------- Data ---------------- */
+const LEDGER = [
+  {id:1,  category:"groceries",    amount:120},
+  {id:2,  category:"payroll",      amount:4500},
+  {id:3,  category:"transport",    amount:75},
+  {id:4,  category:"wire",         amount:15000},
+  {id:5,  category:"groceries",    amount:60},
+  {id:6,  category:"rent",         amount:2300},
+  {id:7,  category:"coffee",       amount:12},
+  {id:8,  category:"payroll",      amount:8900},
+  {id:9,  category:"utilities",    amount:340},
+  {id:10, category:"entertainment",amount:85},
+  {id:11, category:"insurance",    amount:610},
+  {id:12, category:"fees",         amount:25},
+  {id:13, category:"groceries",    amount:95},
+  {id:14, category:"transport",    amount:40},
+  {id:15, category:"wire",         amount:3200}
+];
+const HIDDEN_SMALL = [
+  {id:101, category:"misc", amount:10},
+  {id:102, category:"misc", amount:20},
+  {id:103, category:"misc", amount:30}
+];
+const HIDDEN_THRESH = [
+  {id:201, category:"misc", amount:5},
+  {id:202, category:"misc", amount:50},
+  {id:203, category:"misc", amount:500}
+];
+const HIDDEN_MAX = [
+  {id:301, category:"misc", amount:5},
+  {id:302, category:"misc", amount:99},
+  {id:303, category:"misc", amount:42}
+];
+
+function renderLedger(){
+  const table = document.getElementById('ledgerTable');
+  let html = "<tr><th>ID</th><th>Category</th><th class=\"num\">Amount</th></tr>";
+  LEDGER.forEach(t=>{
+    html += `<tr><td>${t.id}</td><td class="cat">${t.category}</td><td class="num">£${t.amount.toLocaleString()}</td></tr>`;
+  });
+  table.innerHTML = html;
+}
+
+/* ---------------- Challenges ---------------- */
+const CHALLENGES = [
+  {
+    title: "Add Up Every Transaction",
+    fnName: "totalSpend",
+    concept: "VARIABLES · LOOPS · ACCUMULATION",
+    brief: "totalSpend(transactions) should add up the amount of every transaction in the list and return the total. Use the ledger on the right to check your logic — but the real test is whether it works on any list, not just this one.",
+    starter: `// totalSpend(transactions) should add up the amount
+// of every transaction and return the total.
+
+function totalSpend(transactions) {
+  let total = 0;
+  // TODO: loop through transactions and add each amount to total
+
+  return total;
+}`,
+    tests: [
+      { args:[LEDGER], expected: 35362, display: "totalSpend(ledger)" },
+      { args:[HIDDEN_SMALL], expected: 60, display: "totalSpend(hidden — 3 rows)" }
+    ],
+    hints: [
+      "You need a variable that starts at zero, then grows by adding each transaction's amount as you go through the list.",
+      "Inside the loop, add each amount onto your total: total += transactions[i].amount;",
+      "for (let i = 0; i < transactions.length; i++) {\n  total += transactions[i].amount;\n}"
+    ],
+    workedFn: "sumSteps",
+    workedField: "count",
+    workedCode: `function sumSteps(dailyLogs) {
+  let steps = 0;
+  for (let i = 0; i < dailyLogs.length; i++) {
+    steps += dailyLogs[i].count;
+  }
+  return steps;
+}`,
+    workedArrayItems: [
+      {label:"day 1", value:3000},
+      {label:"day 2", value:5200},
+      {label:"day 3", value:8100}
+    ],
+    workedExplain: [
+      "<b>dailyLogs[i]</b> — one single entry from the list, the one at position i.",
+      "<b>dailyLogs[i].count</b> — the count field on that one entry.",
+      "Try changing the numbers below and click Try it — steps always ends up as their sum. Same idea works for adding up amounts."
+    ]
+  },
+  {
+    title: "Total One Category",
+    fnName: "sumByCategory",
+    concept: "ARRAYS · FILTERING · PARAMETERS",
+    brief: "sumByCategory(transactions, category) should add up the amount of every transaction that matches the given category, and return 0 if nothing matches.",
+    starter: `// sumByCategory(transactions, category) should total up
+// only the transactions whose category matches the one given.
+// Return 0 if nothing matches.
+
+function sumByCategory(transactions, category) {
+  let total = 0;
+  // TODO: loop through transactions, and only add the amount
+  // when transactions[i].category matches category
+
+  return total;
+}`,
+    tests: [
+      { args:[LEDGER, "groceries"], expected: 275, display: 'sumByCategory(ledger, "groceries")' },
+      { args:[LEDGER, "payroll"], expected: 13400, display: 'sumByCategory(ledger, "payroll")' },
+      { args:[LEDGER, "wire"], expected: 18200, display: 'sumByCategory(ledger, "wire")' },
+      { args:[LEDGER, "bonuses"], expected: 0, display: 'sumByCategory(ledger, "bonuses")' }
+    ],
+    hints: [
+      "Same idea as before, but this time you only want to add an amount when its category actually matches.",
+      "Put an if check inside the loop before you add anything: if (transactions[i].category === category) { ... }",
+      "for (let i = 0; i < transactions.length; i++) {\n  if (transactions[i].category === category) {\n    total += transactions[i].amount;\n  }\n}"
+    ],
+    workedFn: "sumFoodCost",
+    workedField: "cost",
+    workedCode: `function sumFoodCost(purchases) {
+  let foodTotal = 0;
+  for (let i = 0; i < purchases.length; i++) {
+    if (purchases[i].type === "food") {
+      foodTotal += purchases[i].cost;
+    }
+  }
+  return foodTotal;
+}`,
+    workedArrayItems: [
+      {label:"food", value:12},
+      {label:"food", value:30},
+      {label:"other", value:45}
+    ],
+    workedExplain: [
+      "The if check runs on every purchase, but foodTotal only grows when purchases[i].type actually says \"food\" — everything else gets skipped.",
+      "Change the numbers below and click Try it — only the two \"food\" ones ever count, however big you make \"other\"."
+    ]
+  },
+  {
+    title: "Count the Big Transactions",
+    fnName: "countHighValue",
+    concept: "LOOPS · CONDITIONALS · COUNTING",
+    brief: "countHighValue(transactions, threshold) should return how many transactions have an amount strictly greater than the threshold.",
+    starter: `// countHighValue(transactions, threshold) should count
+// how many transactions have an amount GREATER than threshold.
+
+function countHighValue(transactions, threshold) {
+  let count = 0;
+  // TODO: loop through transactions, and count the ones
+  // whose amount is greater than threshold
+
+  return count;
+}`,
+    tests: [
+      { args:[LEDGER, 1000], expected: 5, display: "countHighValue(ledger, 1000)" },
+      { args:[LEDGER, 5000], expected: 2, display: "countHighValue(ledger, 5000)" },
+      { args:[LEDGER, 10000], expected: 1, display: "countHighValue(ledger, 10000)" },
+      { args:[HIDDEN_THRESH, 10], expected: 2, display: "countHighValue(hidden, 10)" }
+    ],
+    hints: [
+      "This one counts matches instead of adding amounts up — start a counter at zero and increase it, don't total anything.",
+      "Inside the loop: if (transactions[i].amount > threshold) { count++; } — count++ just means \"add one.\"",
+      "for (let i = 0; i < transactions.length; i++) {\n  if (transactions[i].amount > threshold) {\n    count++;\n  }\n}"
+    ],
+    workedFn: "countHotDays",
+    workedField: "temp",
+    workedCode: `function countHotDays(days) {
+  let hotDays = 0;
+  for (let i = 0; i < days.length; i++) {
+    if (days[i].temp > 25) {
+      hotDays++;
+    }
+  }
+  return hotDays;
+}`,
+    workedArrayItems: [
+      {label:"day 1", value:22},
+      {label:"day 2", value:28},
+      {label:"day 3", value:31}
+    ],
+    workedExplain: [
+      "hotDays starts at 0 and only goes up by one each time a day's temp is actually over 25 — count++ means \"add one,\" nothing more. No amounts involved, just counting matches.",
+      "Try pushing the numbers below above and below 25 — watch the count change."
+    ]
+  },
+  {
+    title: "Find the Biggest Transaction",
+    fnName: "largestTransaction",
+    concept: "COMPARISON · TRACKING A RUNNING MAX",
+    brief: "largestTransaction(transactions) should return the single biggest amount in the list. No sorting needed — just keep track of the largest one seen so far as you loop through.",
+    starter: `// largestTransaction(transactions) should return the
+// single biggest amount in the list.
+
+function largestTransaction(transactions) {
+  let biggest = 0;
+  // TODO: loop through transactions, and update biggest
+  // whenever you find a larger amount
+
+  return biggest;
+}`,
+    tests: [
+      { args:[LEDGER], expected: 15000, display: "largestTransaction(ledger)" },
+      { args:[HIDDEN_MAX], expected: 99, display: "largestTransaction(hidden — 3 rows)" }
+    ],
+    hints: [
+      "Keep track of the biggest value you've seen so far as you go through the list — no sorting needed.",
+      "A common slip on this one: starting biggest at the first transaction's amount instead of 0. That usually still works, but starting at 0 is the safer habit if amounts could ever be negative.",
+      "Start let biggest = 0;, then inside the loop: if (transactions[i].amount > biggest) { biggest = transactions[i].amount; }",
+      "Worked through with three made-up amounts — £40, £95, £60: start with biggest = 0. Is 40 > 0? Yes, biggest becomes 40. Is 95 > 40? Yes, biggest becomes 95. Is 60 > 95? No, biggest stays 95. Final answer: 95 — the biggest one seen, regardless of order.",
+      "Here's the shape with two blanks: if (transactions[i].amount > ___) { ___ = transactions[i].amount; } — both blanks are filled by the same variable, the one tracking the biggest value so far.",
+      "for (let i = 0; i < transactions.length; i++) {\n  if (transactions[i].amount > biggest) {\n    biggest = transactions[i].amount;\n  }\n}"
+    ],
+    workedFn: "topScore",
+    workedField: "value",
+    workedCode: `function topScore(scores) {
+  let top = 0;
+  for (let i = 0; i < scores.length; i++) {
+    if (scores[i].value > top) {
+      top = scores[i].value;
+    }
+  }
+  return top;
+}`,
+    workedArrayItems: [
+      {label:"round 1", value:42},
+      {label:"round 2", value:88},
+      {label:"round 3", value:65}
+    ],
+    workedExplain: [
+      "<b>top</b> only updates when it finds something bigger than what it's already holding — by the end it's holding the biggest value seen across the whole list.",
+      "Try changing which number below is the biggest, in any position — top always finds it, in any order."
+    ]
+  },
+  {
+    title: "Work Out the Average",
+    fnName: "averageTransaction",
+    concept: "DIVISION · ROUNDING",
+    brief: "averageTransaction(transactions) should return the average transaction amount, rounded to the nearest whole pound.",
+    starter: `// averageTransaction(transactions) should return the
+// average amount, rounded to the nearest whole pound.
+// Math.round() rounds a number to the nearest integer.
+
+function averageTransaction(transactions) {
+  // TODO: add up all the amounts, divide by how many there
+  // are, then round the result
+
+}`,
+    tests: [
+      { args:[LEDGER], expected: 2357, display: "averageTransaction(ledger)" },
+      { args:[HIDDEN_SMALL], expected: 20, display: "averageTransaction(hidden — 3 rows)" }
+    ],
+    hints: [
+      "Sum everything first using the usual accumulator pattern, then divide by how many items there are.",
+      "A common slip on this one: dividing by transactions.length - 1 instead of transactions.length — that off-by-one comes from a different pattern and isn't needed here.",
+      "Math.round() rounds a number to the nearest whole number — wrap your final division in it.",
+      "Worked through with three made-up amounts — £30, £50, £40: total is 30 + 50 + 40 = 120. There are 3 of them, so 120 / 3 = 40. That one happens to divide evenly — Math.round() is there to tidy up the cases that don't.",
+      "Here's the shape with one blank left: return Math.round(total / ___); — what do you divide the total by to get an average?",
+      "let total = 0;\nfor (let i = 0; i < transactions.length; i++) {\n  total += transactions[i].amount;\n}\nreturn Math.round(total / transactions.length);"
+    ],
+    workedFn: "averageCommute",
+    workedField: "minutes",
+    workedCode: `function averageCommute(days) {
+  let total = 0;
+  for (let i = 0; i < days.length; i++) {
+    total += days[i].minutes;
+  }
+  return Math.round(total / days.length);
+}`,
+    workedArrayItems: [
+      {label:"mon", value:28},
+      {label:"tue", value:35},
+      {label:"wed", value:22}
+    ],
+    workedExplain: [
+      "Add everything up first, then divide by how many items there were — that's the average.",
+      "<b>Math.round()</b> tidies up any messy decimal at the end.",
+      "Try changing the numbers below and click Try it — watch the average shift."
+    ]
+  },
+  {
+    title: "Total Several Categories at Once",
+    fnName: "sumByCategories",
+    concept: "CHECKING IF SOMETHING IS IN A LIST",
+    brief: "New tool for this one: .includes() checks whether something is anywhere in a list. ['rent','food'].includes('rent') is true. ['rent','food'].includes('petrol') is false. sumByCategories(transactions, categories) should add up every transaction whose category is anywhere in the categories list — not just one category this time, several at once.",
+    starter: `// New tool: .includes() checks if something is anywhere in a
+// list. Try it in your head first:
+//   ["rent","food"].includes("rent")   -> true
+//   ["rent","food"].includes("petrol") -> false
+//
+// sumByCategories(transactions, categories) should total up
+// every transaction whose category appears anywhere in the
+// categories array.
+
+function sumByCategories(transactions, categories) {
+  let total = 0;
+  // TODO: loop through transactions, and add the amount when
+  // categories.includes(transactions[i].category) is true
+
+  return total;
+}`,
+    tests: [
+      { args:[LEDGER, ["groceries","coffee","transport"]], expected: 402, display: 'sumByCategories(ledger, ["groceries","coffee","transport"])' },
+      { args:[LEDGER, ["rent"]], expected: 2300, display: 'sumByCategories(ledger, ["rent"])' },
+      { args:[LEDGER, ["bonuses"]], expected: 0, display: 'sumByCategories(ledger, ["bonuses"])' }
+    ],
+    hints: [
+      "Picture categories as a plain list, like [\"rent\",\"food\"]. .includes(x) just asks \"is x anywhere in this list?\" and answers true or false — nothing more complicated than that.",
+      "A common slip on this one: writing categories === transactions[i].category instead of categories.includes(...) — === compares a whole list to a single value, which can never be true.",
+      "categories.includes(transactions[i].category) is true if that transaction's category is anywhere in your list. Use it exactly like you'd use === inside an if, just checking against a list instead of one fixed value.",
+      "Worked through with two made-up transactions — one tagged \"rent\" for £800, one tagged \"food\" for £50 — and categories set to [\"rent\"]: does [\"rent\"].includes(\"rent\")? Yes, so £800 counts. Does [\"rent\"].includes(\"food\")? No, so £50 is skipped. Total: 800. Add \"food\" to the categories list and both would count instead.",
+      "Here's the shape with one blank left: if (categories.includes(___)) { total += transactions[i].amount; } — what goes in the blank, the thing you're checking is in the list?",
+      "for (let i = 0; i < transactions.length; i++) {\n  if (categories.includes(transactions[i].category)) {\n    total += transactions[i].amount;\n  }\n}"
+    ],
+    workedFn: "sumWeekendHours",
+    workedField: "hours",
+    workedCode: `function sumWeekendHours(days) {
+  let total = 0;
+  for (let i = 0; i < days.length; i++) {
+    if (["sat","sun"].includes(days[i].type)) {
+      total += days[i].hours;
+    }
+  }
+  return total;
+}`,
+    workedArrayItems: [
+      {label:"sat", value:4},
+      {label:"sun", value:6},
+      {label:"mon", value:8}
+    ],
+    workedExplain: [
+      "<b>[\"sat\",\"sun\"].includes(days[i].type)</b> checks whether that day's label is anywhere inside the list — true for a match against either one, not just a single fixed name.",
+      "Try changing the hours below — only sat and sun ever count, however big you make mon."
+    ]
+  }
+];
+
+let current = 0;
+let failCount = 0;
+let hintTier = 0;
+let proactiveShown = false;
+
+function buildDots(){
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  CHALLENGES.forEach((_,i)=>{
+    const seg = document.createElement('div');
+    seg.className = 'tl-seg';
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot'+i;
+    seg.appendChild(d);
+    if(i < CHALLENGES.length-1){
+      const line = document.createElement('div');
+      line.className = 'tl-line';
+      line.id = 'line'+i;
+      seg.appendChild(line);
+    }
+    dots.appendChild(seg);
+  });
+}
+function refreshDots(){
+  CHALLENGES.forEach((_,i)=>{
+    document.getElementById('dot'+i).className = 'dot' + (i<current?' done':i===current?' active':'');
+    const l = document.getElementById('line'+i);
+    if(l) l.className = 'tl-line' + (i<current?' done':'');
+  });
+}
+
+function loadChallenge(idx){
+  current = idx;
+  failCount = 0;
+  hintTier = 0;
+  proactiveShown = false;
+  const c = CHALLENGES[idx];
+  const badge = document.getElementById('newContentBadge');
+  if(idx >= 3){
+    badge.style.display = 'flex';
+    badge.innerHTML = '🆕 New — this challenge isn\'t in the taster version';
+  } else {
+    badge.style.display = 'none';
+  }
+  document.getElementById('challengeTitle').textContent = c.title;
+  document.getElementById('fnNameCaption').textContent = c.fnName;
+  document.getElementById('conceptTag').textContent = c.concept.split(' · ')[0];
+  document.getElementById('briefText').textContent = c.brief;
+  document.getElementById('codeInput').value = c.starter;
+  document.getElementById('weCode').textContent = c.workedCode;
+  document.getElementById('weExplain').innerHTML = c.workedExplain.map(e=>`<div class="we-line">${e}</div>`).join('');
+  renderWeTryInputs(c);
+  document.getElementById('weTryResult').textContent = '';
+  document.getElementById('weTryResult').className = 'we-try-result';
+  document.getElementById('workedExample').open = true;
+  document.getElementById('hintBtn').textContent = '💡 Hint';
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('helpDot').style.display = 'none';
+  document.getElementById('syntaxStatus').textContent = '';
+  document.getElementById('syntaxStatus').className = 'syntax-status';
+  clearTimeout(syntaxCheckTimer);
+  refreshDots();
+  renderTests(c);
+  const status = document.getElementById('statusLine');
+  status.textContent = 'awaiting query run';
+  status.className = 'status-line';
+}
+function resetChallenge(){ loadChallenge(current); }
+
+function renderTests(c){
+  const list = document.getElementById('testList');
+  list.innerHTML = '';
+  c.tests.forEach((t,i)=>{
+    const row = document.createElement('div');
+    row.className = 'test-row pending';
+    row.id = 'test-'+i;
+    row.innerHTML = `<span class="test-icon">○</span><span class="test-call">${t.display}</span><span class="test-expect">expect ${JSON.stringify(t.expected)}</span>`;
+    list.appendChild(row);
+  });
+}
+
+let hasRunSinceHint = true;
+function requestHint(){
+  if(!helpOpen) toggleHelp();
+  revealNextHint();
+}
+
+function revealNextHint(){
+  const c = CHALLENGES[current];
+  const btn = document.getElementById('hintBtn');
+
+  if(hintTier > 0 && hintTier < c.hints.length && !hasRunSinceHint){
+    addHelpMsg('⏸ Try running your code first — click ▶ Run Query, then I\u2019ll give you the next hint.', 'bot blocked');
+    return;
+  }
+
+  if(hintTier < c.hints.length){
+    hintTier++;
+    addHelpMsg(`${hintTier}. ${c.hints[hintTier-1]}`, 'bot hint');
+    hasRunSinceHint = false;
+  } else {
+    addHelpMsg('That\u2019s everything I\u2019ve got for this one \u2014 you\u2019ve already seen all the hints. Try running your code, or flag a facilitator if you\u2019re still stuck.', 'bot');
+  }
+  btn.textContent = hintTier >= c.hints.length ? '💡 That\u2019s the full hint' : '💡 Tell me more';
+}
+
+let pendingNudge = null;
+function maybeNudgeHint(){
+  const status = document.getElementById('statusLine');
+  if(failCount >= 2){
+    document.getElementById('helpDot').style.display = 'block';
+    if(hintTier === 0){
+      status.textContent = "No rush — try the 💡 Hint button below, it'll walk you through it step by step.";
+    }
+  }
+  if(failCount >= 3 && !proactiveShown){
+    proactiveShown = true;
+    document.getElementById('helpDot').classList.add('pulse');
+    const msg = "Hey — this one's putting up a fight. That's completely normal, not a sign you're doing anything wrong. Whenever you're ready, tell me what's happening or ask something specific about it.";
+    if(helpOpen){
+      addHelpMsg(msg, 'bot');
+    } else {
+      pendingNudge = msg;
+    }
+  }
+}
+
+function renderWeTryInputs(c){
+  const wrap = document.getElementById('weTryInputs');
+  wrap.innerHTML = c.workedArrayItems.map((item,i) =>
+    `<div class="we-item"><span class="we-item-label">${item.label}</span><input type="number" id="weItem${i}" value="${item.value}" step="any"></div>`
+  ).join('');
+}
+
+function runWorkedExample(){
+  const c = CHALLENGES[current];
+  const resultEl = document.getElementById('weTryResult');
+  try{
+    const fn = new Function(c.workedCode + `\nreturn ${c.workedFn};`)();
+    const arr = c.workedArrayItems.map((item,i) => {
+      const obj = {};
+      obj[c.workedField] = Number(document.getElementById('weItem'+i).value);
+      if(item.label && isNaN(Number(item.label))){
+        obj.type = item.label;
+      }
+      return obj;
+    });
+    const result = fn(arr);
+    resultEl.textContent = `→ ${c.workedFn}([...]) = ${JSON.stringify(result)}`;
+    resultEl.className = 'we-try-result show';
+  }catch(e){
+    resultEl.textContent = 'error — try a different number';
+    resultEl.className = 'we-try-result';
+  }
+}
+
+let syntaxCheckTimer;
+function checkSyntaxLive(){
+  clearTimeout(syntaxCheckTimer);
+  syntaxCheckTimer = setTimeout(()=>{
+    const code = document.getElementById('codeInput').value;
+    const statusEl = document.getElementById('syntaxStatus');
+    if(!code.trim()){
+      statusEl.textContent = '';
+      statusEl.className = 'syntax-status';
+      statusEl.title = '';
+      return;
+    }
+    try{
+      new Function(code);
+      statusEl.textContent = '✓ syntax OK';
+      statusEl.className = 'syntax-status ok';
+      statusEl.title = '';
+    }catch(e){
+      statusEl.textContent = '⚠ ' + describeSyntaxError(e);
+      statusEl.className = 'syntax-status error';
+      statusEl.title = e.message;
+    }
+  }, 500);
+}
+function describeSyntaxError(e){
+  const msg = e.message;
+  if(/Unexpected end of input/.test(msg)) return "a bracket, brace, or parenthesis isn't closed";
+  if(/Unexpected token '\}'/.test(msg)) return "an extra } somewhere, or one closed too early";
+  if(/Unexpected token '\)'/.test(msg)) return "an extra ) somewhere";
+  if(/missing \) after argument list/.test(msg)) return "a function call is missing its closing )";
+  if(/Unexpected identifier/.test(msg)) return "check for a missing comma, operator, or semicolon nearby";
+  return "syntax error — hover for details";
+}
+
+function runTests(){
+  hasRunSinceHint = true;
+  const c = CHALLENGES[current];
+  const src = document.getElementById('codeInput').value;
+  const errorBox = document.getElementById('errorBox');
+  errorBox.style.display = 'none';
+
+  let fn;
+  try{
+    fn = new Function(src + `\nreturn ${c.fnName};`)();
+    if(typeof fn !== 'function'){
+      throw new Error(`${c.fnName} isn't defined as a function yet — check the function name is spelled exactly the same as in the starter code.`);
+    }
+  }catch(e){
+    failCount++;
+    let msg = e.message;
+    const refMatch = msg.match(/^(\w+) is not defined$/);
+    if(refMatch){
+      msg = `${msg} — this usually doesn't mean ${refMatch[1]} is wrong, it means the function wrapper around your code is missing or broken. Check it still starts with <code>function ${c.fnName}(...)</code> and ends with a closing <code>}</code>.`;
+    }
+    errorBox.innerHTML = `<b>That's okay — this is a normal step.</b><br>${msg}`;
+    errorBox.style.display = 'block';
+    maybeNudgeHint();
+    return;
+  }
+
+  let allPass = true;
+  c.tests.forEach((t,i)=>{
+    const row = document.getElementById('test-'+i);
+    let actual, threw = false, errMsg = '';
+    try{
+      actual = fn(...t.args);
+    }catch(e){
+      threw = true; errMsg = e.message;
+    }
+    const pass = !threw && actual === t.expected;
+    row.className = 'test-row ' + (pass ? 'pass' : 'fail');
+    row.querySelector('.test-icon').textContent = pass ? '✓' : '✗';
+    const existingActual = row.querySelector('.test-actual');
+    if(existingActual) existingActual.remove();
+    if(!pass){
+      allPass = false;
+      const span = document.createElement('span');
+      span.className = 'test-actual';
+      span.textContent = threw ? `threw: ${errMsg}` : `got ${JSON.stringify(actual)}`;
+      row.appendChild(span);
+    }
+  });
+
+  const status = document.getElementById('statusLine');
+  if(allPass){
+    failCount = 0;
+    status.textContent = 'all queries correct';
+    status.className = 'status-line pass';
+    showSuccess();
+  } else {
+    failCount++;
+    status.textContent = 'not quite yet — read the rows above and try again';
+    status.className = 'status-line';
+    maybeNudgeHint();
+  }
+}
+
+function showSuccess(){
+  const isLast = current === CHALLENGES.length - 1;
+  document.getElementById('successTitle').textContent = isLast ? 'Feed Processed' : 'Query Correct';
+  document.getElementById('successText').textContent = isLast
+    ? "Every query returned the right numbers, on the ledger and on hidden data."
+    : `${CHALLENGES[current].fnName} works. One more query to write.`;
+  document.getElementById('nextBtn').textContent = isLast ? 'Finish →' : 'Next Query →';
+  document.getElementById('successOverlay').style.display = 'flex';
+}
+
+function nextChallenge(){
+  document.getElementById('successOverlay').style.display = 'none';
+  if(current === CHALLENGES.length - 1){
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('doneScreen').style.display = 'block';
+  } else {
+    loadChallenge(current + 1);
+  }
+}
+
+function claimTrophy(){
+  const nameInput = document.getElementById('certNameInput');
+  const name = (nameInput.value || '').trim() || 'Anonymous';
+  const existing = JSON.parse(localStorage.getItem('mainframe_trophies') || '[]');
+  existing.push({
+    module: 'The Ledger (Take-Home)',
+    tier: 'Ledger Expert',
+    emoji: '🥇',
+    name: name,
+    date: new Date().toLocaleDateString()
+  });
+  localStorage.setItem('mainframe_trophies', JSON.stringify(existing));
+  document.getElementById('claimBtn').textContent = '✅ Saved!';
+  document.getElementById('claimBtn').disabled = true;
+  document.getElementById('claimNote').textContent = 'Saved — view it anytime from "My Trophies" on the dashboard.';
+}
+
+renderLedger();
+buildDots();
+loadChallenge(0);
+</script>
+
+<!-- Help widget -->
+<button class="help-fab" id="helpFab" onclick="toggleHelp()">💬<span class="fab-dot" id="helpDot"></span></button>
+<div class="help-panel" id="helpPanel">
+  <div class="help-head">
+    <span class="htitle">Help &amp; Hints</span>
+    <button onclick="toggleHelp()">✕</button>
+  </div>
+  <div class="help-log" id="helpLog"></div>
+  <div class="menu-area" id="menuArea"></div>
+  <div class="freetext-area" id="freetextArea" style="display:none;">
+    <div class="help-inputrow">
+      <input type="text" id="helpInput" placeholder="Ask in your own words…" onkeydown="if(event.key==='Enter')sendFreeText()">
+      <button onclick="sendFreeText()">Send</button>
+    </div>
+    <button class="menu-btn back" onclick="renderMenu('root')" style="margin-top:8px;"><span class="mi">←</span>Back to menu</button>
+  </div>
+</div>
+
+
+<script>
+
+/* ---------------- Help widget ---------------- */
+const HELP_DATA = {
+  "module": "ledger",
+  "entries": [
+    {
+      "id": "what-is-function-general",
+      "keywords": [
+        "whats a function",
+        "what is a function",
+        "what does function mean",
+        "how do functions work"
+      ],
+      "response": "A function does something when you call it. function totalSpend(transactions) { ... } names it and says what input it takes \u2014 transactions here is the list you're working with."
+    },
+    {
+      "id": "what-is-array",
+      "keywords": [
+        "what is an array",
+        "what does array mean",
+        "square brackets",
+        "array syntax",
+        "what is an index",
+        "what does index mean",
+        "array index"
+      ],
+      "response": "An array is a list of values in order. transactions[0] gets the first item, transactions.length tells you how many items there are in total."
+    },
+    {
+      "id": "what-is-object",
+      "keywords": [
+        "what is an object",
+        "dot notation",
+        "what does .amount mean",
+        "object property",
+        "what does a row look like",
+        "what does a transaction look like",
+        "what does an entry look like"
+      ],
+      "response": "An object holds named fields. transactions[i].amount means 'the amount field of the i-th transaction' \u2014 the dot gets you the named value out."
+    },
+    {
+      "id": "accumulator-pattern",
+      "keywords": [
+        "accumulator",
+        "running total",
+        "how to add up",
+        "keep a total",
+        "total += "
+      ],
+      "response": "Declare let total = 0; before the loop starts, then inside the loop do total += transactions[i].amount; \u2014 that adds each amount onto the running total as you go."
+    },
+    {
+      "id": "total-reset-bug",
+      "keywords": [
+        "total keeps resetting",
+        "total always small",
+        "total not adding up",
+        "total wrong every time"
+      ],
+      "response": "Check where let total = 0 is written \u2014 if it's inside the loop instead of before it, it resets to zero on every single pass, so you only ever end up with the last item's value."
+    },
+    {
+      "id": "loop-through-array",
+      "keywords": [
+        "how to loop through array",
+        "for loop array",
+        "loop transactions",
+        "iterate array"
+      ],
+      "response": "for (let i = 0; i < transactions.length; i++) { ... } \u2014 using .length means the loop always covers the whole list, however many items it has."
+    },
+    {
+      "id": "filter-with-if",
+      "keywords": [
+        "filter inside loop",
+        "only count some",
+        "matching category",
+        "if inside for loop"
+      ],
+      "response": "Put an if check inside the loop before you add to the total \u2014 if (transactions[i].category === category) { total += transactions[i].amount; } \u2014 only matching items get added."
+    },
+    {
+      "id": "nan-error",
+      "keywords": [
+        "nan error",
+        "returns nan",
+        "not a number"
+      ],
+      "response": "NaN usually means a typo in a property name \u2014 like transactions[i].amout instead of .amount \u2014 so it's trying to do maths on something that doesn't exist."
+    },
+    {
+      "id": "hidden-test-fails",
+      "keywords": [
+        "hidden test fails",
+        "second test fails",
+        "works on ledger not hidden",
+        "hardcoded number"
+      ],
+      "response": "If the visible ledger test passes but the hidden one doesn't, that's usually a sign the number's been typed in directly rather than calculated \u2014 the function needs to work on any list it's given, not just this one."
+    }
+  ],
+  "synonyms": {
+    "list": "array",
+    "table": "array",
+    "row": "transaction",
+    "entry": "transaction",
+    "cash": "amount",
+    "money": "amount",
+    "tally": "total"
+  }
+};
+const HELP_GREETING = "Hi! Tap 💡 Hint for a step-by-step nudge on whatever you're working on, or ❓ Help for general syntax and troubleshooting — just click, no typing needed.";
+
+let helpOpen = false;
+let helpGreeted = false;
+
+function findHelpEntry(id){ return HELP_DATA.entries.find(e => e.id === id); }
+
+const STUCK_PHRASES = ["im stuck", "i'm stuck", "help", "dont know what to do", "don't know what to do", "confused", "not sure what to write", "no idea", "how do i even start", "where do i begin", "how do i start", "just tell me", "give me the answer", "tell me the answer", "im really stuck", "really stuck", "super stuck", "please just tell me", "just give me the code", "i give up", "cant figure it out", "cant work it out", "just show me", "give up"];
+const HELP_FALLBACK = "I'm not totally sure about that one — try asking it a different way, or use the Help menu's Syntax and Troubleshooting topics instead. You're doing fine.";
+function normalizeHelp(s){
+  let out = s.toLowerCase();
+  out = out.replace(/>=/g, ' gte ').replace(/<=/g, ' lte ')
+           .replace(/===/g, ' strictequal ').replace(/!==/g, ' notequal ')
+           .replace(/&&/g, ' and ').replace(/\|\|/g, ' or ')
+           .replace(/>/g, ' gt ').replace(/</g, ' lt ');
+  return out.replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+const HELP_STOPWORDS = new Set(["what","does","do","is","are","the","a","an","to","of","in","on","for","and","or","i","my","how","this","that","it","me","you","your","did","doing","can","help","meaning","mean","means","explain","understand","understanding","know","knowing","work","working","works","use","using","used","need","needs","needed","want","wanted","wants","sure","right","correct","wrong","thing","things","stuff","way","ways","doesnt","dont","isnt","not","get","got","getting","should","would","could","will","with","when","where","why","which","who","from","have","has","had","about","some","any","just","really","actually","supposed","stuck","function","functions"]);
+function stem(w){
+  if(w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) return w.slice(0,-1);
+  return w;
+}
+function scoreHelpEntry(msgNorm, msgWords, entry){
+  let best = 0;
+  const msgStems = msgWords.map(stem);
+  entry.keywords.forEach(kw=>{
+    const kwNorm = normalizeHelp(kw);
+    let score = 0;
+    if(msgNorm.includes(kwNorm)) score += 4;
+    const kwWords = kwNorm.split(' ').filter(w=>w.length>1 && !HELP_STOPWORDS.has(w));
+    const overlap = kwWords.filter(w=>msgStems.includes(stem(w))).length;
+    score += overlap;
+    if(score > best) best = score;
+  });
+  return best;
+}
+function isStuckPhrase(msgNorm){
+  return STUCK_PHRASES.some(p => msgNorm.includes(p));
+}
+function applySynonyms(msgNorm){
+  const syns = HELP_DATA.synonyms || {};
+  return msgNorm.split(' ').map(w => syns[w] || w).join(' ');
+}
+function findHelpResponse(userMsg){
+  let msgNorm = normalizeHelp(userMsg);
+  msgNorm = applySynonyms(msgNorm);
+  const msgWords = msgNorm.split(' ');
+  let bestEntry = null, bestScore = 0;
+  HELP_DATA.entries.forEach(entry=>{
+    const s = scoreHelpEntry(msgNorm, msgWords, entry);
+    if(s > bestScore){ bestScore = s; bestEntry = entry; }
+  });
+  return (bestEntry && bestScore >= 1) ? bestEntry.response : null;
+}
+function sendFreeText(){
+  const input = document.getElementById('helpInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  addHelpMsg(msg, 'user');
+  input.value = '';
+  setTimeout(()=>{
+    const msgNorm = applySynonyms(normalizeHelp(msg));
+    if(isStuckPhrase(msgNorm)){
+      revealNextHint();
+    } else {
+      const response = findHelpResponse(msg);
+      addHelpMsg(response || HELP_FALLBACK, 'bot');
+    }
+  }, 220);
+}
+
+const MENU = {
+  root: {
+    prompt: null,
+    options: [
+      { label: "Hint for this query", icon: "💡", action: "hint" },
+      { label: "Help", icon: "❓", goto: "help" },
+      { label: "Write it yourself", icon: "✏️", action: "freetext" }
+    ]
+  },
+  help: {
+    prompt: "What kind of help?",
+    options: [
+      { label: "Syntax — how do I write this?", icon: "📖", goto: "syntax" },
+      { label: "Troubleshooting — why isn't this working?", icon: "🐛", goto: "trouble" },
+      { label: "Back", icon: "←", goto: "root", back: true }
+    ]
+  },
+  syntax: {
+    prompt: "Pick a topic:",
+    options: [
+      { label: "How do function calls work?", icon: "📖", entry: "what-is-function-general" },
+      { label: "What's an array?", icon: "📖", entry: "what-is-array" },
+      { label: "What's an object / dot notation?", icon: "📖", entry: "what-is-object" },
+      { label: "How do I build up a running total?", icon: "📖", entry: "accumulator-pattern" },
+      { label: "How do I loop through a list?", icon: "📖", entry: "loop-through-array" },
+      { label: "How do I only count some items?", icon: "📖", entry: "filter-with-if" },
+      { label: "Back", icon: "←", goto: "help", back: true }
+    ]
+  },
+  trouble: {
+    prompt: "Pick what's happening:",
+    options: [
+      { label: "My total keeps resetting to the last item", icon: "🐛", entry: "total-reset-bug" },
+      { label: "I'm getting NaN", icon: "🐛", entry: "nan-error" },
+      { label: "Visible test passes but hidden one fails", icon: "🐛", entry: "hidden-test-fails" },
+      { label: "Back", icon: "←", goto: "help", back: true }
+    ]
+  }
+};
+
+function renderMenu(state){
+  document.getElementById('freetextArea').style.display = 'none';
+  document.getElementById('menuArea').style.display = 'flex';
+  const area = document.getElementById('menuArea');
+  const menu = MENU[state];
+  area.innerHTML = '';
+  if(menu.prompt){
+    addHelpMsg(menu.prompt, 'bot');
+  }
+  menu.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'menu-btn' + (opt.back ? ' back' : '');
+    btn.innerHTML = `<span class="mi">${opt.icon}</span>${opt.label}`;
+    btn.onclick = () => selectMenuOption(opt);
+    area.appendChild(btn);
+  });
+}
+
+function selectMenuOption(opt){
+  if(!opt.back){
+    addHelpMsg(opt.label, 'user');
+  }
+  if(opt.goto){
+    renderMenu(opt.goto);
+    return;
+  }
+  if(opt.action === 'hint'){
+    setTimeout(()=>{
+      revealNextHint();
+      renderMenu('root');
+    }, 200);
+    return;
+  }
+  if(opt.action === 'freetext'){
+    document.getElementById('menuArea').style.display = 'none';
+    document.getElementById('freetextArea').style.display = 'block';
+    document.getElementById('helpInput').focus();
+    return;
+  }
+  if(opt.entry){
+    setTimeout(()=>{
+      addHelpMsg(findHelpEntry(opt.entry).response, 'bot');
+      renderMenu('root');
+    }, 200);
+  }
+}
+
+function toggleHelp(){
+  helpOpen = !helpOpen;
+  const panel = document.getElementById('helpPanel');
+  panel.classList.toggle('open', helpOpen);
+  if(helpOpen){
+    document.getElementById('helpDot').style.display = 'none';
+    document.getElementById('helpDot').classList.remove('pulse');
+  }
+  if(helpOpen && !helpGreeted){
+    addHelpMsg(HELP_GREETING, 'bot');
+    helpGreeted = true;
+    renderMenu('root');
+  }
+  if(helpOpen && pendingNudge){
+    addHelpMsg(pendingNudge, 'bot');
+    pendingNudge = null;
+  }
+}
+function addHelpMsg(text, who){
+  const log = document.getElementById('helpLog');
+  const div = document.createElement('div');
+  div.className = 'help-msg ' + who;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+</script>
+</body>
+</html>

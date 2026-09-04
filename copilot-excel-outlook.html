@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Effective CoPilot — Excel &amp; Outlook</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --border-strong:#D0D5DD; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --danger:#F04438; --danger-bg:#FEF3F2;
+  --warning:#F79009; --warning-bg:#FFFAEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+  --shadow-md:0 4px 14px rgba(16,24,40,0.08);
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:0 0 60px;line-height:1.55;}
+.wrap{max-width:900px;margin:0 auto;padding:40px 20px 0;}
+a{color:var(--accent);}
+.home-btn{position:fixed;top:16px;left:16px;z-index:90;width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;box-shadow:0 1px 2px rgba(16,24,40,0.05);color:var(--text-secondary);}
+.home-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);color:var(--accent);}
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px;}
+h1{font-size:26px;font-weight:800;letter-spacing:-0.01em;margin:0 0 8px;}
+.lead{color:var(--text-secondary);font-size:14.5px;max-width:640px;}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 8px;}
+.toc a{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:700;}
+.toc a:hover{color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg);}
+
+section{margin:44px 0;scroll-margin-top:20px;}
+.snum{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;margin-right:10px;flex-shrink:0;}
+h2{font-size:18px;font-weight:800;margin:0 0 6px;display:flex;align-items:center;}
+.section-sub{color:var(--text-secondary);font-size:13.5px;margin:0 0 20px;padding-left:34px;}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--shadow-sm);}
+
+/* excel-style data table */
+.sheet{border:1px solid var(--border-strong);border-radius:8px;overflow:hidden;margin-bottom:18px;}
+.sheet-tab{background:var(--surface-alt);padding:8px 14px;font-size:11.5px;font-weight:700;color:var(--text-secondary);border-bottom:1px solid var(--border-strong);display:flex;align-items:center;gap:6px;}
+table.data{width:100%;border-collapse:collapse;font-size:13px;}
+table.data th{background:#F0F2F5;text-align:right;padding:9px 14px;font-weight:700;color:var(--text);border:1px solid var(--border);}
+table.data th:first-child{text-align:left;}
+table.data td{padding:9px 14px;text-align:right;border:1px solid var(--border);color:var(--text);font-variant-numeric:tabular-nums;}
+table.data td:first-child{text-align:left;font-weight:600;background:#FAFBFC;}
+
+.prompt-tools{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px;}
+.choice-group{margin:16px 0;}
+.choice-group h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:700;margin:0 0 10px;}
+.choice-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.choice-card{border-radius:12px;padding:18px 20px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;transition:transform .12s ease, box-shadow .12s ease;border-width:2px;border-style:solid;}
+.choice-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(16,24,40,0.1);}
+.choice-card .cc-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.choice-card .cc-prompt{font-size:14.5px;color:var(--text);line-height:1.5;font-weight:500;}
+.choice-card.bad{background:var(--danger-bg);border-color:#FECDCA;}
+.choice-card.bad .cc-label{color:#B42318;}
+.choice-card.average{background:var(--warning-bg);border-color:#FEDF89;}
+.choice-card.average .cc-label{color:#B54708;}
+.choice-card.great{background:var(--success-bg,#ECFDF3);border-color:#A6F4C5;}
+.choice-card.great .cc-label{color:#067647;}
+.ref-prompt{position:relative;background:var(--surface-alt);border:1px solid var(--border);border-radius:9px;padding:14px 44px 14px 16px;margin-bottom:12px;font-size:13.5px;color:var(--text);line-height:1.5;}
+.ref-prompt:last-child{margin-bottom:0;}
+.ref-copy{position:absolute;top:10px;right:10px;font-size:10.5px;font-weight:700;background:#fff;border:1px solid var(--border);padding:4px 9px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--text-secondary);}
+.ref-copy:hover{border-color:var(--accent-border);color:var(--accent);}
+.ref-why{font-size:12px;color:var(--text-muted);margin-top:6px;}
+
+.response-area{margin-top:18px;}
+.weak-response{background:var(--warning-bg);border:1px solid #FEDF89;border-radius:10px;padding:16px 18px;}
+.weak-response .wr-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#B54708;margin-bottom:8px;}
+.weak-response p{margin:0 0 10px;font-size:13.5px;color:var(--text);}
+.coach-tip{font-size:12.5px;color:#B54708;background:#fff;border:1px solid #FEDF89;border-radius:7px;padding:9px 12px;}
+
+.dashboard{background:linear-gradient(135deg,#FAFAFF,#F3F4FF);border:1px solid var(--accent-border);border-radius:12px;padding:22px;}
+.dash-title{font-size:15px;font-weight:800;color:var(--text);margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+.dash-sub{font-size:12px;color:var(--text-muted);margin:0 0 18px;}
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.dash-stat{background:#fff;border:1px solid var(--border);border-radius:9px;padding:12px 14px;}
+.dash-stat .dsv{font-size:18px;font-weight:800;color:var(--accent);}
+.dash-stat .dsl{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:700;margin-top:2px;}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:9px;padding:16px;margin-bottom:14px;}
+.chart-card h4{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-secondary);font-weight:700;margin:0 0 12px;}
+.chart-card svg{width:100%;height:auto;display:block;}
+
+/* inbox */
+.inbox{border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:18px;max-height:340px;overflow-y:auto;}
+.inbox-row{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);background:#fff;}
+.inbox-row:last-child{border-bottom:none;}
+.inbox-row .from{font-weight:700;font-size:12.5px;color:var(--text);width:110px;flex-shrink:0;}
+.inbox-row .subj{font-size:12.5px;color:var(--text);flex:1;}
+.inbox-row .subj .preview{color:var(--text-muted);font-weight:400;}
+
+.found-email{background:#fff;border:1px solid var(--success);border-radius:10px;padding:16px 18px;margin-top:4px;}
+.found-email .fe-head{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--success);margin-bottom:8px;}
+.found-email .fe-from{font-weight:700;font-size:13px;color:var(--text);}
+.found-email .fe-subj{font-size:13.5px;font-weight:600;color:var(--text);margin:2px 0 10px;}
+.found-email .fe-body{font-size:13px;color:var(--text-secondary);white-space:pre-line;background:var(--surface-alt);border-radius:7px;padding:12px 14px;}
+
+.multi-match{background:var(--warning-bg);border:1px solid #FEDF89;border-radius:10px;padding:16px 18px;}
+.multi-match .mm-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#B54708;margin-bottom:10px;}
+.mm-item{background:#fff;border:1px solid var(--border);border-radius:7px;padding:8px 12px;margin-bottom:6px;font-size:12.5px;}
+.mm-item b{color:var(--text);}
+
+.summary-card{background:#fff;border:1px solid var(--success);border-radius:10px;padding:16px 18px;}
+.summary-card .sc-head{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--success);margin-bottom:10px;}
+.summary-card ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--text);}
+.summary-card li{margin-bottom:6px;}
+
+.footer-note{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+<a href="index.html" class="home-btn" title="Back to dashboard">🏠</a>
+<div class="wrap">
+  <div class="eyebrow">AI Prompting · Live Exercise</div>
+  <h1>Effective CoPilot — Excel &amp; Outlook</h1>
+  <p class="lead">Same underlying data, same underlying inbox, every time — the only thing that changes between a generic response and a genuinely useful one is which prompt you pick. Try all three tiers.</p>
+
+  <div class="toc">
+    <a href="#excel">1. Excel — build a dashboard</a>
+    <a href="#outlook">2. Outlook — find &amp; summarise</a>
+    <a href="#prompts-reference">3. Prompts worth keeping</a>
+    <a href="#download">4. Try it yourself</a>
+    <a href="#teams-outlook">5. Finding old chats &amp; files</a>
+  </div>
+
+  <section id="excel">
+    <h2><span class="snum">1</span>Turn a data table into a dashboard</h2>
+    <p class="section-sub">This is a real spreadsheet of regional sales. Pick a prompt below — what you get back depends entirely on which one you choose.</p>
+    <div class="panel">
+      <div class="sheet">
+        <div class="sheet-tab">📊 RegionalSales.xlsx</div>
+        <table class="data" id="salesTable"></table>
+      </div>
+
+      <div class="choice-group">
+        <h4>Pick a prompt to try</h4>
+        <div class="choice-cards">
+          <div class="choice-card bad" onclick="askExcel('bad')">
+            <div class="cc-label">😕 Bad</div>
+            <div class="cc-prompt">"Do something with this."</div>
+          </div>
+          <div class="choice-card average" onclick="askExcel('average')">
+            <div class="cc-label">😐 Average</div>
+            <div class="cc-prompt">"Summarise this data."</div>
+          </div>
+          <div class="choice-card great" onclick="askExcel('great')">
+            <div class="cc-label">😃 Great</div>
+            <div class="cc-prompt">"Build a dashboard with a chart of sales by region and the quarterly trend, and call out the best performer."</div>
+          </div>
+        </div>
+      </div>
+      <div class="response-area" id="excelResponse"></div>
+    </div>
+  </section>
+
+  <section id="outlook">
+    <h2><span class="snum">2</span>Find or summarise something in an inbox</h2>
+    <p class="section-sub">A real-looking inbox below. Pick a prompt to find a specific email, or to summarise a conversation — a weak prompt gets a weak answer, same as the real thing.</p>
+    <div class="panel">
+      <div class="inbox" id="inboxList"></div>
+
+      <div class="choice-group">
+        <h4>Find a specific email</h4>
+        <div class="choice-cards">
+          <div class="choice-card bad" onclick="askOutlook('find-bad')">
+            <div class="cc-label">😕 Bad</div>
+            <div class="cc-prompt">"Find something."</div>
+          </div>
+          <div class="choice-card average" onclick="askOutlook('find-average')">
+            <div class="cc-label">😐 Average</div>
+            <div class="cc-prompt">"Find the marketing email."</div>
+          </div>
+          <div class="choice-card great" onclick="askOutlook('find-great')">
+            <div class="cc-label">😃 Great</div>
+            <div class="cc-prompt">"Find the email that needs a signature before Friday."</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="choice-group">
+        <h4>Summarise a conversation</h4>
+        <div class="choice-cards">
+          <div class="choice-card bad" onclick="askOutlook('sum-bad')">
+            <div class="cc-label">😕 Bad</div>
+            <div class="cc-prompt">"Tell me what's going on."</div>
+          </div>
+          <div class="choice-card average" onclick="askOutlook('sum-average')">
+            <div class="cc-label">😐 Average</div>
+            <div class="cc-prompt">"Summarise my emails."</div>
+          </div>
+          <div class="choice-card great" onclick="askOutlook('sum-great')">
+            <div class="cc-label">😃 Great</div>
+            <div class="cc-prompt">"Summarise the marketing campaign feedback thread."</div>
+          </div>
+        </div>
+      </div>
+      <div class="response-area" id="outlookResponse"></div>
+    </div>
+  </section>
+
+  <section id="prompts-reference">
+    <h2><span class="snum">3</span>Prompts worth keeping</h2>
+    <p class="section-sub">Take these into real Excel or Outlook CoPilot and adapt them to your own data or inbox.</p>
+    <div class="panel" id="promptRefPanel">
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Build a dashboard from this data with a chart of [metric] by [category], and call out the highest and lowest performers.</span>
+        <div class="ref-why">The template behind the "great" Excel prompt above — swap in your own metric and category.</div>
+      </div>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Find the email from [name] about [topic] — I think it mentioned a deadline.</span>
+        <div class="ref-why">Naming a sender AND a topic together narrows a search fast, even with no exact keyword.</div>
+      </div>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Summarise this thread into three bullet points: what was decided, what's still open, and who owns the next step.</span>
+        <div class="ref-why">Naming the exact shape of the summary gets something usable immediately, not a generic paragraph.</div>
+      </div>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Compare [this month] to [last month] in this data and tell me the single biggest change.</span>
+        <div class="ref-why">Asking for one specific insight, not "analyse this", gets a direct, checkable answer.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="download">
+    <h2><span class="snum">4</span>Try it on the real thing</h2>
+    <p class="section-sub">The exact same data from the exercise above, as a real spreadsheet — open it with CoPilot in Excel and try your own prompts on it.</p>
+    <div class="panel" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="font-size:32px;">📊</div>
+      <div style="flex:1;min-width:200px;">
+        <div style="font-weight:700;font-size:14px;color:var(--text);">RegionalSales.xlsx</div>
+        <div style="font-size:12.5px;color:var(--text-muted);">Same figures as above — 4 regions, 4 quarters, real SUM formulas.</div>
+      </div>
+      <a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,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" download="RegionalSales.xlsx" class="ask-btn" style="text-decoration:none;">⬇ Download the file</a>
+    </div>
+  </section>
+
+  <section id="teams-outlook">
+    <h2><span class="snum">5</span>Finding old chats and files</h2>
+    <p class="section-sub">CoPilot can search across your own history in Teams and Outlook — including things from months or years ago that would take forever to scroll back to manually.</p>
+    <div class="panel" id="teamsOutlookPanel">
+      <p style="font-size:13.5px;color:var(--text-secondary);margin:0 0 16px;">CoPilot in Teams and Outlook can search across everything you have access to — chats, channels, and emails — going back as far as your history exists, not just what you can remember scrolling to. The trick is the same one from the whole exercise above: name something specific, not "that thing from before."</p>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">What did Priya say about the Q2 budget in our Teams chat back in March?</span>
+        <div class="ref-why">A person, a topic, and a rough time period — enough to find one specific message in months of chat history.</div>
+      </div>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Find the pricing spreadsheet Mike shared with me last year — I think it was called something like "Q4 pricing."</span>
+        <div class="ref-why">Works even with a half-remembered file name — CoPilot searches content and context, not just exact titles.</div>
+      </div>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Did anyone ever send me the signed contract for the Cornwall project? Check both my email and Teams.</span>
+        <div class="ref-why">CoPilot can search across BOTH Outlook and Teams in one go — useful when you're not sure which one something landed in.</div>
+      </div>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Summarise every decision made in the #onboarding channel before the summer, even the older messages.</span>
+        <div class="ref-why">Turns a channel nobody's opened in months into a quick, readable catch-up — without you scrolling through all of it yourself.</div>
+      </div>
+      <div class="ref-prompt">
+        <button class="ref-copy" onclick="copyPromptText(this)">Copy</button>
+        <span class="ref-ptext">Has this exact question come up before in any of my chats or emails? If so, what was the answer?</span>
+        <div class="ref-why">Genuinely useful before asking a colleague something twice — CoPilot checks your own history first.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-note">Part of <a href="index.html">The Mainframe</a> — digital skills training terminal. See also: <a href="copilot-prompts-guide.html">Effective CoPilot Prompts</a>, the reference guide these exercises put into practice.</div>
+</div>
+
+<script>
+/* ---------------- Excel data ---------------- */
+const SALES_DATA = {
+  regions: ['North', 'South', 'East', 'West'],
+  quarters: ['Q1', 'Q2', 'Q3', 'Q4'],
+  values: {
+    North: [42000, 45000, 51000, 61000],
+    South: [38000, 36000, 40000, 44000],
+    East:  [29000, 31000, 35000, 33000],
+    West:  [55000, 58000, 62000, 71000]
+  }
+};
+
+function renderSalesTable(){
+  let html = '<tr><th>Region</th>' + SALES_DATA.quarters.map(q=>`<th>${q}</th>`).join('') + '</tr>';
+  SALES_DATA.regions.forEach(r=>{
+    html += `<tr><td>${r}</td>` + SALES_DATA.values[r].map(v=>`<td>£${v.toLocaleString()}</td>`).join('') + '</tr>';
+  });
+  document.getElementById('salesTable').innerHTML = html;
+}
+
+function svgBarChart(labels, values, color){
+  const max = Math.max(...values);
+  const barW = 64, gap = 30, chartH = 150, padTop = 26;
+  const w = labels.length * (barW + gap);
+  let bars = '';
+  labels.forEach((label, i) => {
+    const barH = (values[i] / max) * chartH;
+    const x = i * (barW + gap) + gap/2;
+    const y = chartH - barH + padTop;
+    bars += `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="${color}" rx="5"/>`;
+    bars += `<text x="${x + barW/2}" y="${chartH + padTop + 18}" text-anchor="middle" font-size="11.5" fill="#475467" font-family="Inter,sans-serif">${label}</text>`;
+    bars += `<text x="${x + barW/2}" y="${y - 8}" text-anchor="middle" font-size="11" font-weight="700" fill="#101828" font-family="Inter,sans-serif">£${Math.round(values[i]/1000)}k</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${chartH + padTop + 30}" xmlns="http://www.w3.org/2000/svg">${bars}</svg>`;
+}
+
+function svgLineChart(labels, values, color){
+  const max = Math.max(...values), min = Math.min(0, Math.min(...values));
+  const w = 460, h = 160, pad = 32;
+  const pts = values.map((v,i) => {
+    const x = pad + (i/(values.length-1)) * (w - pad*2);
+    const y = h - pad - ((v-min)/(max-min || 1)) * (h - pad*2);
+    return [x,y];
+  });
+  const path = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  let dots = '';
+  pts.forEach((p,i) => {
+    dots += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${color}"/>`;
+    dots += `<text x="${p[0]}" y="${h-10}" text-anchor="middle" font-size="11.5" fill="#475467" font-family="Inter,sans-serif">${labels[i]}</text>`;
+    dots += `<text x="${p[0]}" y="${p[1]-11}" text-anchor="middle" font-size="11" font-weight="700" fill="#101828" font-family="Inter,sans-serif">£${Math.round(values[i]/1000)}k</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><path d="${path}" stroke="${color}" stroke-width="2.5" fill="none"/>${dots}</svg>`;
+}
+
+function computeSalesStats(){
+  const byRegion = {};
+  SALES_DATA.regions.forEach(r => { byRegion[r] = SALES_DATA.values[r].reduce((a,b)=>a+b,0); });
+  const byQuarter = SALES_DATA.quarters.map((q,i) => SALES_DATA.regions.reduce((sum,r) => sum + SALES_DATA.values[r][i], 0));
+  const grandTotal = Object.values(byRegion).reduce((a,b)=>a+b,0);
+  const bestRegion = Object.entries(byRegion).sort((a,b)=>b[1]-a[1])[0];
+  const bestQuarterIdx = byQuarter.indexOf(Math.max(...byQuarter));
+  return { byRegion, byQuarter, grandTotal, bestRegion, bestQuarter: SALES_DATA.quarters[bestQuarterIdx] };
+}
+
+function askExcel(tier){
+  const out = document.getElementById('excelResponse');
+  if(tier === 'bad'){
+    out.innerHTML = `<div class="weak-response">
+      <div class="wr-label">😕 Confused response</div>
+      <p>I'm not sure what you'd like me to do with this — could you tell me what you're trying to find out, or what you'd like it to look like?</p>
+      <div class="coach-tip">💡 "Do something with this" doesn't give CoPilot anything to act on — no task, no format, nothing to aim for.</div>
+    </div>`;
+    return;
+  }
+  if(tier === 'average'){
+    out.innerHTML = `<div class="weak-response">
+      <div class="wr-label">😐 Generic response</div>
+      <p>Here's a general summary: the data covers 4 regions across 4 quarters, with figures ranging from around £29,000 to £71,000. Overall performance varies by both region and quarter.</p>
+      <div class="coach-tip">💡 That's genuinely all this prompt gets you — try naming a chart type, asking for a specific breakdown (by region? by quarter?), or asking it to call out the best or worst performer.</div>
+    </div>`;
+    return;
+  }
+  const stats = computeSalesStats();
+  out.innerHTML = `<div class="dashboard">
+    <div class="dash-title">📊 Regional Sales Dashboard</div>
+    <div class="dash-sub">Generated from RegionalSales.xlsx</div>
+    <div class="dash-stats">
+      <div class="dash-stat"><div class="dsv">£${(stats.grandTotal/1000).toFixed(0)}k</div><div class="dsl">Total sales</div></div>
+      <div class="dash-stat"><div class="dsv">${stats.bestRegion[0]}</div><div class="dsl">Top region · £${(stats.bestRegion[1]/1000).toFixed(0)}k</div></div>
+      <div class="dash-stat"><div class="dsv">${stats.bestQuarter}</div><div class="dsl">Strongest quarter</div></div>
+    </div>
+    <div class="chart-card">
+      <h4>Total sales by region</h4>
+      ${svgBarChart(SALES_DATA.regions, SALES_DATA.regions.map(r=>stats.byRegion[r]), '#4F46E5')}
+    </div>
+    <div class="chart-card">
+      <h4>Sales trend by quarter</h4>
+      ${svgLineChart(SALES_DATA.quarters, stats.byQuarter, '#12B76A')}
+    </div>
+  </div>`;
+}
+
+/* ---------------- Outlook data ---------------- */
+const INBOX = [
+  {id:1, from:"Sarah Chen", subject:"Q3 Budget Review — action needed by Friday", preview:"Could you review the attached budget figures before our call...", body:"Hi team,\n\nCould you review the attached Q3 budget figures before our call on Friday? I've flagged a couple of variances in marketing spend that we should discuss.\n\nThanks,\nSarah", tags:["budget","friday","review","deadline"]},
+  {id:2, from:"Legal Team", subject:"Contract renewal — TechSupply Ltd — needs signature", preview:"The TechSupply Ltd contract is up for renewal and requires your signature...", body:"Hi,\n\nThe TechSupply Ltd service contract is up for renewal on the 30th. It needs your signature before Friday to avoid a lapse in service.\n\nPlease find the document attached.\n\nLegal Team", tags:["contract","signature","sign","legal","renewal","techsupply","friday"]},
+  {id:3, from:"Priya Patel", subject:"Team lunch next Tuesday?", preview:"Thinking of booking the usual place for the team...", body:"Hey! Thinking of booking the usual place for a team lunch next Tuesday around 12:30. Let me know if that works.\n\nPriya", tags:["lunch","tuesday","team"]},
+  {id:4, from:"IT Support", subject:"Server migration window this weekend", preview:"Planned maintenance will take place Saturday 10pm - Sunday 6am...", body:"Planned maintenance will take place Saturday 10pm to Sunday 6am. Some internal systems may be briefly unavailable.\n\nIT Support", tags:["server","migration","it","maintenance","weekend"]},
+  {id:5, from:"Alex Kim", subject:"Re: Marketing campaign feedback", preview:"Thanks for the notes — I've made the changes to the headline...", body:"Thanks for the notes — I've made the changes to the headline and swapped the hero image. Can you take another look?\n\nAlex", tags:["marketing","campaign","feedback","alex","headline"]},
+  {id:6, from:"Alex Kim", subject:"Re: Re: Marketing campaign feedback", preview:"Looks much better. One more thing — can we test a shorter version...", body:"Looks much better. One more thing — can we test a shorter subject line too? The current one might be getting cut off on mobile.\n\nAlex", tags:["marketing","campaign","feedback","alex","subject"]},
+  {id:7, from:"Alex Kim", subject:"Re: Re: Re: Marketing campaign feedback", preview:"Good call, done. Ready to send whenever you are...", body:"Good call, done — shortened it to under 40 characters. Ready to send whenever you are.\n\nAlex", tags:["marketing","campaign","feedback","alex","ready"]}
+];
+
+function renderInbox(){
+  document.getElementById('inboxList').innerHTML = INBOX.map(e =>
+    `<div class="inbox-row"><span class="from">${e.from}</span><span class="subj"><b>${e.subject}</b> — <span class="preview">${e.preview}</span></span></div>`
+  ).join('');
+}
+
+function findEmailMatches(prompt){
+  const p = prompt.toLowerCase();
+  return INBOX.map(email => {
+    const score = email.tags.filter(t => p.includes(t)).length;
+    return { email, score };
+  }).filter(m => m.score > 0).sort((a,b) => b.score - a.score);
+}
+
+function baseSubject(subject){
+  return subject.replace(/^(re:\s*)+/i, '').trim();
+}
+
+function askOutlook(choice){
+  const out = document.getElementById('outlookResponse');
+
+  if(choice === 'find-bad'){
+    out.innerHTML = `<div class="weak-response">
+      <div class="wr-label">😕 Confused response</div>
+      <p>I'm not sure what you'd like me to find — could you tell me who it's from, what it's about, or something you'd expect to see in the subject line?</p>
+      <div class="coach-tip">💡 "Find something" doesn't give CoPilot anything to search for — there's no name, topic, or detail to match against.</div>
+    </div>`;
+    return;
+  }
+  if(choice === 'find-average'){
+    const matches = findEmailMatches('marketing');
+    out.innerHTML = `<div class="multi-match">
+      <div class="mm-label">😐 A few possible matches</div>
+      ${matches.slice(0,3).map(m => `<div class="mm-item"><b>${m.email.from}:</b> ${m.email.subject}</div>`).join('')}
+      <div class="coach-tip" style="margin-top:8px;">💡 "The marketing email" isn't specific enough — there are three. Add a detail from just one of them to narrow it down.</div>
+    </div>`;
+    return;
+  }
+  if(choice === 'find-great'){
+    const matches = findEmailMatches('signature friday contract');
+    const e = matches[0].email;
+    out.innerHTML = `<div class="found-email">
+      <div class="fe-head">😃 Found it</div>
+      <div class="fe-from">${e.from}</div>
+      <div class="fe-subj">${e.subject}</div>
+      <div class="fe-body">${e.body}</div>
+    </div>`;
+    return;
+  }
+  if(choice === 'sum-bad'){
+    out.innerHTML = `<div class="weak-response">
+      <div class="wr-label">😕 Confused response</div>
+      <p>I'm not sure which conversation you mean — could you tell me the topic, a sender, or something from the subject line?</p>
+      <div class="coach-tip">💡 "What's going on" doesn't name a conversation — CoPilot has no idea which of several emails you're asking about.</div>
+    </div>`;
+    return;
+  }
+  if(choice === 'sum-average'){
+    out.innerHTML = `<div class="weak-response">
+      <div class="wr-label">😐 Too broad to summarise well</div>
+      <p>There are several separate conversations in this inbox — a budget review, a contract renewal, a marketing thread, and more. I can summarise one of them properly, but not all of them at once in anything useful.</p>
+      <div class="coach-tip">💡 Name the actual conversation — a sender, a subject, or a topic — and this becomes a genuinely good summary instead of a shrug.</div>
+    </div>`;
+    return;
+  }
+  if(choice === 'sum-great'){
+    const matches = findEmailMatches('marketing campaign feedback');
+    const topScore = matches[0].score;
+    const thread = matches.filter(m => m.score === topScore && baseSubject(m.email.subject) === baseSubject(matches[0].email.subject));
+    const points = thread.map(m => m.email.body.split('\n\n')[0].split('\n').pop());
+    out.innerHTML = `<div class="summary-card">
+      <div class="sc-head">😃 Thread summary — ${baseSubject(thread[0].email.subject)} (${thread.length} messages)</div>
+      <ul>${points.map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>`;
+    return;
+  }
+}
+
+function copyPromptText(btn){
+  const text = btn.parentElement.querySelector('.ref-ptext').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(()=>{ btn.textContent = old; }, 1500);
+  }).catch(()=>{});
+}
+
+renderSalesTable();
+renderInbox();
+</script>
+</body>
+</html>

@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Vault: Extended — Write, Call, Test</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --border-strong:#D0D5DD;
+  --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3; --success-border:#A6F4C5;
+  --warning:#F79009; --warning-bg:#FFFAEB;
+  --danger:#F04438; --danger-bg:#FEF3F2; --danger-border:#FDA29B;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.05);
+  --shadow-md: 0 4px 12px rgba(16,24,40,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 60px;}
+code,.mono{font-family:'JetBrains Mono',monospace;}
+
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600;display:inline-flex;align-items:center;gap:7px;margin-bottom:10px;}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);}
+
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid var(--border);}
+h1{font-size:26px;margin:0 0 8px;font-weight:700;letter-spacing:-0.01em;color:var(--text);}
+.sub{color:var(--text-secondary);font-size:14px;margin:0;max-width:600px;line-height:1.6;}
+
+.timeline{display:flex;align-items:center;gap:0;}
+.tl-seg{display:flex;align-items:center;}
+.tl-seg .dot{width:10px;height:10px;border-radius:50%;background:var(--surface-alt);border:2px solid var(--border-strong);}
+.tl-seg .dot.done{background:var(--success);border-color:var(--success);}
+.tl-seg .dot.active{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-bg);}
+.tl-line{width:26px;height:2px;background:var(--border-strong);}
+.tl-line.done{background:var(--success);}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media (max-width:860px){.cols{grid-template-columns:1fr;}}
+.right-col{display:flex;flex-direction:column;gap:20px;}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--shadow-sm);}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.panel h2{font-size:13px;margin:0;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:700;}
+.tag{font-size:11px;letter-spacing:.03em;color:var(--accent);border:1px solid var(--accent-border);background:var(--accent-bg);padding:3px 10px;border-radius:20px;text-transform:uppercase;font-weight:600;}
+.brief{color:var(--text-secondary);font-size:13.5px;line-height:1.65;margin:0 0 16px;}
+.fn-caption{color:var(--text-muted);font-size:12px;margin:2px 0 0;}
+.fn-caption code{background:var(--surface-alt);color:var(--accent);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11.5px;}
+#newContentBadge{background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDBA74;border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:700;color:#9A3412;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+
+.worked-example{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.worked-example summary{padding:11px 14px;cursor:pointer;font-size:13px;color:var(--accent);font-weight:600;list-style:none;}
+.worked-example summary::-webkit-details-marker{display:none;}
+.we-body{padding:2px 14px 14px;}
+.we-try{margin-top:12px;padding-top:12px;border-top:1px dashed var(--accent-border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.we-try-inputs{display:flex;gap:10px;flex-wrap:wrap;}
+.we-try-inputs label{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:5px;font-weight:600;}
+.we-try-inputs input[type="number"]{width:70px;padding:6px 8px;border-radius:6px;border:1px solid var(--accent-border);font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#fff;}
+.we-try-inputs input[type="number"]:focus{outline:none;border-color:var(--accent);}
+.we-try-inputs input[type="checkbox"]{width:16px;height:16px;}
+.we-try-btn{padding:7px 14px !important;font-size:12.5px !important;}
+.we-try-result{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text-muted);font-weight:600;}
+.we-try-result.show{color:var(--success);}
+.we-body pre{background:#0D1117;border:none;border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#E6EDF3;line-height:1.65;margin:0 0 10px;white-space:pre-wrap;}
+.we-body .we-line{font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:4px;}
+
+.editor-chrome{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.editor-titlebar{padding:9px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;}
+.editor-titlebar span{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
+.editor-titlebar .syntax-status{font-size:11px;font-weight:600;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.editor-titlebar .syntax-status.ok{color:var(--success);}
+.editor-titlebar .syntax-status.error{color:var(--danger);cursor:help;}
+textarea{width:100%;min-height:170px;background:#0D1117;color:#E6EDF3;border:none;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;padding:14px 16px;resize:vertical;tab-size:2;}
+textarea:focus{outline:none;}
+.editor-chrome:focus-within{box-shadow:0 0 0 3px var(--accent-bg);}
+
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+button{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;cursor:pointer;padding:11px 20px;}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent);box-shadow:var(--shadow-sm);}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);}
+.btn-ghost{background:#fff;color:var(--text-secondary);border:1px solid var(--border-strong);}
+.btn-ghost:hover{background:var(--surface-alt);color:var(--text);}
+
+.help-msg.hint{background:var(--accent-bg);border:1px solid var(--accent-border);}
+.help-msg.blocked{background:var(--warning-bg);border:1px solid #FEDF89;color:#B54708;font-weight:600;}
+.error-box{margin-top:12px;font-size:13px;padding:12px 14px;border-radius:8px;display:none;line-height:1.6;white-space:pre-wrap;color:#B42318;background:var(--danger-bg);border:1px solid var(--danger-border);}
+
+.test-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.test-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;background:#fff;flex-wrap:wrap;}
+.test-row:last-child{border-bottom:none;}
+.test-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;border:1.5px solid var(--border-strong);color:transparent;}
+.test-row.pass{background:var(--success-bg);}
+.test-row.pass .test-icon{background:var(--success);border-color:var(--success);color:#fff;}
+.test-row.fail .test-icon{background:var(--danger);border-color:var(--danger);color:#fff;}
+.test-call,.test-desc{color:var(--text);flex:1;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+.test-expect,.test-prop{color:var(--text-muted);font-size:11.5px;}
+.test-actual{color:#B42318;width:100%;padding-left:30px;font-size:12px;}
+
+.status-line{margin-top:14px;font-size:13px;color:var(--text-secondary);text-align:center;}
+.status-line.pass{color:var(--success);font-weight:600;}
+
+#successOverlay{display:none;position:fixed;inset:0;background:rgba(16,24,40,0.45);backdrop-filter:blur(2px);align-items:center;justify-content:center;z-index:50;padding:20px;}
+.success-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;max-width:380px;text-align:center;box-shadow:var(--shadow-md);}
+.ping{width:56px;height:56px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:var(--success-bg);border:1px solid var(--success-border);}
+.ping-dot{width:14px;height:14px;border-radius:50%;background:var(--success);}
+.success-card h3{font-size:19px;margin:0 0 8px;color:var(--text);font-weight:700;}
+.success-card p{color:var(--text-secondary);font-size:13.5px;line-height:1.5;margin:0 0 22px;}
+
+#doneScreen{display:none;text-align:center;padding:50px 20px;}
+.done-card{max-width:520px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:44px 38px;box-shadow:var(--shadow-md);}
+.learn-more{text-align:left;background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:20px;}
+.plenary{text-align:left;margin-top:22px;padding-top:20px;border-top:1px solid var(--border);}
+.plenary h4{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:700;margin:0 0 12px;}
+.plenary ul{margin:0 0 16px;padding-left:20px;}
+.plenary li{font-size:13.5px;color:var(--text);margin-bottom:8px;line-height:1.5;}
+.plenary .job-note{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:9px;padding:14px 16px;font-size:13.5px;color:var(--text);}
+.plenary .job-note b{color:var(--accent);}
+.learn-more h4{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:700;margin:0 0 10px;}
+.learn-more a{display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:600;font-size:13px;text-decoration:none;padding:6px 0;}
+.learn-more a:hover{text-decoration:underline;}
+.learn-more a .lm-sub{color:var(--text-muted);font-weight:400;font-size:12px;}
+.done-card h2{font-size:22px;color:var(--text);margin:0 0 10px;font-weight:700;}
+.done-card p{color:var(--text-secondary);font-size:13.5px;line-height:1.6;margin:0 0 8px;}
+
+/* chat widget */
+.help-fab{position:fixed;bottom:22px;right:22px;z-index:80;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md);}
+.help-fab:hover{background:var(--accent-hover);}
+.help-fab .fab-dot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:var(--danger);border:2px solid #fff;display:none;}
+.help-fab .fab-dot.pulse{animation:fabpulse 1.4s ease-in-out infinite;}
+@keyframes fabpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.35);}}
+.help-panel{position:fixed;bottom:90px;right:22px;z-index:80;width:340px;max-width:calc(100vw - 40px);height:440px;max-height:calc(100vh - 130px);background:var(--surface);border:1px solid var(--border);border-radius:14px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(16,24,40,0.15);}
+.help-panel.open{display:flex;}
+.help-head{padding:12px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.help-head .htitle{font-size:13px;color:var(--text);font-weight:700;display:flex;align-items:center;gap:7px;}
+.help-head .htitle::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);}
+.help-head button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:2px 6px;}
+.help-head button:hover{color:var(--text);}
+.help-log{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+.help-msg{font-size:12.5px;line-height:1.55;padding:9px 11px;border-radius:8px;max-width:88%;}
+.help-msg.bot{background:var(--surface-alt);border:1px solid var(--border);color:var(--text);align-self:flex-start;}
+.help-msg.user{background:var(--accent);border:1px solid var(--accent);color:#fff;align-self:flex-end;}
+.help-inputrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);}
+.freetext-area{padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);}
+.freetext-area .help-inputrow{padding:0;border-top:none;background:none;}
+.menu-area{padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-alt);display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;}
+.menu-btn{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;text-align:left;width:100%;}
+.menu-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);}
+.menu-btn.back{color:var(--text-muted);font-weight:500;background:var(--surface-alt);}
+.menu-btn .mi{font-size:14px;flex-shrink:0;}
+.help-inputrow input{flex:1;background:#fff;border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12.5px;padding:9px 11px;border-radius:8px;}
+.help-inputrow input:focus{outline:none;border-color:var(--accent);}
+.help-inputrow button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0 14px;font-weight:600;font-size:12px;}
+.help-inputrow button:hover{background:var(--accent-hover);}
+
+
+.home-btn{position:fixed;top:16px;left:16px;z-index:90;width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;box-shadow:0 1px 2px rgba(16,24,40,0.05);color:var(--text-secondary);transition:border-color .15s ease, color .15s ease;}
+.home-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);color:var(--accent);}
+</style>
+</head>
+<body>
+<a href="index.html" class="home-btn" title="Back to dashboard">🏠</a>
+
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Financial Systems · Live Taster</div>
+      <h1>The Vault: Extended — Write, Call, Test</h1>
+      <p class="sub">Six pieces of a bank's risk-checking system are broken — the logic is missing. Multiple parameters, compound conditions, and a couple of genuine edge cases this time.</p>
+    </div>
+    <div class="timeline" id="dots"></div>
+  </div>
+
+  <div id="game">
+    <div class="cols">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 id="challengeTitle">Add a Service Charge</h2>
+            <p class="fn-caption">You'll write a function called <code id="fnNameCaption">calculateTotal</code></p>
+          </div>
+          <span class="tag" id="conceptTag">FUNCTIONS</span>
+        </div>
+        <div id="newContentBadge" style="display:none;"></div>
+        <p class="brief" id="briefText"></p>
+        <details class="worked-example" id="workedExample" open>
+          <summary>📎 See a worked example — then try it yourself</summary>
+          <div class="we-body">
+            <pre id="weCode"></pre>
+            <div id="weExplain"></div>
+            <div class="we-try">
+              <div class="we-try-inputs" id="weTryInputs"></div>
+              <button class="btn-ghost we-try-btn" onclick="runWorkedExample()">▶ Try it</button>
+              <span class="we-try-result" id="weTryResult"></span>
+            </div>
+          </div>
+        </details>
+        <div class="editor-chrome">
+          <div class="editor-titlebar">
+            <div><span>risk.js</span> — updates as you type</div>
+            <span class="syntax-status" id="syntaxStatus"></span>
+          </div>
+          <textarea id="codeInput" spellcheck="false" oninput="checkSyntaxLive()"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="runTests()">▶ Run Tests</button>
+          <button class="btn-ghost" onclick="resetChallenge()">↺ Reset</button>
+          <button class="btn-ghost" id="hintBtn" onclick="requestHint()">💡 Hint</button>
+        </div>
+        <div class="error-box" id="errorBox"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Test Console</h2>
+        </div>
+        <div class="test-list" id="testList"></div>
+        <div class="status-line" id="statusLine">awaiting test run</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="doneScreen">
+    <div class="done-card">
+      <div style="width:64px;height:64px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,#FFE066,#E8B923);box-shadow:0 6px 16px rgba(232,185,35,0.4);">🥇</div>
+      <div class="eyebrow" style="justify-content:center;">The Vault · Take-Home</div>
+      <h2>All 6 patched</h2>
+      <p>Every function passed its tests. That's the actual day-to-day loop for a lot of dev roles — read a rule, write the logic, run the tests, fix what fails.</p>
+      <div class="cert-claim" style="background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:16px;text-align:left;">
+        <label for="certNameInput" style="font-size:12.5px;font-weight:700;color:var(--text);display:block;margin-bottom:8px;">Your name, for the certificate:</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="certNameInput" placeholder="Type your name…" maxlength="40" style="flex:1;padding:10px 14px;border-radius:7px;border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:13.5px;">
+          <button class="btn-primary" id="claimBtn" onclick="claimTrophy()" style="border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;padding:11px 18px;">🏆 Claim Certificate</button>
+        </div>
+        <p id="claimNote" style="font-size:12.5px;color:var(--success,#12B76A);margin:8px 0 0;font-weight:600;"></p>
+      </div>
+      <p style="color:var(--text-muted);margin-top:14px;">You've now done every Vault challenge that exists — nice work.</p>
+      <div class="learn-more">
+        <h4>Keep learning</h4>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener">MDN — Functions <span class="lm-sub">the full reference on what you just practiced</span></a>
+        <a href="https://javascript.info/" target="_blank" rel="noopener">javascript.info <span class="lm-sub">a free, beginner-friendly full course</span></a>
+      </div>
+      <div class="plenary">
+        <h4>💭 Before you go — what you just did</h4>
+        <ul>
+          <li>Wrote real <b>functions</b> — named blocks of logic that take an input and give back an answer.</li>
+          <li>Used <b>true/false decisions</b>, including combining two conditions at once, to make code respond correctly to real business rules.</li>
+          <li>Ran real <b>tests</b> to prove your code actually worked, instead of just hoping it did.</li>
+        </ul>
+        <div class="job-note">🔧 <b>Where this shows up at work:</b> "read a rule, write the logic, run the tests, fix what fails" is genuinely the day-to-day rhythm of a huge number of developer roles — not a simplified version of the job, the actual job.</div>
+      </div>
+      <div class="actions" style="justify-content:center;margin-top:18px;">
+        <a href="index.html" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-radius:8px;cursor:pointer;padding:11px 20px;">🏠 Return Home</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="successOverlay">
+  <div class="success-card">
+    <div class="ping"><div class="ping-dot"></div></div>
+    <h3 id="successTitle">Tests Passing</h3>
+    <p id="successText">All checks cleared.</p>
+    <button class="btn-primary" onclick="nextChallenge()" id="nextBtn">Deploy →</button>
+  </div>
+</div>
+
+<script>
+
+/* ---------------- Challenges ---------------- */
+const CHALLENGES = [
+  {
+    title: "Add a Service Charge",
+    fnName: "calculateTotal",
+    concept: "FUNCTIONS · RETURN VALUES",
+    brief: "Every transfer carries a flat £5 processing fee. Write calculateTotal(amount) so it returns the transaction amount plus that fee.",
+    starter: `// calculateTotal(amount) should return the transaction
+// amount plus a flat £5 processing fee.
+
+function calculateTotal(amount) {
+  // TODO: return amount plus the fee
+}`,
+    tests: [
+      {args:[100], expected:105},
+      {args:[250], expected:255},
+      {args:[0], expected:5}
+    ],
+    hints: [
+      "Think about what the function needs to give back — the amount, plus something extra.",
+      "You need a return statement. The shape is: return amount + ___;",
+      "return amount + 5;"
+    ],
+    workedFn: "addServiceCharge",
+    workedCode: `function addServiceCharge(price) {
+  return price + 2;
+}`,
+    workedParams: [{name:"price", default:10}],
+    workedExplain: [
+      "<b>function addServiceCharge(price)</b> — this names the function and says what goes in: price.",
+      "<b>return price + 2;</b> — this is what comes back out: price, plus 2.",
+      "Try changing the number below and clicking <b>Try it</b> — watch the answer change. That's the whole shape you need below, just with a different number and name."
+    ]
+  },
+  {
+    title: "Spot a High-Risk Transaction",
+    fnName: "isHighRisk",
+    concept: "BOOLEANS · COMPARISON",
+    brief: "Compliance flags any transaction strictly over £10,000 for manual review. Write isHighRisk(amount) so it returns true or false.",
+    starter: `// isHighRisk(amount) should return true if the amount
+// is OVER £10,000, and false otherwise.
+
+function isHighRisk(amount) {
+  // TODO
+}`,
+    tests: [
+      {args:[15000], expected:true},
+      {args:[5000], expected:false},
+      {args:[10000], expected:false}
+    ],
+    hints: [
+      "This is really a yes/no question — is the amount over 10000?",
+      "A comparison like amount > 10000 already gives you true or false directly — you can return it as-is.",
+      "return amount > 10000;"
+    ],
+    workedFn: "isAdult",
+    workedCode: `function isAdult(age) {
+  return age >= 18;
+}`,
+    workedParams: [{name:"age", default:20}],
+    workedExplain: [
+      "<b>age >= 18</b> — read as one operator, \"greater than or equal to\" (there's no single ≥ key on a keyboard, so code writes it as &gt; and = back to back). This is a question with a yes/no answer: true or false.",
+      "<b>return age >= 18;</b> — sends that yes/no answer straight back. No need to write \"if this is true, return true\" — the comparison already IS true or false.",
+      "Try changing the number below and clicking <b>Try it</b> — watch it flip between true and false around 18."
+    ]
+  },
+  {
+    title: "Sort a Transaction by Size",
+    fnName: "categoriseTransaction",
+    concept: "CONDITIONALS · MULTIPLE OUTCOMES",
+    brief: "The risk system sorts every transaction into one of three bands: 'flagged' if over £10,000, 'review' if £1,000 or more, otherwise 'standard'. Write categoriseTransaction(amount) to return the right band.",
+    starter: `// categoriseTransaction(amount) should return:
+//   'flagged'  if amount > 10000
+//   'review'   if amount >= 1000
+//   'standard' otherwise
+
+function categoriseTransaction(amount) {
+  // TODO
+}`,
+    tests: [
+      {args:[15000], expected:"flagged"},
+      {args:[5000], expected:"review"},
+      {args:[1000], expected:"review"},
+      {args:[500], expected:"standard"}
+    ],
+    hints: [
+      "Check the most extreme case first, then work your way down to the least extreme.",
+      "Start with: if (amount > 10000) return 'flagged'; then add another if for the next band.",
+      "if (amount > 10000) return 'flagged';\nif (amount >= 1000) return 'review';\nreturn 'standard';"
+    ],
+    workedFn: "gradeScore",
+    workedCode: `function gradeScore(score) {
+  if (score > 90) return 'A';
+  if (score >= 70) return 'B';
+  return 'C';
+}`,
+    workedParams: [{name:"score", default:85}],
+    workedExplain: [
+      "<b>if (score > 90) return 'A';</b> — checked first. If this matches, it stops here.",
+      "<b>if (score >= 70) return 'B';</b> — only checked if the first one didn't match.",
+      "<b>return 'C';</b> — if neither matched, this runs last, with no \"if\" needed.",
+      "Try sliding the number below across 90 and 70 — watch which letter comes back."
+    ]
+  },
+  {
+    title: "Apply a Loyalty Discount",
+    fnName: "applyLoyaltyDiscount",
+    concept: "MULTIPLE PARAMETERS · BOOLEANS",
+    brief: "Premium customers get a 10% discount on the transaction total. Standard customers pay full price. Write applyLoyaltyDiscount(amount, isPremium) to return the correct charge. Regular if/else works fine here — there's just a shorter way too, if you want it.",
+    starter: `// applyLoyaltyDiscount(amount, isPremium) should return:
+//   amount * 0.9   if isPremium is true
+//   amount         otherwise
+// Plain if/else works fine — no need to learn anything new
+// unless you want to.
+
+function applyLoyaltyDiscount(amount, isPremium) {
+  // TODO
+}`,
+    tests: [
+      {args:[100, true], expected:90},
+      {args:[100, false], expected:100},
+      {args:[50, true], expected:45}
+    ],
+    hints: [
+      "You already know how to do this with if/else — that works completely fine here: if (isPremium) { return amount * 0.9; } return amount;. If you'd rather try something new, keep reading.",
+      "A common slip on this one: writing isPremium == true instead of just isPremium — a boolean is already true or false, comparing it to true again doesn't do anything extra and can actually cause bugs.",
+      "A ternary is a shorthand for exactly that if/else, written in one line: condition ? valueIfTrue : valueIfFalse. Same logic, different shape — entirely optional.",
+      "Worked through with real numbers: amount is 100, isPremium is true. You want 90 back — that's 100 * 0.9. If isPremium were false instead, you'd want the original 100 back, completely untouched. That's the exact shape to build, in either style.",
+      "Here's the shape with one blank left: return isPremium ? amount * ___ : amount; — what number goes in the blank to knock 10% off?",
+      "Either of these passes: if (isPremium) { return amount * 0.9; } return amount;  —  or  —  return isPremium ? amount * 0.9 : amount;"
+    ],
+    workedFn: "applyMemberPrice",
+    workedCode: `function applyMemberPrice(price, isMember) {
+  return isMember ? price * 0.8 : price;
+}`,
+    workedParams: [{name:"price", default:100}, {name:"isMember", default:true, type:"boolean"}],
+    workedExplain: [
+      "<b>isMember ? price * 0.8 : price</b> — a shorthand if/else. If isMember is true, use the first value; otherwise use the second. Writing this out as a full if/else instead works exactly the same — this is just a shorter way to say it, not a required one.",
+      "Try ticking and unticking the checkbox below — watch the discount switch on and off."
+    ]
+  },
+  {
+    title: "Calculate Interest Owed",
+    fnName: "calculateInterest",
+    concept: "MULTIPLE PARAMETERS · ARITHMETIC",
+    brief: "Savings interest is simple: the balance multiplied by the annual rate, as a percentage. Write calculateInterest(balance, rate) to return the interest earned.",
+    starter: `// calculateInterest(balance, rate) should return the interest
+// earned: balance multiplied by (rate / 100).
+
+function calculateInterest(balance, rate) {
+  // TODO
+}`,
+    tests: [
+      {args:[1000, 5], expected:50},
+      {args:[2500, 3], expected:75},
+      {args:[0, 5], expected:0}
+    ],
+    hints: [
+      "rate is given as a whole number like 5, meaning 5% — you need to turn that into a fraction first.",
+      "A common slip on this one: dividing balance by rate instead of rate by 100 — double-check which number is on top and which is on the bottom before multiplying.",
+      "Dividing by 100 turns a percentage like 5 into 0.05 — then multiply that by balance.",
+      "Worked through with the first test's real numbers: balance is 1000, rate is 5. First, 5 / 100 = 0.05. Then, 1000 * 0.05 = 50 — and 50 is exactly what that test expects back.",
+      "Here's the shape with one blank left: return balance * (rate / ___); — what number turns a whole-number percentage like 5 into a fraction?",
+      "return balance * (rate / 100);"
+    ],
+    workedFn: "calculateCommission",
+    workedCode: `function calculateCommission(sale, percent) {
+  return sale * (percent / 100);
+}`,
+    workedParams: [{name:"sale", default:1000}, {name:"percent", default:10}],
+    workedExplain: [
+      "<b>percent / 100</b> — turns a whole number like 10 into a fraction like 0.1.",
+      "<b>sale * (percent / 100)</b> — multiplies the sale by that fraction to get the commission amount.",
+      "Try changing either number below and clicking <b>Try it</b>."
+    ]
+  },
+  {
+    title: "Flag Suspicious Activity",
+    fnName: "flagSuspiciousActivity",
+    concept: "COMPOUND LOGIC · AND",
+    brief: "Compliance flags a transaction as suspicious only when BOTH conditions are true: it's strictly over £5,000, AND it's from outside the UK. Write flagSuspiciousActivity(amount, country) to return true or false. Nested if statements work fine here too — && is just a shortcut, not a requirement.",
+    starter: `// flagSuspiciousActivity(amount, country) should return true
+// only when amount is OVER 5000 AND country is NOT "UK".
+// Nested ifs work fine — && is just a shorter way to write it.
+
+function flagSuspiciousActivity(amount, country) {
+  // TODO
+}`,
+    tests: [
+      {args:[6000, "US"], expected:true},
+      {args:[6000, "UK"], expected:false},
+      {args:[3000, "US"], expected:false},
+      {args:[5000, "US"], expected:false}
+    ],
+    hints: [
+      "You can nest an if inside another if — the inner one only runs when the outer one is already true, which is exactly \"both conditions at once.\" That works completely fine here.",
+      "A common slip on this one: typing a single & instead of &&. A single & does something completely different in JavaScript — always use two.",
+      "&& is a shortcut for that same nesting, written on one line: it only returns true when BOTH sides are true. Try: amount > 5000 && country !== 'UK' — but nested ifs give the same result if you'd rather use those.",
+      "Worked through with the first test's real numbers: amount is 6000, country is 'US'. Is 6000 > 5000? Yes. Is 'US' not equal to 'UK'? Yes. Both true, so the answer is true. Now check amount 6000, country 'UK': the first condition still holds, but the second one doesn't — so the answer flips to false.",
+      "Here's the shape with one blank left: return amount > 5000 ___ country !== 'UK'; — which operator means \"both sides have to be true\"?",
+      "Either passes: if (amount > 5000) { if (country !== 'UK') { return true; } } return false;  —  or  —  return amount > 5000 && country !== 'UK';"
+    ],
+    workedFn: "needsApproval",
+    workedCode: `function needsApproval(age, amount) {
+  return age < 18 && amount > 50;
+}`,
+    workedParams: [{name:"age", default:16}, {name:"amount", default:100}],
+    workedExplain: [
+      "<b>age &lt; 18 && amount &gt; 50</b> — both sides have to be true for the whole thing to be true.",
+      "Try pushing age above 18, or amount below 50 — either one alone is enough to flip the result to false."
+    ]
+  }
+];
+
+let current = 0;
+let failCount = 0;
+let hintTier = 0;
+let proactiveShown = false;
+
+function buildDots(){
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  CHALLENGES.forEach((_,i)=>{
+    const seg = document.createElement('div');
+    seg.className = 'tl-seg';
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot'+i;
+    seg.appendChild(d);
+    if(i < CHALLENGES.length-1){
+      const line = document.createElement('div');
+      line.className = 'tl-line';
+      line.id = 'line'+i;
+      seg.appendChild(line);
+    }
+    dots.appendChild(seg);
+  });
+}
+function refreshDots(){
+  CHALLENGES.forEach((_,i)=>{
+    document.getElementById('dot'+i).className = 'dot' + (i<current?' done':i===current?' active':'');
+    const l = document.getElementById('line'+i);
+    if(l) l.className = 'tl-line' + (i<current?' done':'');
+  });
+}
+
+function loadChallenge(idx){
+  current = idx;
+  failCount = 0;
+  hintTier = 0;
+  proactiveShown = false;
+  const c = CHALLENGES[idx];
+  const badge = document.getElementById('newContentBadge');
+  if(idx >= 3){
+    badge.style.display = 'flex';
+    badge.innerHTML = '🆕 New — this challenge isn\'t in the taster version';
+  } else {
+    badge.style.display = 'none';
+  }
+  document.getElementById('challengeTitle').textContent = c.title;
+  document.getElementById('fnNameCaption').textContent = c.fnName;
+  document.getElementById('conceptTag').textContent = c.concept;
+  document.getElementById('briefText').textContent = c.brief;
+  document.getElementById('codeInput').value = c.starter;
+  document.getElementById('weCode').textContent = c.workedCode;
+  document.getElementById('weExplain').innerHTML = c.workedExplain.map(e=>`<div class="we-line">${e}</div>`).join('');
+  renderWeTryInputs(c);
+  document.getElementById('weTryResult').textContent = '';
+  document.getElementById('weTryResult').className = 'we-try-result';
+  document.getElementById('workedExample').open = true;
+  document.getElementById('hintBtn').textContent = '💡 Hint';
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('helpDot').style.display = 'none';
+  document.getElementById('syntaxStatus').textContent = '';
+  document.getElementById('syntaxStatus').className = 'syntax-status';
+  clearTimeout(syntaxCheckTimer);
+  refreshDots();
+  renderTests(c);
+  const status = document.getElementById('statusLine');
+  status.textContent = 'awaiting test run';
+  status.className = 'status-line';
+}
+function resetChallenge(){ loadChallenge(current); }
+
+function renderTests(c){
+  const list = document.getElementById('testList');
+  list.innerHTML = '';
+  c.tests.forEach((t,i)=>{
+    const row = document.createElement('div');
+    row.className = 'test-row pending';
+    row.id = 'test-'+i;
+    row.innerHTML = `<span class="test-icon">○</span><span class="test-call">${c.fnName}(${t.args.map(a=>JSON.stringify(a)).join(', ')})</span><span class="test-expect">expect ${JSON.stringify(t.expected)}</span>`;
+    list.appendChild(row);
+  });
+}
+
+let hasRunSinceHint = true;
+function requestHint(){
+  if(!helpOpen) toggleHelp();
+  revealNextHint();
+}
+
+function revealNextHint(){
+  const c = CHALLENGES[current];
+  const btn = document.getElementById('hintBtn');
+
+  if(hintTier > 0 && hintTier < c.hints.length && !hasRunSinceHint){
+    addHelpMsg('⏸ Try running your code first — click ▶ Run Tests, then I\u2019ll give you the next hint.', 'bot blocked');
+    return;
+  }
+
+  if(hintTier < c.hints.length){
+    hintTier++;
+    addHelpMsg(`${hintTier}. ${c.hints[hintTier-1]}`, 'bot hint');
+    hasRunSinceHint = false;
+  } else {
+    addHelpMsg('That\u2019s everything I\u2019ve got for this one \u2014 you\u2019ve already seen all the hints. Try running your code, or flag a facilitator if you\u2019re still stuck.', 'bot');
+  }
+  btn.textContent = hintTier >= c.hints.length ? '💡 That\u2019s the full hint' : '💡 Tell me more';
+}
+
+let pendingNudge = null;
+function maybeNudgeHint(){
+  const status = document.getElementById('statusLine');
+  if(failCount >= 2){
+    document.getElementById('helpDot').style.display = 'block';
+    if(hintTier === 0){
+      status.textContent = "No rush — try the 💡 Hint button below, it'll walk you through it step by step.";
+    }
+  }
+  if(failCount >= 3 && !proactiveShown){
+    proactiveShown = true;
+    document.getElementById('helpDot').classList.add('pulse');
+    const msg = "Hey — this one's putting up a fight. That's completely normal, not a sign you're doing anything wrong. Whenever you're ready, tell me what's happening or ask something specific about it.";
+    if(helpOpen){
+      addHelpMsg(msg, 'bot');
+    } else {
+      pendingNudge = msg;
+    }
+  }
+}
+
+function renderWeTryInputs(c){
+  const wrap = document.getElementById('weTryInputs');
+  wrap.innerHTML = c.workedParams.map((p,i) => {
+    if(p.type === 'boolean'){
+      return `<label>${p.name} <input type="checkbox" id="weParam${i}" ${p.default ? 'checked' : ''}></label>`;
+    }
+    return `<label>${p.name} <input type="number" id="weParam${i}" value="${p.default}" step="any"></label>`;
+  }).join('');
+}
+
+function runWorkedExample(){
+  const c = CHALLENGES[current];
+  const resultEl = document.getElementById('weTryResult');
+  try{
+    const fn = new Function(c.workedCode + `\nreturn ${c.workedFn};`)();
+    const args = c.workedParams.map((p,i) => {
+      const el = document.getElementById('weParam'+i);
+      return p.type === 'boolean' ? el.checked : Number(el.value);
+    });
+    const result = fn(...args);
+    resultEl.textContent = `→ ${c.workedFn}(${args.join(', ')}) = ${JSON.stringify(result)}`;
+    resultEl.className = 'we-try-result show';
+  }catch(e){
+    resultEl.textContent = 'error — try a different value';
+    resultEl.className = 'we-try-result';
+  }
+}
+
+let syntaxCheckTimer;
+function checkSyntaxLive(){
+  clearTimeout(syntaxCheckTimer);
+  syntaxCheckTimer = setTimeout(()=>{
+    const code = document.getElementById('codeInput').value;
+    const statusEl = document.getElementById('syntaxStatus');
+    if(!code.trim()){
+      statusEl.textContent = '';
+      statusEl.className = 'syntax-status';
+      statusEl.title = '';
+      return;
+    }
+    try{
+      new Function(code);
+      statusEl.textContent = '✓ syntax OK';
+      statusEl.className = 'syntax-status ok';
+      statusEl.title = '';
+    }catch(e){
+      statusEl.textContent = '⚠ ' + describeSyntaxError(e);
+      statusEl.className = 'syntax-status error';
+      statusEl.title = e.message;
+    }
+  }, 500);
+}
+function describeSyntaxError(e){
+  const msg = e.message;
+  if(/Unexpected end of input/.test(msg)) return "a bracket, brace, or parenthesis isn't closed";
+  if(/Unexpected token '\}'/.test(msg)) return "an extra } somewhere, or one closed too early";
+  if(/Unexpected token '\)'/.test(msg)) return "an extra ) somewhere";
+  if(/missing \) after argument list/.test(msg)) return "a function call is missing its closing )";
+  if(/Unexpected identifier/.test(msg)) return "check for a missing comma, operator, or semicolon nearby";
+  return "syntax error — hover for details";
+}
+
+function runTests(){
+  hasRunSinceHint = true;
+  const c = CHALLENGES[current];
+  const src = document.getElementById('codeInput').value;
+  const errorBox = document.getElementById('errorBox');
+  errorBox.style.display = 'none';
+
+  let fn;
+  try{
+    fn = new Function(src + `\nreturn ${c.fnName};`)();
+    if(typeof fn !== 'function'){
+      throw new Error(`${c.fnName} isn't defined as a function yet — check the function name is spelled exactly the same as in the starter code.`);
+    }
+  }catch(e){
+    failCount++;
+    let msg = e.message;
+    const refMatch = msg.match(/^(\w+) is not defined$/);
+    if(refMatch){
+      msg = `${msg} — this usually doesn't mean ${refMatch[1]} is wrong, it means the function wrapper around your code is missing or broken. Check it still starts with <code>function ${c.fnName}(...)</code> and ends with a closing <code>}</code>.`;
+    }
+    errorBox.innerHTML = `<b>That's okay — this is a normal step.</b><br>${msg}`;
+    errorBox.style.display = 'block';
+    maybeNudgeHint();
+    return;
+  }
+
+  let allPass = true;
+  c.tests.forEach((t,i)=>{
+    const row = document.getElementById('test-'+i);
+    let actual, threw = false, errMsg = '';
+    try{
+      actual = fn(...t.args);
+    }catch(e){
+      threw = true; errMsg = e.message;
+    }
+    const pass = !threw && actual === t.expected;
+    row.className = 'test-row ' + (pass ? 'pass' : 'fail');
+    row.querySelector('.test-icon').textContent = pass ? '✓' : '✗';
+    const existingActual = row.querySelector('.test-actual');
+    if(existingActual) existingActual.remove();
+    if(!pass){
+      allPass = false;
+      const span = document.createElement('span');
+      span.className = 'test-actual';
+      span.textContent = threw ? `threw: ${errMsg}` : `got ${JSON.stringify(actual)}`;
+      row.appendChild(span);
+    }
+  });
+
+  const status = document.getElementById('statusLine');
+  if(allPass){
+    failCount = 0;
+    status.textContent = 'all tests passing';
+    status.className = 'status-line pass';
+    showSuccess();
+  } else {
+    failCount++;
+    status.textContent = 'not quite yet — read the rows above and try again';
+    status.className = 'status-line';
+    maybeNudgeHint();
+  }
+}
+
+function showSuccess(){
+  const isLast = current === CHALLENGES.length - 1;
+  document.getElementById('successTitle').textContent = isLast ? 'Vault Secured' : 'Tests Passing';
+  document.getElementById('successText').textContent = isLast
+    ? 'All six functions deployed and passing.'
+    : `${CHALLENGES[current].fnName} is solid. One more piece to patch.`;
+  document.getElementById('nextBtn').textContent = isLast ? 'Finish →' : 'Deploy →';
+  document.getElementById('successOverlay').style.display = 'flex';
+}
+
+function nextChallenge(){
+  document.getElementById('successOverlay').style.display = 'none';
+  if(current === CHALLENGES.length - 1){
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('doneScreen').style.display = 'block';
+  } else {
+    loadChallenge(current + 1);
+  }
+}
+
+function claimTrophy(){
+  const nameInput = document.getElementById('certNameInput');
+  const name = (nameInput.value || '').trim() || 'Anonymous';
+  const existing = JSON.parse(localStorage.getItem('mainframe_trophies') || '[]');
+  existing.push({
+    module: 'The Vault (Take-Home)',
+    tier: 'Vault Expert',
+    emoji: '🥇',
+    name: name,
+    date: new Date().toLocaleDateString()
+  });
+  localStorage.setItem('mainframe_trophies', JSON.stringify(existing));
+  document.getElementById('claimBtn').textContent = '✅ Saved!';
+  document.getElementById('claimBtn').disabled = true;
+  document.getElementById('claimNote').textContent = 'Saved — view it anytime from "My Trophies" on the dashboard.';
+}
+
+buildDots();
+loadChallenge(0);
+</script>
+
+<!-- Help widget -->
+<button class="help-fab" id="helpFab" onclick="toggleHelp()">💬<span class="fab-dot" id="helpDot"></span></button>
+<div class="help-panel" id="helpPanel">
+  <div class="help-head">
+    <span class="htitle">Help &amp; Hints</span>
+    <button onclick="toggleHelp()">✕</button>
+  </div>
+  <div class="help-log" id="helpLog"></div>
+  <div class="menu-area" id="menuArea"></div>
+  <div class="freetext-area" id="freetextArea" style="display:none;">
+    <div class="help-inputrow">
+      <input type="text" id="helpInput" placeholder="Ask in your own words…" onkeydown="if(event.key==='Enter')sendFreeText()">
+      <button onclick="sendFreeText()">Send</button>
+    </div>
+    <button class="menu-btn back" onclick="renderMenu('root')" style="margin-top:8px;"><span class="mi">←</span>Back to menu</button>
+  </div>
+</div>
+
+
+<script>
+
+/* ---------------- Help widget ---------------- */
+const HELP_DATA = {
+  "module": "vault",
+  "entries": [
+    {
+      "id": "what-is-function-def",
+      "keywords": [
+        "how do i write a function",
+        "define a function",
+        "function syntax",
+        "writing a function",
+        "what does function mean",
+        "what is a parameter",
+        "what is an argument",
+        "function argument meaning",
+        "what goes in the brackets"
+      ],
+      "response": "function name(parameter) { return something; } \u2014 the name is what you call it by, the parameter is the input, and return sends a value back out. Nothing after return runs."
+    },
+    {
+      "id": "missing-return",
+      "keywords": [
+        "undefined",
+        "returns undefined",
+        "forgot return",
+        "nothing comes back",
+        "no return value"
+      ],
+      "response": "If a test shows 'got undefined', your function ran but never hit a return statement \u2014 the logic might be right, it's just not being sent back. Add return in front of the value."
+    },
+    {
+      "id": "boolean-explain",
+      "keywords": [
+        "what is a boolean",
+        "true false",
+        "what does boolean mean",
+        "return true or false"
+      ],
+      "response": "A boolean is just true or false. A comparison like amount > 10000 already produces one \u2014 you can return it directly, no need for an if statement just to say 'if this is true, return true'."
+    },
+    {
+      "id": "comparison-operators",
+      "keywords": [
+        "greater than",
+        "less than",
+        "what does gte mean",
+        ">= meaning",
+        "over or equal",
+        "strictly over",
+        "what does gte mean",
+        "gte meaning"
+      ],
+      "response": "> means strictly greater than (10000 itself doesn't count). >= means greater than or equal to (10000 itself does count). Read the brief's exact wording \u2014 'over' and 'or more' mean different things here."
+    },
+    {
+      "id": "if-else-syntax",
+      "keywords": [
+        "if else syntax",
+        "how does if else work",
+        "multiple conditions",
+        "if else if",
+        "conditional chain",
+        "if statement",
+        "what is an if statement",
+        "how does if work",
+        "what is if"
+      ],
+      "response": "if (condition) { return x; } if (otherCondition) { return y; } return z; \u2014 checks run top to bottom, and the first one that matches wins. Put the most specific condition first."
+    },
+    {
+      "id": "test-console-explain",
+      "keywords": [
+        "what does the test console show",
+        "how do tests work",
+        "what is a test",
+        "pass fail meaning",
+        "why does my test fail",
+        "why is my test failing"
+      ],
+      "response": "Each row calls your function with specific input and checks whether what it actually returns matches what's expected. A red cross shows you exactly what your function returned, so compare that against what it should have been."
+    },
+    {
+      "id": "case-sensitive",
+      "keywords": [
+        "case sensitive",
+        "capital letters matter",
+        "uppercase lowercase"
+      ],
+      "response": "Text comparisons in JavaScript are case-sensitive \u2014 'Flagged' and 'flagged' are different values. Match the exact spelling and capitalisation shown in the brief."
+    },
+    {
+      "id": "function-name-typo",
+      "keywords": [
+        "function not found",
+        "isn't defined as a function",
+        "wrong function name",
+        "typo in function name",
+        "why isnt my function found",
+        "function isnt working"
+      ],
+      "response": "The function name in your code has to match exactly what's expected \u2014 check for typos, and make sure you haven't accidentally renamed it while editing."
+    }
+  ],
+  "synonyms": {
+    "cash": "amount",
+    "money": "amount",
+    "output": "return",
+    "percent": "rate",
+    "percentage": "rate"
+  }
+};
+const HELP_GREETING = "Hi! Tap 💡 Hint for a step-by-step nudge on whatever you're working on, or ❓ Help for general syntax and troubleshooting — just click, no typing needed.";
+
+let helpOpen = false;
+let helpGreeted = false;
+
+function findHelpEntry(id){ return HELP_DATA.entries.find(e => e.id === id); }
+
+const STUCK_PHRASES = ["im stuck", "i'm stuck", "help", "dont know what to do", "don't know what to do", "confused", "not sure what to write", "no idea", "how do i even start", "where do i begin", "how do i start", "just tell me", "give me the answer", "tell me the answer", "im really stuck", "really stuck", "super stuck", "please just tell me", "just give me the code", "i give up", "cant figure it out", "cant work it out", "just show me", "give up"];
+const HELP_FALLBACK = "I'm not totally sure about that one — try asking it a different way, or use the Help menu's Syntax and Troubleshooting topics instead. You're doing fine.";
+function normalizeHelp(s){
+  let out = s.toLowerCase();
+  out = out.replace(/>=/g, ' gte ').replace(/<=/g, ' lte ')
+           .replace(/===/g, ' strictequal ').replace(/!==/g, ' notequal ')
+           .replace(/&&/g, ' and ').replace(/\|\|/g, ' or ')
+           .replace(/>/g, ' gt ').replace(/</g, ' lt ');
+  return out.replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+const HELP_STOPWORDS = new Set(["what","does","do","is","are","the","a","an","to","of","in","on","for","and","or","i","my","how","this","that","it","me","you","your","did","doing","can","help","meaning","mean","means","explain","understand","understanding","know","knowing","work","working","works","use","using","used","need","needs","needed","want","wanted","wants","sure","right","correct","wrong","thing","things","stuff","way","ways","doesnt","dont","isnt","not","get","got","getting","should","would","could","will","with","when","where","why","which","who","from","have","has","had","about","some","any","just","really","actually","supposed","stuck"]);
+function stem(w){
+  if(w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) return w.slice(0,-1);
+  return w;
+}
+function scoreHelpEntry(msgNorm, msgWords, entry){
+  let best = 0;
+  const msgStems = msgWords.map(stem);
+  entry.keywords.forEach(kw=>{
+    const kwNorm = normalizeHelp(kw);
+    let score = 0;
+    if(msgNorm.includes(kwNorm)) score += 4;
+    const kwWords = kwNorm.split(' ').filter(w=>w.length>1 && !HELP_STOPWORDS.has(w));
+    const overlap = kwWords.filter(w=>msgStems.includes(stem(w))).length;
+    score += overlap;
+    if(score > best) best = score;
+  });
+  return best;
+}
+function isStuckPhrase(msgNorm){
+  return STUCK_PHRASES.some(p => msgNorm.includes(p));
+}
+function applySynonyms(msgNorm){
+  const syns = HELP_DATA.synonyms || {};
+  return msgNorm.split(' ').map(w => syns[w] || w).join(' ');
+}
+function findHelpResponse(userMsg){
+  let msgNorm = normalizeHelp(userMsg);
+  msgNorm = applySynonyms(msgNorm);
+  const msgWords = msgNorm.split(' ');
+  let bestEntry = null, bestScore = 0;
+  HELP_DATA.entries.forEach(entry=>{
+    const s = scoreHelpEntry(msgNorm, msgWords, entry);
+    if(s > bestScore){ bestScore = s; bestEntry = entry; }
+  });
+  return (bestEntry && bestScore >= 1) ? bestEntry.response : null;
+}
+function sendFreeText(){
+  const input = document.getElementById('helpInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  addHelpMsg(msg, 'user');
+  input.value = '';
+  setTimeout(()=>{
+    const msgNorm = applySynonyms(normalizeHelp(msg));
+    if(isStuckPhrase(msgNorm)){
+      revealNextHint();
+    } else {
+      const response = findHelpResponse(msg);
+      addHelpMsg(response || HELP_FALLBACK, 'bot');
+    }
+  }, 220);
+}
+
+const MENU = {
+  root: {
+    prompt: null,
+    options: [
+      { label: "Hint for this challenge", icon: "💡", action: "hint" },
+      { label: "Help", icon: "❓", goto: "help" },
+      { label: "Write it yourself", icon: "✏️", action: "freetext" }
+    ]
+  },
+  help: {
+    prompt: "What kind of help?",
+    options: [
+      { label: "Syntax — how do I write this?", icon: "📖", goto: "syntax" },
+      { label: "Troubleshooting — why isn't this working?", icon: "🐛", goto: "trouble" },
+      { label: "Back", icon: "←", goto: "root", back: true }
+    ]
+  },
+  syntax: {
+    prompt: "Pick a topic:",
+    options: [
+      { label: "How do I write a function?", icon: "📖", entry: "what-is-function-def" },
+      { label: "What's a boolean / comparison?", icon: "📖", entry: "boolean-explain" },
+      { label: "What do >, >=, etc. mean?", icon: "📖", entry: "comparison-operators" },
+      { label: "How does if/else work?", icon: "📖", entry: "if-else-syntax" },
+      { label: "Back", icon: "←", goto: "help", back: true }
+    ]
+  },
+  trouble: {
+    prompt: "Pick what's happening:",
+    options: [
+      { label: "My function says \"undefined\"", icon: "🐛", entry: "missing-return" },
+      { label: "What does the test console show me?", icon: "🐛", entry: "test-console-explain" },
+      { label: "My exact match isn't working", icon: "🐛", entry: "case-sensitive" },
+      { label: "My function isn't being found", icon: "🐛", entry: "function-name-typo" },
+      { label: "Back", icon: "←", goto: "help", back: true }
+    ]
+  }
+};
+
+function renderMenu(state){
+  document.getElementById('freetextArea').style.display = 'none';
+  document.getElementById('menuArea').style.display = 'flex';
+  const area = document.getElementById('menuArea');
+  const menu = MENU[state];
+  area.innerHTML = '';
+  if(menu.prompt){
+    addHelpMsg(menu.prompt, 'bot');
+  }
+  menu.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'menu-btn' + (opt.back ? ' back' : '');
+    btn.innerHTML = `<span class="mi">${opt.icon}</span>${opt.label}`;
+    btn.onclick = () => selectMenuOption(opt);
+    area.appendChild(btn);
+  });
+}
+
+function selectMenuOption(opt){
+  if(!opt.back){
+    addHelpMsg(opt.label, 'user');
+  }
+  if(opt.goto){
+    renderMenu(opt.goto);
+    return;
+  }
+  if(opt.action === 'hint'){
+    setTimeout(()=>{
+      revealNextHint();
+      renderMenu('root');
+    }, 200);
+    return;
+  }
+  if(opt.action === 'freetext'){
+    document.getElementById('menuArea').style.display = 'none';
+    document.getElementById('freetextArea').style.display = 'block';
+    document.getElementById('helpInput').focus();
+    return;
+  }
+  if(opt.entry){
+    setTimeout(()=>{
+      addHelpMsg(findHelpEntry(opt.entry).response, 'bot');
+      renderMenu('root');
+    }, 200);
+  }
+}
+
+function toggleHelp(){
+  helpOpen = !helpOpen;
+  const panel = document.getElementById('helpPanel');
+  panel.classList.toggle('open', helpOpen);
+  if(helpOpen){
+    document.getElementById('helpDot').style.display = 'none';
+    document.getElementById('helpDot').classList.remove('pulse');
+  }
+  if(helpOpen && !helpGreeted){
+    addHelpMsg(HELP_GREETING, 'bot');
+    helpGreeted = true;
+    renderMenu('root');
+  }
+  if(helpOpen && pendingNudge){
+    addHelpMsg(pendingNudge, 'bot');
+    pendingNudge = null;
+  }
+}
+function addHelpMsg(text, who){
+  const log = document.getElementById('helpLog');
+  const div = document.createElement('div');
+  div.className = 'help-msg ' + who;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+</script>
+</body>
+</html>

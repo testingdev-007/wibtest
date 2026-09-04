@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redesign Preview — Two New Constructs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+:root{
+  --bg:#000; --panel:#040804; --panel-alt:#081208; --line:#0F3A1C; --line-soft:#0A240F;
+  --green:#00FF41; --green-bright:#8CFFB0; --green-dim:#0F9D45; --green-faint:#0A5C28;
+  --red:#FF3131; --text:#B9F5C6; --muted:#4E8F5E; --muted-dim:#2E5C3A;
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;margin:0;padding:26px 20px 60px;}
+.wrap{max-width:900px;margin:0 auto;}
+.note{
+  border:1px solid var(--green-faint); background:rgba(0,255,65,0.05); border-radius:6px;
+  padding:16px 18px; margin-bottom:26px; font-size:13px; line-height:1.65; color:var(--green-bright);
+}
+.note b{color:var(--green);}
+.note .why{color:var(--muted);display:block;margin-top:8px;font-size:12.5px;}
+h1{font-size:20px;text-transform:uppercase;letter-spacing:.03em;margin:0 0 6px;color:var(--green-bright);}
+.sub{color:var(--muted);font-size:13px;margin:0 0 24px;}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px;margin-bottom:20px;box-shadow:0 0 30px rgba(0,255,65,0.03);}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.panel h2{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--green-bright);margin:0;}
+.tag{font-size:10px;letter-spacing:.06em;color:var(--green);border:1px solid var(--green-faint);background:rgba(0,255,65,0.06);padding:3px 9px;border-radius:3px;text-transform:uppercase;}
+.brief{color:var(--muted);font-size:13px;line-height:1.65;margin:10px 0 16px;}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media (max-width:760px){.cols{grid-template-columns:1fr;}}
+
+.editor-chrome{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#010401;}
+.editor-titlebar{padding:9px 12px;background:var(--panel-alt);border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);}
+.editor-titlebar span{color:var(--green-bright);}
+textarea{width:100%;min-height:150px;background:transparent;color:var(--green-bright);border:none;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.65;padding:14px 16px;resize:vertical;tab-size:2;caret-color:var(--green);}
+textarea:focus{outline:none;}
+.editor-chrome:focus-within{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,255,65,0.12);}
+
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+button{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;border-radius:3px;cursor:pointer;padding:12px 20px;text-transform:uppercase;letter-spacing:.03em;transition:transform .15s ease,box-shadow .15s ease;}
+.btn-primary{background:var(--green);color:#001A08;border:1px solid var(--green);box-shadow:0 0 20px rgba(0,255,65,0.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(0,255,65,0.5);}
+.btn-ghost{background:transparent;color:var(--green-bright);border:1px solid var(--line);}
+.btn-ghost:hover{border-color:var(--green-dim);background:rgba(0,255,65,0.06);}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.hint-box,.error-box{margin-top:12px;font-size:12.5px;padding:11px 13px;border-radius:4px;display:none;line-height:1.55;}
+.hint-box{color:var(--green-bright);background:rgba(0,255,65,0.05);border:1px solid rgba(0,255,65,0.25);}
+.hint-box::before{content:'[ HINT ] ';color:var(--green);font-weight:700;}
+.error-box{color:#FF8080;background:rgba(255,49,49,0.06);border:1px solid rgba(255,49,49,0.28);}
+.error-box::before{content:'[ ERROR ] ';color:var(--red);font-weight:700;}
+
+.viz-frame{position:relative;border-radius:4px;background:#010401;border:1px solid var(--line);padding:22px;margin-bottom:14px;}
+#gridViz{position:relative;display:grid;gap:4px;margin:0 auto;width:100%;max-width:280px;}
+.cell{background:rgba(0,255,65,0.025);border:1px solid rgba(0,255,65,0.08);border-radius:2px;position:relative;display:flex;align-items:center;justify-content:center;transition:background .2s ease;}
+.cell.unknown{background:repeating-linear-gradient(45deg, rgba(78,143,94,0.06) 0 3px, transparent 3px 7px);}
+.cell.unknown::after{content:'?';color:var(--muted-dim);font-size:11px;}
+.cell.wall{background:repeating-linear-gradient(135deg, rgba(255,49,49,0.14) 0 2px, transparent 2px 6px), rgba(255,49,49,0.06); border-color:rgba(255,49,49,0.35);}
+.cell.wall::after{content:'';width:34%;height:34%;background:var(--red);opacity:.8;clip-path:polygon(20% 0,80% 0,100% 20%,100% 80%,80% 100%,20% 100%,0 80%,0 20%);box-shadow:0 0 10px rgba(255,49,49,0.7);}
+.cell.target{background:rgba(0,255,65,0.07);border-color:rgba(0,255,65,0.5);}
+.cell.target::after{content:'';width:36%;height:36%;border-radius:50%;border:2px solid var(--green);box-shadow:0 0 12px rgba(0,255,65,0.6);animation:pulse 1.8s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(0.8);opacity:.65;}50%{transform:scale(1.08);opacity:1;}}
+.cell.trail{background:rgba(0,255,65,0.11);}
+.rover-wrap{position:absolute;top:0;left:0;z-index:5;display:flex;align-items:center;justify-content:center;pointer-events:none;transform-origin:50% 50%;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.rover-wrap svg{width:58%;height:58%;color:var(--green);filter:drop-shadow(0 0 3px var(--green)) drop-shadow(0 0 10px rgba(0,255,65,0.65));}
+.rover-wrap.win svg{color:var(--green-bright);filter:drop-shadow(0 0 5px var(--green-bright)) drop-shadow(0 0 16px rgba(0,255,65,0.95));}
+
+.terminal{background:#08090D;border:1px solid var(--line);border-radius:4px;padding:13px 15px;font-size:12.5px;color:var(--green);min-height:90px;max-height:130px;overflow-y:auto;line-height:1.7;}
+.terminal .line::before{content:'> ';color:var(--muted-dim);}
+.terminal .muted{color:var(--muted-dim);}
+.terminal .muted::before{content:'';}
+.terminal .err{color:var(--red);}
+.terminal .ok{color:var(--green-bright);}
+
+.done-banner{display:none;text-align:center;padding:30px;border:1px solid var(--green-faint);border-radius:6px;background:rgba(0,255,65,0.04);}
+.done-banner h2{color:var(--green-bright);font-size:20px;margin-top:0;}
+.done-banner p{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:500px;margin:0 auto 6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="note">
+    <b>Preview build — not wired into the real event file yet.</b> Two candidate constructs below.
+    Both are designed so they <b>can't be solved by eyeballing the grid</b> — the correctness depends on
+    reading and reasoning about the code, not counting squares on screen.
+    <span class="why">Construct A adds real conditionals (booleans, if/else) via a maze you can't see until you sense it.
+    Construct B adds variables and arithmetic — the grid is too wide to count reliably, so you have to calculate.</span>
+  </div>
+
+  <h1 id="pageTitle">Construct A — The Sensor</h1>
+  <p class="sub" id="pageSub">Fundamentals: booleans · conditionals (if / else)</p>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Briefing</h2>
+      <span class="tag" id="conceptTag">CONDITIONALS</span>
+    </div>
+    <p class="brief" id="briefText"></p>
+    <div class="cols">
+      <div>
+        <div class="editor-chrome">
+          <div class="editor-titlebar"><span>root@construct:~$</span> rover.js</div>
+          <textarea id="codeInput" spellcheck="false"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="runCode()">▶ Run</button>
+          <button class="btn-ghost" onclick="resetLevel()">↺ Reset</button>
+          <button class="btn-ghost" onclick="toggleHint()">💡 Hint</button>
+        </div>
+        <div class="hint-box" id="hintBox"></div>
+        <div class="error-box" id="errorBox"></div>
+      </div>
+      <div>
+        <div class="viz-frame"><div id="gridViz"></div></div>
+        <div class="terminal" id="terminal"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="done-banner" id="doneBanner">
+    <h2 id="doneTitle">Both previews cleared</h2>
+    <p id="doneText"></p>
+  </div>
+
+</div>
+
+<script>
+const LEVELS = [
+  {
+    id:'sensor',
+    pageTitle:'Construct A — The Sensor',
+    pageSub:'Fundamentals: booleans · conditionals (if / else)',
+    concept:'CONDITIONALS',
+    size:5,
+    start:{x:0,y:0,dir:'E'},
+    target:{x:4,y:4},
+    walls:[{x:2,y:0},{x:2,y:1}],
+    starter:`// You can't see the maze — only the exit.
+// pathClear() checks the cell directly ahead and
+// returns true or false. Use it before every move.
+
+if (pathClear()) {
+  moveForward();
+} else {
+  turnRight();
+}`,
+    brief:"The maze is hidden — only the exit glows. Before each move, call pathClear() to sense the cell ahead. If it's open, go. If it's blocked, turn toward the exit and try again. Run as many times as you like — what you sense stays revealed.",
+    hint:"There's a wall two cells in. Once you sense it, turn toward the exit (south), not away from it. You can call pathClear(), moveForward(), turnLeft() and turnRight() as many times as you need in one script.",
+    usesSensor:true
+  },
+  {
+    id:'count',
+    pageTitle:'Construct B — The Count',
+    pageSub:'Fundamentals: variables · arithmetic expressions',
+    concept:'VARIABLES',
+    size:8,
+    gridRows:1,
+    start:{x:0,y:0,dir:'E'},
+    target:{x:7,y:0},
+    walls:[],
+    starter:`// The board's too wide to count accurately by eye.
+// roverCol and targetCol are given below — use them.
+
+const roverCol = 0;
+const targetCol = 7;
+
+// TODO: work out the distance and loop that many times
+
+moveForward();`,
+    brief:"No counting squares this time — work it out. roverCol and targetCol are given as real numbers. Calculate the distance between them and use a loop to travel exactly that far.",
+    hint:"const distance = targetCol - roverCol;\nfor (let i = 0; i < distance; i++) { moveForward(); }",
+    usesSensor:false
+  }
+];
+
+let levelIdx = 0;
+let roverState = {};
+let roverEl = null;
+let revealed = new Set();
+const DIR_DEG = {N:0,E:90,S:180,W:270};
+const DELTAS = {N:{x:0,y:-1},E:{x:1,y:0},S:{x:0,y:1},W:{x:-1,y:0}};
+const TURN_ORDER = ['N','E','S','W'];
+
+function loadLevel(idx){
+  levelIdx = idx;
+  const lvl = LEVELS[idx];
+  document.getElementById('pageTitle').textContent = lvl.pageTitle;
+  document.getElementById('pageSub').textContent = lvl.pageSub;
+  document.getElementById('conceptTag').textContent = lvl.concept;
+  document.getElementById('briefText').textContent = lvl.brief;
+  document.getElementById('codeInput').value = lvl.starter;
+  document.getElementById('hintBox').style.display = 'none';
+  document.getElementById('hintBox').textContent = lvl.hint;
+  document.getElementById('errorBox').style.display = 'none';
+  revealed = new Set();
+  buildGrid(lvl);
+  clearLog();
+  log('level loaded', 'muted');
+}
+
+function resetLevel(){ loadLevel(levelIdx); }
+
+function buildGrid(lvl){
+  roverState = {x:lvl.start.x, y:lvl.start.y, dir:lvl.start.dir};
+  const viz = document.getElementById('gridViz');
+  const rows = lvl.gridRows || lvl.size;
+  viz.style.gridTemplateColumns = `repeat(${lvl.size}, 1fr)`;
+  viz.style.aspectRatio = `${lvl.size} / ${rows}`;
+  viz.innerHTML = '';
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<lvl.size;x++){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.id = `c-${x}-${y}`;
+      const isWall = lvl.walls.some(w=>w.x===x&&w.y===y);
+      const isTarget = lvl.target.x===x && lvl.target.y===y;
+      if(isTarget){
+        cell.classList.add('target');
+      } else if(lvl.usesSensor){
+        cell.classList.add('unknown');
+      } else if(isWall){
+        cell.classList.add('wall');
+      }
+      viz.appendChild(cell);
+    }
+  }
+  roverEl = document.createElement('div');
+  roverEl.className = 'rover-wrap';
+  roverEl.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,3 19,20 12,16 5,20"/></svg>';
+  viz.appendChild(roverEl);
+  positionRover(true);
+}
+
+function revealCell(lvl, x, y){
+  if(!lvl.usesSensor) return;
+  const key = `${x}-${y}`;
+  if(revealed.has(key)) return;
+  revealed.add(key);
+  const cell = document.getElementById(`c-${x}-${y}`);
+  if(!cell || cell.classList.contains('target')) return;
+  const inBounds = x>=0 && y>=0 && x<lvl.size && y<(lvl.gridRows||lvl.size);
+  if(!inBounds) return;
+  cell.classList.remove('unknown');
+  const isWall = lvl.walls.some(w=>w.x===x&&w.y===y);
+  if(isWall) cell.classList.add('wall');
+}
+
+function positionRover(instant){
+  if(!roverEl) return;
+  const cell = document.getElementById(`c-${roverState.x}-${roverState.y}`);
+  if(!cell) return;
+  roverEl.style.width = cell.offsetWidth + 'px';
+  roverEl.style.height = cell.offsetHeight + 'px';
+  if(instant) roverEl.style.transition = 'none';
+  roverEl.style.transform = `translate(${cell.offsetLeft}px, ${cell.offsetTop}px) rotate(${DIR_DEG[roverState.dir]}deg)`;
+  if(instant){ void roverEl.offsetWidth; roverEl.style.transition = ''; }
+}
+
+function log(msg, cls){
+  const term = document.getElementById('terminal');
+  const line = document.createElement('div');
+  line.className = 'line' + (cls ? ' '+cls : '');
+  line.textContent = msg;
+  term.appendChild(line);
+  term.scrollTop = term.scrollHeight;
+}
+function clearLog(){ document.getElementById('terminal').innerHTML = ''; }
+function toggleHint(){
+  const box = document.getElementById('hintBox');
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+}
+
+function runCode(){
+  const lvl = LEVELS[levelIdx];
+  const src = document.getElementById('codeInput').value;
+  const errorBox = document.getElementById('errorBox');
+  errorBox.style.display = 'none';
+  clearLog();
+  log('compiling…', 'muted');
+
+  roverState = {x:lvl.start.x, y:lvl.start.y, dir:lvl.start.dir};
+  document.querySelectorAll('.cell').forEach(c=>c.classList.remove('trail'));
+  if(roverEl) roverEl.classList.remove('win');
+  positionRover(true);
+
+  const queue = [];
+  const sim = {x:lvl.start.x, y:lvl.start.y, dir:lvl.start.dir};
+
+  const api = {
+    moveForward: ()=>{
+      queue.push({type:'move'});
+      const d = DELTAS[sim.dir];
+      sim.x += d.x; sim.y += d.y;
+    },
+    turnLeft: ()=>{
+      queue.push({type:'turn', dir:'L'});
+      const i = TURN_ORDER.indexOf(sim.dir);
+      sim.dir = TURN_ORDER[(i+3)%4];
+    },
+    turnRight: ()=>{
+      queue.push({type:'turn', dir:'R'});
+      const i = TURN_ORDER.indexOf(sim.dir);
+      sim.dir = TURN_ORDER[(i+1)%4];
+    },
+    pathClear: ()=>{
+      const d = DELTAS[sim.dir];
+      const nx = sim.x+d.x, ny = sim.y+d.y;
+      const rows = lvl.gridRows || lvl.size;
+      const inBounds = nx>=0 && ny>=0 && nx<lvl.size && ny<rows;
+      const blocked = lvl.walls.some(w=>w.x===nx&&w.y===ny);
+      revealCell(lvl, nx, ny);
+      return inBounds && !blocked;
+    }
+  };
+
+  try{
+    const args = lvl.usesSensor
+      ? ['moveForward','turnLeft','turnRight','pathClear', src]
+      : ['moveForward','turnLeft','turnRight', src];
+    const fnArgs = lvl.usesSensor
+      ? [api.moveForward, api.turnLeft, api.turnRight, api.pathClear]
+      : [api.moveForward, api.turnLeft, api.turnRight];
+    const fn = new Function(...args);
+    fn(...fnArgs);
+  }catch(e){
+    errorBox.textContent = e.message;
+    errorBox.style.display = 'block';
+    log('compile error — see message above', 'err');
+    return;
+  }
+
+  if(queue.length === 0){
+    log('no commands sent', 'err');
+    return;
+  }
+  if(queue.length > 60){
+    errorBox.textContent = "That's a lot of commands — check for an infinite loop.";
+    errorBox.style.display = 'block';
+    return;
+  }
+  animateQueue(queue, lvl, 0);
+}
+
+function animateQueue(queue, lvl, i){
+  if(i >= queue.length){ checkWin(lvl); return; }
+  const cmd = queue[i];
+  const rows = lvl.gridRows || lvl.size;
+  if(cmd.type === 'move'){
+    const d = DELTAS[roverState.dir];
+    const nx = roverState.x + d.x, ny = roverState.y + d.y;
+    const inBounds = nx>=0 && ny>=0 && nx<lvl.size && ny<rows;
+    const blocked = lvl.walls.some(w=>w.x===nx&&w.y===ny);
+    revealCell(lvl, nx, ny);
+    if(!inBounds){
+      log('moveForward() — blocked by grid edge', 'err');
+    } else if(blocked){
+      log(`moveForward() — blocked at (${nx},${ny})`, 'err');
+    } else {
+      document.getElementById(`c-${roverState.x}-${roverState.y}`).classList.add('trail');
+      roverState.x = nx; roverState.y = ny;
+      log(`moveForward() → (${nx},${ny})`, 'ok');
+      positionRover(false);
+    }
+  } else {
+    const idx = TURN_ORDER.indexOf(roverState.dir);
+    roverState.dir = cmd.dir === 'R' ? TURN_ORDER[(idx+1)%4] : TURN_ORDER[(idx+3)%4];
+    log(`${cmd.dir === 'R' ? 'turnRight()' : 'turnLeft()'} → facing ${roverState.dir}`, 'ok');
+    positionRover(false);
+  }
+  setTimeout(()=>animateQueue(queue, lvl, i+1), 240);
+}
+
+function checkWin(lvl){
+  if(roverState.x === lvl.target.x && roverState.y === lvl.target.y){
+    log('exit reached', 'ok');
+    if(roverEl) roverEl.classList.add('win');
+    setTimeout(()=>{
+      if(levelIdx < LEVELS.length - 1){
+        loadLevel(levelIdx + 1);
+      } else {
+        document.querySelector('.panel').style.display = 'none';
+        document.getElementById('pageSub').style.display='none';
+        document.getElementById('doneBanner').style.display = 'block';
+        document.getElementById('doneText').textContent = "Both mechanics work end to end — conditionals with hidden state, and variables with a calculation you can't skip. Let me know which direction feels right and I'll fold it into the full five-construct build.";
+      }
+    }, 900);
+  } else {
+    log(`halted at (${roverState.x},${roverState.y}) — exit at (${lvl.target.x},${lvl.target.y})`, 'muted');
+  }
+}
+
+loadLevel(0);
+</script>
+</body>
+</html>
