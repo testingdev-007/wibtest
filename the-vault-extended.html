@@ -216,7 +216,7 @@ button{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-ra
 
       <div class="panel">
         <div class="panel-head">
-          <h2>Test Console</h2>
+          <h2>Your Checklist</h2>
         </div>
         <div class="test-list" id="testList"></div>
         <div class="status-line" id="statusLine">awaiting test run</div>
@@ -881,8 +881,9 @@ const HELP_DATA = {
       "response": "if (condition) { return x; } if (otherCondition) { return y; } return z; \u2014 checks run top to bottom, and the first one that matches wins. Put the most specific condition first."
     },
     {
-      "id": "test-console-explain",
+      "id": "checklist-explain",
       "keywords": [
+        "what does the checklist show",
         "what does the test console show",
         "how do tests work",
         "what is a test",
@@ -1024,7 +1025,7 @@ const MENU = {
     prompt: "Pick what's happening:",
     options: [
       { label: "My function says \"undefined\"", icon: "🐛", entry: "missing-return" },
-      { label: "What does the test console show me?", icon: "🐛", entry: "test-console-explain" },
+      { label: "What does the checklist show me?", icon: "🐛", entry: "checklist-explain" },
       { label: "My exact match isn't working", icon: "🐛", entry: "case-sensitive" },
       { label: "My function isn't being found", icon: "🐛", entry: "function-name-typo" },
       { label: "Back", icon: "←", goto: "help", back: true }

@@ -67,8 +67,9 @@
       "response": "if (condition) { return x; } if (otherCondition) { return y; } return z; \u2014 checks run top to bottom, and the first one that matches wins. Put the most specific condition first."
     },
     {
-      "id": "test-console-explain",
+      "id": "checklist-explain",
       "keywords": [
+        "what does the checklist show",
         "what does the test console show",
         "how do tests work",
         "what is a test",
