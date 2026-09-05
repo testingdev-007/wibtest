@@ -53,7 +53,10 @@ h1{font-size:26px;margin:0 0 8px;font-weight:700;letter-spacing:-0.01em;color:va
 .worked-example{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
 .worked-example summary{padding:11px 14px;cursor:pointer;font-size:13px;color:var(--accent);font-weight:600;list-style:none;}
 .worked-example summary::-webkit-details-marker{display:none;}
+.we-body-wrap{position:relative;}
 .we-body{padding:2px 14px 14px;}
+.we-body pre{position:relative;}
+.we-example-badge{position:absolute;top:8px;right:22px;background:#F79009;color:#1a1200;font-size:10px;font-weight:800;letter-spacing:.04em;padding:3px 8px;border-radius:5px;pointer-events:none;z-index:1;}
 .we-body pre{background:#0D1117;border:none;border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#E6EDF3;line-height:1.65;margin:0 0 10px;white-space:pre-wrap;}
 .we-body .we-line{font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:4px;}
 
@@ -228,7 +231,10 @@ button{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-ra
 &lt;/<span class="tagname">main</span>&gt;</div>
         <details class="worked-example" id="workedExample" open>
           <summary>📎 See a worked example first</summary>
-          <div class="we-body" id="weBody"></div>
+          <div class="we-body-wrap">
+            <div class="we-example-badge">EXAMPLE — READ ONLY</div>
+            <div class="we-body" id="weBody"></div>
+          </div>
         </details>
         <div class="color-tool">
           <label for="colorPicker">🎨 Not sure what colour to use? Pick one:</label>
@@ -238,7 +244,7 @@ button{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border-ra
         </div>
         <div class="editor-chrome">
           <div class="editor-titlebar">
-            <div><span>style.css</span> — scroll for all 4 sections, updates as you type</div>
+            <div>✏️ <span>style.css</span> — <b>type here</b>, scroll for all 4 sections</div>
             <span class="syntax-status" id="syntaxStatus"></span>
           </div>
           <textarea id="codeInput" spellcheck="false"></textarea>
