@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Trophies — The Mainframe</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --warning-bg:#FFFAEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:0 0 60px;line-height:1.6;}
+.wrap{max-width:800px;margin:0 auto;padding:40px 20px 0;}
+.home-btn{position:fixed;top:16px;left:16px;z-index:90;width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;box-shadow:var(--shadow-sm);color:var(--text-secondary);}
+.home-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);color:var(--accent);}
+
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px;}
+h1{font-size:26px;font-weight:800;margin:0 0 10px;}
+p.lead{color:var(--text-secondary);font-size:14.5px;max-width:600px;}
+
+.reset-note{background:var(--warning-bg);border:1px solid #FEDF89;border-radius:10px;padding:12px 16px;font-size:13px;color:#B54708;margin:18px 0;}
+
+.trophy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:24px;}
+.trophy-card{background:linear-gradient(160deg,#fff,var(--accent-bg));border:1.5px solid var(--accent-border);border-radius:14px;padding:22px 20px;text-align:center;box-shadow:var(--shadow-sm);}
+.trophy-emoji{font-size:38px;margin-bottom:10px;}
+.trophy-module{font-size:15px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.trophy-tier{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;}
+.trophy-name{font-size:13px;color:var(--text-secondary);}
+.trophy-date{font-size:11.5px;color:var(--text-muted);margin-top:4px;font-family:'JetBrains Mono',monospace;}
+
+.empty-state{background:var(--surface);border:1px dashed var(--border);border-radius:14px;padding:50px 30px;text-align:center;margin-top:24px;}
+.empty-state .big{font-size:44px;margin-bottom:14px;}
+.empty-state p{color:var(--text-secondary);font-size:14.5px;max-width:420px;margin:0 auto;}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-weight:700;font-size:14.5px;padding:12px 24px;border-radius:9px;text-decoration:none;margin-top:20px;}
+
+.count-strip{display:flex;align-items:center;gap:10px;margin-top:20px;}
+.count-badge{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--text);}
+</style>
+</head>
+<body>
+<a href="index.html" class="home-btn" title="Back to dashboard">🏠</a>
+<div class="wrap">
+  <div class="eyebrow">Your progress</div>
+  <h1>🏆 My Trophies</h1>
+  <p class="lead">Every certificate you've claimed this session, all in one place.</p>
+
+  <div class="reset-note">⚠️ <b>Refreshing this page clears the trophies shown here</b> — that's deliberate, so the next person using this computer gets a clean slate. If you want to keep a record, take a screenshot or a photo before you reload.</div>
+
+  <div id="trophyContent"></div>
+</div>
+
+<script>
+function loadAndClear(){
+  const raw = localStorage.getItem('mainframe_trophies');
+  const trophies = raw ? JSON.parse(raw) : [];
+  localStorage.removeItem('mainframe_trophies');
+  return trophies;
+}
+
+function render(){
+  const trophies = loadAndClear();
+  const el = document.getElementById('trophyContent');
+
+  if(trophies.length === 0){
+    el.innerHTML = `<div class="empty-state">
+      <div class="big">🗂️</div>
+      <p>No trophies claimed yet this session. Finish an activity and claim your certificate on its completion screen — it'll show up here.</p>
+      <a href="index.html" class="cta-btn">Go pick an activity →</a>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="count-strip"><span class="count-badge">${trophies.length} earned this session</span></div>
+    <div class="trophy-grid">
+      ${trophies.map(t => `
+        <div class="trophy-card">
+          <div class="trophy-emoji">${t.emoji}</div>
+          <div class="trophy-module">${escapeHtml(t.module)}</div>
+          <div class="trophy-tier">${escapeHtml(t.tier)}</div>
+          <div class="trophy-name">${escapeHtml(t.name)}</div>
+          <div class="trophy-date">${escapeHtml(t.date)}</div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+render();
+</script>
+</body>
+</html>

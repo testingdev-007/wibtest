@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello, Computer — Your First Step</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+  --border:#E4E7EC; --text:#101828; --text-secondary:#475467; --text-muted:#98A2B3;
+  --accent:#4F46E5; --accent-hover:#4338CA; --accent-bg:#EEF2FF; --accent-border:#C7D2FE;
+  --success:#12B76A; --success-bg:#ECFDF3;
+  --warning:#F79009; --warning-bg:#FFFAEB;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05);
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;margin:0;padding:0 0 60px;line-height:1.6;}
+.wrap{max-width:720px;margin:0 auto;padding:40px 20px 0;}
+.home-btn{position:fixed;top:16px;left:16px;z-index:90;width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;box-shadow:var(--shadow-sm);color:var(--text-secondary);}
+.home-btn:hover{border-color:var(--accent-border);background:var(--accent-bg);color:var(--accent);}
+
+.eyebrow{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px;}
+h1{font-size:26px;font-weight:800;margin:0 0 10px;}
+p.lead{color:var(--text-secondary);font-size:15px;line-height:1.7;}
+
+.step{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:22px 0;box-shadow:var(--shadow-sm);display:none;}
+.step.active{display:block;}
+.step-label{display:inline-flex;align-items:center;gap:8px;background:var(--accent-bg);color:var(--accent);font-weight:700;font-size:12.5px;padding:5px 12px;border-radius:20px;margin-bottom:16px;}
+.step h2{font-size:19px;font-weight:800;margin:0 0 12px;}
+.step p{font-size:14.5px;color:var(--text-secondary);}
+
+.analogy{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;padding:16px 18px;font-size:14px;color:var(--text);margin:14px 0;}
+.analogy b{color:var(--accent);}
+
+.console-box{background:#1E1E2E;border-radius:10px;padding:0;margin:16px 0;overflow:hidden;border:1px solid #2D2D44;}
+.console-titlebar{background:#2A2A3D;padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9CA3C4;display:flex;align-items:center;gap:8px;}
+.console-titlebar .dot{width:9px;height:9px;border-radius:50%;background:#4B5271;}
+.console-body{padding:18px;font-family:'JetBrains Mono',monospace;font-size:14.5px;min-height:60px;}
+.console-line{color:#8B93B8;margin-bottom:6px;}
+.console-output{color:#7EE787;margin-top:8px;}
+.console-error{color:#FF7B72;margin-top:8px;}
+
+.type-here-row{display:flex;gap:10px;margin-top:14px;}
+.type-here-row input{flex:1;padding:13px 16px;border-radius:8px;border:2px solid var(--accent-border);font-family:'JetBrains Mono',monospace;font-size:14.5px;background:#fff;}
+.type-here-row input:focus{outline:none;border-color:var(--accent);}
+.big-btn{background:var(--accent);color:#fff;border:none;padding:13px 26px;border-radius:8px;font-weight:700;font-size:14.5px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
+.big-btn:hover{background:var(--accent-hover);}
+.big-btn:disabled{background:var(--text-muted);cursor:not-allowed;}
+
+.pointer-hint{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--accent);font-weight:700;margin-top:10px;}
+.pointer-hint .arrow{font-size:18px;animation:point 1.2s ease-in-out infinite;}
+@keyframes point{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
+
+.feedback-box{margin-top:16px;padding:14px 16px;border-radius:9px;font-size:14px;display:none;}
+.feedback-box.show{display:block;}
+.feedback-box.good{background:var(--success-bg);border:1px solid #A6F4C5;color:#065F46;}
+.feedback-box.retry{background:var(--warning-bg);border:1px solid #FEDF89;color:#B54708;}
+
+.next-row{margin-top:20px;display:flex;justify-content:flex-end;}
+
+.recap-list{background:var(--surface-alt);border-radius:10px;padding:18px 20px;margin:16px 0;}
+.recap-list li{margin-bottom:10px;font-size:14px;color:var(--text);}
+.job-link{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;padding:16px 18px;font-size:14px;color:var(--text);margin-top:16px;}
+.job-link b{color:var(--accent);}
+.bridge-note{background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-size:14px;color:var(--text);margin-top:12px;}
+.bridge-note b{color:var(--accent);}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-weight:700;font-size:15px;padding:14px 28px;border-radius:10px;text-decoration:none;margin-top:20px;}
+.cta-btn:hover{background:var(--accent-hover);}
+</style>
+</head>
+<body>
+<a href="index.html" class="home-btn" title="Back to dashboard">🏠</a>
+<div class="wrap">
+  <div class="eyebrow">Start here · Takes about 3 minutes</div>
+  <h1>Hello, Computer 👋</h1>
+  <p class="lead">Before anything else today — let's do the one thing every single person who has ever written code has done first. This page needs no experience at all. If you've never touched a line of code before, you're exactly who this is for.</p>
+
+  <div class="step active" data-step="0">
+    <div class="step-label">Step 1 of 4</div>
+    <h2>What actually is a "console"?</h2>
+    <p>You're going to see the word "console" a lot today. Here's all it means:</p>
+    <div class="analogy">A console is just a simple box where you type an instruction, press a button, and the computer replies straight away. <b>That's genuinely it.</b> No menus, no clicking around — just type something, and something happens.</div>
+    <p>Below is exactly what one looks like. It's dark, it uses a typewriter-style font, and it's where you'll type your first ever instruction.</p>
+    <div class="console-box">
+      <div class="console-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp;&nbsp;console</div>
+      <div class="console-body">
+        <div class="console-line">// this is what an empty console looks like — nothing has happened yet</div>
+      </div>
+    </div>
+    <div class="next-row">
+      <button class="big-btn" onclick="goToStep(1)">I understand — what's next? →</button>
+    </div>
+  </div>
+
+  <div class="step" data-step="1">
+    <div class="step-label">Step 2 of 4</div>
+    <h2>Your turn — type your first instruction</h2>
+    <p>Every programming language has a way to display a message. In JavaScript — the language you'll see today — it looks like this:</p>
+    <div class="console-box">
+      <div class="console-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp;&nbsp;console</div>
+      <div class="console-body" id="consoleBody1">
+        <div class="console-line">// type the instruction below into the box, then click Run</div>
+      </div>
+    </div>
+    <p style="margin-top:14px;"><b>Type exactly this</b>, including the punctuation:</p>
+    <div style="background:var(--surface-alt);border-radius:8px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:14.5px;margin:10px 0;">console.log("Hello, World!")</div>
+    <div class="type-here-row">
+      <input type="text" id="step1Input" placeholder="Type it here…" onkeydown="if(event.key==='Enter')checkStep1()">
+      <button class="big-btn" onclick="checkStep1()">▶ Run</button>
+    </div>
+    <div class="pointer-hint" id="step1Pointer"><span class="arrow">👆</span> Click inside the box above, type the instruction, then click the blue Run button</div>
+    <div class="feedback-box" id="step1Feedback"></div>
+  </div>
+
+  <div class="step" data-step="2">
+    <div class="step-label">Step 3 of 4</div>
+    <h2>One more time — with your own name</h2>
+    <p>You just did the exact thing every developer does dozens of times a day: tell the computer to display something, and watch it happen immediately. Let's do it once more, this time with your own name instead.</p>
+    <div class="console-box">
+      <div class="console-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp;&nbsp;console</div>
+      <div class="console-body" id="consoleBody2">
+        <div class="console-line">// replace YOUR NAME below with your actual name, keeping the quote marks</div>
+      </div>
+    </div>
+    <p style="margin-top:14px;"><b>Type this, swapping in your own name:</b></p>
+    <div style="background:var(--surface-alt);border-radius:8px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:14.5px;margin:10px 0;">console.log("Hello, YOUR NAME!")</div>
+    <div class="type-here-row">
+      <input type="text" id="step2Input" placeholder='e.g. console.log("Hello, Sam!")' onkeydown="if(event.key==='Enter')checkStep2()">
+      <button class="big-btn" onclick="checkStep2()">▶ Run</button>
+    </div>
+    <div class="feedback-box" id="step2Feedback"></div>
+  </div>
+
+  <div class="step" data-step="3">
+    <div class="step-label">Step 4 of 4 · You're done!</div>
+    <h2>🎉 That's your first line of code, ever</h2>
+    <p>Genuinely — that's not a simplified taste of coding, that's the real thing. Every developer, on every project, starts exactly like this.</p>
+    <div class="recap-list">
+      <ul style="margin:0;padding-left:20px;">
+        <li>A <b>console</b> is just a box where you type an instruction and see the result immediately.</li>
+        <li><b>console.log(...)</b> is the instruction for "display this on screen."</li>
+        <li>Anything you want to display as text goes inside quote marks <code>"like this"</code>.</li>
+      </ul>
+    </div>
+    <div class="job-link">💼 <b>Where this shows up in real jobs:</b> every single professional developer uses a console every day — to check their code is doing what they expect, to try out an idea quickly, or to fix something that's gone wrong. It's less a "coding trick" and more like a mechanic's basic toolkit — you never stop using it.</div>
+    <div class="bridge-note">🔗 <b>Keep an eye out for this idea again:</b> in a few of today's other activities, you'll see a running list of results appear as your code runs — that's the exact same thing you just did here, just automated instead of typed by hand. Same idea: give an instruction, see immediately what happened.</div>
+    <a href="index.html" class="cta-btn">Head to the dashboard, pick your first activity →</a>
+  </div>
+
+</div>
+
+<script>
+function goToStep(n){
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector('.step[data-step="'+n+'"]').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function normalize(s){
+  return s.trim().replace(/[’‘]/g,"'").replace(/[“”]/g,'"');
+}
+
+function checkStep1(){
+  const raw = document.getElementById('step1Input').value;
+  const val = normalize(raw);
+  const body = document.getElementById('consoleBody1');
+  const feedback = document.getElementById('step1Feedback');
+  const pointer = document.getElementById('step1Pointer');
+  pointer.style.display = 'none';
+
+  if(val === 'console.log("Hello, World!")'){
+    body.innerHTML += `<div class="console-line">&gt; ${escapeHtml(raw)}</div><div class="console-output">Hello, World!</div>`;
+    feedback.className = 'feedback-box show good';
+    feedback.innerHTML = '✅ That\'s it — you just told the computer to display something, and it did. Ready for the next bit.';
+    setTimeout(()=>goToStep(2), 1400);
+  } else if(val === ''){
+    feedback.className = 'feedback-box show retry';
+    feedback.innerHTML = '⌨️ The box is empty — click inside it and type the instruction shown above first.';
+  } else {
+    body.innerHTML += `<div class="console-line">&gt; ${escapeHtml(raw)}</div><div class="console-error">Not quite right yet</div>`;
+    feedback.className = 'feedback-box show retry';
+    feedback.innerHTML = '🤔 Not quite — check every character matches, including the quote marks and the brackets. Small typos are completely normal here, even for experienced developers.';
+  }
+}
+
+function checkStep2(){
+  const raw = document.getElementById('step2Input').value;
+  const val = normalize(raw);
+  const body = document.getElementById('consoleBody2');
+  const feedback = document.getElementById('step2Feedback');
+  const pattern = /^console\.log\("Hello, .+!"\)$/;
+
+  if(pattern.test(val) && !/YOUR NAME/i.test(val)){
+    const nameMatch = val.match(/^console\.log\("Hello, (.+)!"\)$/);
+    body.innerHTML += `<div class="console-line">&gt; ${escapeHtml(raw)}</div><div class="console-output">Hello, ${escapeHtml(nameMatch[1])}!</div>`;
+    feedback.className = 'feedback-box show good';
+    feedback.innerHTML = '✅ Nicely done — you changed what the computer displays just by changing the text inside the quotes.';
+    setTimeout(()=>goToStep(3), 1400);
+  } else if(/YOUR NAME/i.test(val)){
+    feedback.className = 'feedback-box show retry';
+    feedback.innerHTML = '✏️ Swap out the words "YOUR NAME" for your actual name — keep everything else exactly the same.';
+  } else if(val === ''){
+    feedback.className = 'feedback-box show retry';
+    feedback.innerHTML = '⌨️ The box is empty — type your version of the instruction above first.';
+  } else {
+    body.innerHTML += `<div class="console-line">&gt; ${escapeHtml(raw)}</div><div class="console-error">Not quite right yet</div>`;
+    feedback.className = 'feedback-box show retry';
+    feedback.innerHTML = '🤔 Check it still starts with console.log("Hello, and ends with !") — with your name in the middle.';
+  }
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
