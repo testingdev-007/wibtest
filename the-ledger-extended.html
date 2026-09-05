@@ -351,7 +351,10 @@ function totalSpend(transactions) {
     ],
     hints: [
       "You need a variable that starts at zero, then grows by adding each transaction's amount as you go through the list.",
+      "A common slip here: writing let total = 0; INSIDE the loop instead of before it — that would reset total back to zero on every single pass, wiping out everything added so far.",
+      "Worked through with three made-up amounts — £10, £20, £5: total starts at 0. After the first: 0 + 10 = 10. After the second: 10 + 20 = 30. After the third: 30 + 5 = 35. Final answer: 35.",
       "Inside the loop, add each amount onto your total: total += transactions[i].amount;",
+      "total += transactions[i].amount; is shorthand for total = total + transactions[i].amount; — same thing, less typing.",
       "for (let i = 0; i < transactions.length; i++) {\n  total += transactions[i].amount;\n}"
     ],
     workedFn: "sumSteps",
@@ -398,7 +401,10 @@ function sumByCategory(transactions, category) {
     ],
     hints: [
       "Same idea as before, but this time you only want to add an amount when its category actually matches.",
+      "A common slip here: writing transactions[i].category = category with a single = instead of ===. A single = assigns a value instead of comparing — always use === to check if two things are equal.",
+      "Worked through with two made-up transactions — one 'rent' for £800, one 'food' for £50 — checking category \"rent\": does 'rent' === 'rent'? Yes, so £800 counts. Does 'food' === 'rent'? No, so £50 is skipped. Total: 800.",
       "Put an if check inside the loop before you add anything: if (transactions[i].category === category) { ... }",
+      "Here's the shape with one blank: if (transactions[i].category === ___) — what are you comparing it against?",
       "for (let i = 0; i < transactions.length; i++) {\n  if (transactions[i].category === category) {\n    total += transactions[i].amount;\n  }\n}"
     ],
     workedFn: "sumFoodCost",
@@ -445,7 +451,10 @@ function countHighValue(transactions, threshold) {
     ],
     hints: [
       "This one counts matches instead of adding amounts up — start a counter at zero and increase it, don't total anything.",
+      "A common slip here: writing count = count + amount, accidentally reusing the 'add up the amount' pattern from before — this challenge only needs count++, adding exactly one per match, not the amount itself.",
+      "Worked through with three made-up amounts — £500, £1500, £2000 — threshold 1000: is 500 > 1000? No. Is 1500 > 1000? Yes, count becomes 1. Is 2000 > 1000? Yes, count becomes 2. Final answer: 2.",
       "Inside the loop: if (transactions[i].amount > threshold) { count++; } — count++ just means \"add one.\"",
+      "Here's the shape with one blank: if (transactions[i].amount ___ threshold) — which symbol means 'greater than'?",
       "for (let i = 0; i < transactions.length; i++) {\n  if (transactions[i].amount > threshold) {\n    count++;\n  }\n}"
     ],
     workedFn: "countHotDays",
