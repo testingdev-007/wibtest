@@ -360,7 +360,7 @@ function firstTransactionAmount(transactions) {
       "Worked through with a real example: if the list is [{amount:120}, {amount:45}], transactions[0] gets you {amount:120} — the whole first transaction, not just the number.",
       "transactions[0] gets you the whole first transaction — an object with category and amount fields. Add .amount to get just the number.",
       "Here's the shape with one blank: return transactions[0]___; — what goes after the 0 to get just the number?",
-      "return transactions[0].amount;"
+      "function firstTransactionAmount(transactions) {\n  return transactions[0].amount;\n}"
     ],
     workedFn: "firstStepCount",
     workedField: "count",
@@ -402,7 +402,7 @@ function totalSpend(transactions) {
       "Worked through with three made-up amounts — £10, £20, £5: total starts at 0. After the first: 0 + 10 = 10. After the second: 10 + 20 = 30. After the third: 30 + 5 = 35. Final answer: 35.",
       "Inside the loop, add each amount onto your total: total += transactions[i].amount;",
       "total += transactions[i].amount; is shorthand for total = total + transactions[i].amount; — same thing, less typing.",
-      "for (let i = 0; i < transactions.length; i++) {\n  total += transactions[i].amount;\n}"
+      "function totalSpend(transactions) {\n  let total = 0;\n  for (let i = 0; i < transactions.length; i++) {\n    total += transactions[i].amount;\n  }\n  return total;\n}"
     ],
     workedFn: "sumSteps",
     workedField: "count",
@@ -452,7 +452,7 @@ function sumByCategory(transactions, category) {
       "Worked through with two made-up transactions — one 'rent' for £800, one 'food' for £50 — checking category \"rent\": does 'rent' === 'rent'? Yes, so £800 counts. Does 'food' === 'rent'? No, so £50 is skipped. Total: 800.",
       "Put an if check inside the loop before you add anything: if (transactions[i].category === category) { ... }",
       "Here's the shape with one blank: if (transactions[i].category === ___) — what are you comparing it against?",
-      "for (let i = 0; i < transactions.length; i++) {\n  if (transactions[i].category === category) {\n    total += transactions[i].amount;\n  }\n}"
+      "function sumByCategory(transactions, category) {\n  let total = 0;\n  for (let i = 0; i < transactions.length; i++) {\n    if (transactions[i].category === category) {\n      total += transactions[i].amount;\n    }\n  }\n  return total;\n}"
     ],
     workedFn: "sumFoodCost",
     workedField: "cost",
@@ -502,7 +502,7 @@ function countHighValue(transactions, threshold) {
       "Worked through with three made-up amounts — £500, £1500, £2000 — threshold 1000: is 500 > 1000? No. Is 1500 > 1000? Yes, count becomes 1. Is 2000 > 1000? Yes, count becomes 2. Final answer: 2.",
       "Inside the loop: if (transactions[i].amount > threshold) { count++; } — count++ just means \"add one.\"",
       "Here's the shape with one blank: if (transactions[i].amount ___ threshold) — which symbol means 'greater than'?",
-      "for (let i = 0; i < transactions.length; i++) {\n  if (transactions[i].amount > threshold) {\n    count++;\n  }\n}"
+      "function countHighValue(transactions, threshold) {\n  let count = 0;\n  for (let i = 0; i < transactions.length; i++) {\n    if (transactions[i].amount > threshold) {\n      count++;\n    }\n  }\n  return count;\n}"
     ],
     workedFn: "countHotDays",
     workedField: "temp",

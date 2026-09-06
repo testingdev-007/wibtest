@@ -343,7 +343,7 @@ function calculateTotal(amount) {
       "Worked through with a real number: if amount is 20, you want 25 back — that's 20 + 5. The fee is always exactly 5, no matter what the amount is.",
       "You need a return statement. The shape is: return amount + ___;",
       "The blank is just the fee itself — a plain number, not a word or a calculation.",
-      "return amount + 5;"
+      "function calculateTotal(amount) {\n  return amount + 5;\n}"
     ],
     workedFn: "addServiceCharge",
     workedCode: `function addServiceCharge(price) {
@@ -378,7 +378,7 @@ function isHighRisk(amount) {
       "Worked through with a real number: amount is 15000. Is 15000 > 10000? Yes — so the answer is true. Now try amount 5000: is 5000 > 10000? No — so the answer is false.",
       "A comparison like amount > 10000 already gives you true or false directly — you can return it as-is.",
       "Here's the shape with one blank: return amount ___ 10000; — which symbol means 'greater than'?",
-      "return amount > 10000;"
+      "function isHighRisk(amount) {\n  return amount > 10000;\n}"
     ],
     workedFn: "isAdult",
     workedCode: `function isAdult(age) {
@@ -416,7 +416,7 @@ function categoriseTransaction(amount) {
       "Worked through with a real number: amount is 5000. Is it over 10000? No. Is it 1000 or more? Yes — so it's 'review'. Now try 500: not over 10000, not 1000 or more either, so it falls through to 'standard'.",
       "Start with: if (amount > 10000) return 'flagged'; then add another if for the next band.",
       "Each check only runs if the ones above it didn't already return — that's why checking biggest-first works without needing else.",
-      "if (amount > 10000) return 'flagged';\nif (amount >= 1000) return 'review';\nreturn 'standard';"
+      "function categoriseTransaction(amount) {\n  if (amount > 10000) return 'flagged';\n  if (amount >= 1000) return 'review';\n  return 'standard';\n}"
     ],
     workedFn: "gradeScore",
     workedCode: `function gradeScore(score) {
@@ -455,7 +455,7 @@ function applyLateFee(amount, daysLate) {
       "Worked through with real numbers: amount is 100, daysLate is 5. Since 5 > 0, add the fee: 100 + 10 = 110. Now try daysLate 0: since 0 is not > 0, nothing changes — the answer is just 100.",
       "if (daysLate > 0) { return amount + 10; } then return amount unchanged afterwards.",
       "The second return only runs at all if the if above it didn't already return — no else needed.",
-      "if (daysLate > 0) return amount + 10;\nreturn amount;"
+      "function applyLateFee(amount, daysLate) {\n  if (daysLate > 0) return amount + 10;\n  return amount;\n}"
     ],
     workedFn: "chargeLateFee",
     workedCode: `function chargeLateFee(bill, daysOverdue) {
@@ -491,7 +491,7 @@ function roundToNearestPound(amount) {
       "Worked through with a real number: amount is 19.6. Math.round(19.6) looks at the .6 — that's over halfway, so it rounds up to 20. Amount 19.4 would round down to 19 instead.",
       "Math.round() takes a number and rounds it. Math.round(4.6) gives 5. Math.round(4.2) gives 4.",
       "Here's the shape with one blank: return Math.round(___); — what goes inside the brackets?",
-      "return Math.round(amount);"
+      "function roundToNearestPound(amount) {\n  return Math.round(amount);\n}"
     ],
     workedFn: "roundToNearestKg",
     workedCode: `function roundToNearestKg(weight) {
