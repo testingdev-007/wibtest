@@ -73,6 +73,8 @@ h1{font-size:26px;margin:0 0 8px;font-weight:700;letter-spacing:-0.01em;color:va
 .editor-titlebar{padding:9px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;}
 .editor-titlebar span.path{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
 textarea{width:100%;min-height:220px;background:#0D1117;color:#E6EDF3;border:none;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;padding:14px 16px;resize:vertical;tab-size:2;}
+textarea[readonly]{cursor:default;}
+textarea[readonly]:focus{outline:none;}
 textarea:focus{outline:none;}
 
 .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
@@ -142,10 +144,10 @@ button.btn-ghost:hover{background:var(--surface-alt);color:var(--text);}
         </div>
         <div class="panel">
           <div class="panel-head"><h2>Code Window</h2></div>
-          <p class="panel-subcaption">You don't need to type here yourself — describing a problem in the chat updates this automatically. You can also edit it directly if you want to.</p>
+          <p class="panel-subcaption">This updates automatically as you describe problems in the chat — it's view-only, so there's nothing to type here yourself.</p>
           <div class="editor-chrome">
-            <div class="editor-titlebar"><span class="path">bank.js</span><span>updates live as you type</span></div>
-            <textarea id="codeInput" spellcheck="false"></textarea>
+            <div class="editor-titlebar"><span class="path">bank.js</span><span>updates live as fixes land</span></div>
+            <textarea id="codeInput" spellcheck="false" readonly></textarea>
           </div>
           <div class="actions">
             <button class="btn-primary" onclick="checkFixes()">✓ Check My Fixes</button>
