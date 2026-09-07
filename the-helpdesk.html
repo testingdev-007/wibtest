@@ -530,9 +530,9 @@ const HELP_ENTRIES = [
 function findEntry(id){ return HELP_ENTRIES.find(e => e.id === id); }
 
 const CHAT_FALLBACK = "I'm not totally sure which issue that is — try each part of the app (deposit, withdraw, transfer), watch what actually happens, and describe exactly what you're seeing. Or say \"I'm stuck\" and I'll point you somewhere.";
-const STUCK_PHRASES = ["im stuck", "i'm stuck", "not sure what to check", "what should i look for", "cant find", "can't find", "dont know what to look for", "no idea what's wrong", "not sure what's wrong", "give me a hint", "any hints", "what am i missing", "what's left", "not sure what else", "help me find the rest"];
+const STUCK_PHRASES = ["i'm stuck", "not sure what to check", "what should i look for", "can't find", "don't know what to look for", "no idea what's wrong", "not sure what's wrong", "give me a hint", "any hints", "what am i missing", "what's left", "not sure what else", "help me find the rest"];
 function normalizeChat(s){
-  return s.toLowerCase().replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
+  return s.toLowerCase().replace(/'/g,'').replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
 }
 const CHAT_STOPWORDS = new Set(["what","does","do","is","are","the","a","an","to","of","in","on","for","and","or","i","my","how","this","that","it","me","you","your","did","doing","can","if","when","doesnt","dont","isnt","not","get","got","with"]);
 function scoreEntry(msgNorm, msgWords, entry){
@@ -549,7 +549,7 @@ function scoreEntry(msgNorm, msgWords, entry){
 }
 function isStuckMessage(msg){
   const norm = normalizeChat(msg);
-  return STUCK_PHRASES.some(p => norm.includes(p));
+  return STUCK_PHRASES.some(p => norm.includes(normalizeChat(p)));
 }
 function findFix(userMsg){
   const msgNorm = normalizeChat(userMsg);
